@@ -39,14 +39,22 @@ typedef struct UnityXRNativePointCloud_1
     void* pointCloud;
 } UnityXRNativePointCloud_1;
 
+typedef struct UnityXRNativeImage_1
+{
+    int version;
+    void* imageTrackable;
+} UnityXRNativeImage_1;
+
 static const int kUnityXRNativeSessionVersion = 1;
 static const int kUnityXRNativeFrameVersion = 1;
 static const int kUnityXRNativePlaneVersion = 1;
 static const int kUnityXRNativeReferencePointVersion = 1;
 static const int kUnityXRNativePointCloudVersion = 1;
+static const int kUnityXRNativeImageVersion = 1;
 
 typedef UnityXRNativeSession_1 UnityXRNativeSession;
 typedef UnityXRNativeFrame_1 UnityXRNativeFrame;
 typedef UnityXRNativePlane_1 UnityXRNativePlane;
 typedef UnityXRNativeReferencePoint_1 UnityXRNativeReferencePoint;
 typedef UnityXRNativePointCloud_1 UnityXRNativePointCloud;
+typedef UnityXRNativeImage_1 UnityXRNativeImage;

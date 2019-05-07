@@ -26,10 +26,15 @@ namespace UnityEngine.XR.ARCore
             public Provider()
             {
                 NativeApi.UnityARCore_session_construct(CameraPermissionRequestProvider);
+                if (SystemInfo.graphicsMultiThreaded)
+                {
+                    m_RenderEventFunc = NativeApi.UnityARCore_session_getRenderEventFunc();
+                }
             }
 
             public override void Resume()
             {
+                CreateTexture();
                 NativeApi.UnityARCore_session_resume();
             }
 
@@ -47,6 +52,7 @@ namespace UnityEngine.XR.ARCore
 
             public override void Destroy()
             {
+                DeleteTexture();
                 NativeApi.UnityARCore_session_destroy();
             }
 
@@ -178,7 +184,48 @@ namespace UnityEngine.XR.ARCore
                 gch.Free();
             }
 
+            void IssueRenderEventAndWaitForCompletion(NativeApi.RenderEvent renderEvent)
+            {
+                // NB: If m_RenderEventFunc is zero, it means
+                //     1. We are running in the Editor.
+                //     2. The UnityARCore library could not be loaded or similar catastrophic failure.
+                if (m_RenderEventFunc != IntPtr.Zero)
+                {
+                    NativeApi.UnityARCore_session_setRenderEventPending();
+                    GL.IssuePluginEvent(m_RenderEventFunc, (int)renderEvent);
+                    NativeApi.UnityARCore_session_waitForRenderEvent();
+                }
+            }
+
+            // Safe to call multiple times; does nothing if already created.
+            void CreateTexture()
+            {
+                if (SystemInfo.graphicsMultiThreaded)
+                {
+                    IssueRenderEventAndWaitForCompletion(NativeApi.RenderEvent.CreateTexture);
+                }
+                else
+                {
+                    NativeApi.UnityARCore_session_createTextureMainThread();
+                }
+            }
+
+            // Safe to call multiple times; does nothing if already destroyed.
+            void DeleteTexture()
+            {
+                if (SystemInfo.graphicsMultiThreaded)
+                {
+                    IssueRenderEventAndWaitForCompletion(NativeApi.RenderEvent.DeleteTexture);
+                }
+                else
+                {
+                    NativeApi.UnityARCore_session_deleteTextureMainThread();
+                }
+            }
+
             const string k_CameraPermissionName = "android.permission.CAMERA";
+
+            IntPtr m_RenderEventFunc;
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -213,6 +260,12 @@ namespace UnityEngine.XR.ARCore
                 SupportedNotInstalled = 201,
                 SupportedApkTooOld = 202,
                 SupportedInstalled = 203
+            }
+
+            public enum RenderEvent
+            {
+                CreateTexture,
+                DeleteTexture
             }
 
             public delegate void CameraPermissionRequestProviderDelegate(
@@ -264,6 +317,21 @@ namespace UnityEngine.XR.ARCore
 
             [DllImport("UnityARCore")]
             public static extern TrackingState UnityARCore_session_getTrackingState();
+
+            [DllImport("UnityARCore")]
+            public static extern IntPtr UnityARCore_session_getRenderEventFunc();
+
+            [DllImport("UnityARCore")]
+            public static extern void UnityARCore_session_setRenderEventPending();
+
+            [DllImport("UnityARCore")]
+            public static extern void UnityARCore_session_waitForRenderEvent();
+
+            [DllImport("UnityARCore")]
+            public static extern void UnityARCore_session_createTextureMainThread();
+
+            [DllImport("UnityARCore")]
+            public static extern void UnityARCore_session_deleteTextureMainThread();
 #else
             public static IntPtr UnityARCore_session_getNativePtr()
             {
@@ -313,6 +381,23 @@ namespace UnityEngine.XR.ARCore
             {
                 return TrackingState.None;
             }
+
+            public static IntPtr UnityARCore_session_getRenderEventFunc()
+            {
+                return IntPtr.Zero;
+            }
+
+            public static void UnityARCore_session_setRenderEventPending()
+            {}
+
+            public static void UnityARCore_session_waitForRenderEvent()
+            {}
+
+            public static void UnityARCore_session_createTextureMainThread()
+            {}
+
+            public static void UnityARCore_session_deleteTextureMainThread()
+            {}
 #endif
         }
     }

@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine.Scripting;
 using UnityEngine.XR.ARSubsystems;
 
@@ -20,6 +21,30 @@ namespace UnityEngine.XR.ARCore
         /// </value>
         const string k_SubsystemId = "ARCore-Camera";
 
+        enum CameraConfigurationResult
+        {
+            /// <summary>
+            /// Setting the camera configuration was successful.
+            /// </summary>
+            Success = 0,
+
+            /// <summary>
+            /// The given camera configuration was not valid to be set by the provider.
+            /// </summary>
+            InvalidCameraConfiguration = 1,
+
+            /// <summary>
+            /// The provider session was invalid.
+            /// </summary>
+            InvalidSession = 2,
+
+            /// <summary>
+            /// An error occurred because the user did not dispose of all <c>XRCameraImages</c> and did not allow all
+            /// asynchronous conversion jobs complete before changing the camera configuration.
+            /// </summary>
+            ErrorImagesNotDisposed = 3,
+        }
+
         /// <summary>
         /// Create and register the camera subsystem descriptor to advertise a providing implementation for camera
         /// functionality.
@@ -36,7 +61,9 @@ namespace UnityEngine.XR.ARCore
                 supportsColorCorrection = true,
                 supportsDisplayMatrix = true,
                 supportsProjectionMatrix = true,
-                supportsTimestamp = true
+                supportsTimestamp = true,
+                supportsCameraConfigurations = true,
+                supportsCameraImage = true,
             };
 
             if (!XRCameraSubsystem.Register(cameraSubsystemCinfo))
@@ -86,9 +113,38 @@ namespace UnityEngine.XR.ARCore
             static readonly int k_MainTexPropertyNameId = Shader.PropertyToID(k_MainTexPropertyName);
 
             /// <summary>
+            /// Get the shader name used by <c>XRCameraSubsystem</c> to render texture.
+            /// </summary>
+            /// <value>
+            /// Get the shader name used by <c>XRCameraSubsystem</c> to render texture.
+            /// </value>
+            public override string shaderName
+            {
+                get { return "Unlit/ARCoreBackground"; }
+            }
+
+            /// <summary>
+            /// Determine whether camera permission has been granted.
+            /// </summary>
+            /// <returns>
+            /// <c>true</c> if camera permission has been granted for this app. Otherwise, <c>false</c>.
+            /// </returns>
+            public override bool permissionGranted
+            {
+                get
+                {
+                    return ARCorePermissionManager.IsPermissionGranted(k_CameraPermissionName);
+                }
+            }
+
+            public override bool invertCulling
+            {
+                get { return NativeApi.UnityARCore_Camera_ShouldInvertCulling(); }
+            }
+
+            /// <summary>
             /// Construct the camera functionality provider for ARCore.
             /// </summary>
-            /// <param name="preUpdateCallback">The callback for the preupdate event.</param>
             public Provider()
             {
                 NativeApi.UnityARCore_Camera_Construct(k_MainTexPropertyNameId);
@@ -119,7 +175,7 @@ namespace UnityEngine.XR.ARCore
             }
 
             /// <summary>
-            /// Get the current camera frame for the subsystem.
+            /// Get the camera frame for the subsystem.
             /// </summary>
             /// <param name="cameraParams">The current Unity <c>Camera</c> parameters.</param>
             /// <param name="cameraFrame">The current camera frame returned by the method.</param>
@@ -129,14 +185,6 @@ namespace UnityEngine.XR.ARCore
             public override bool TryGetFrame(XRCameraParams cameraParams, out XRCameraFrame cameraFrame)
             {
                 return NativeApi.UnityARCore_Camera_TryGetFrame(cameraParams, out cameraFrame);
-            }
-
-            /// <summary>
-            /// Get the shader name used by <c>XRCameraSubsystem</c> to render texture.
-            /// </summary>
-            public override string shaderName
-            {
-                get { return "Unlit/ARCoreBackground"; }
             }
 
             /// <summary>
@@ -176,16 +224,88 @@ namespace UnityEngine.XR.ARCore
             }
 
             /// <summary>
-            /// Determine whether camera permission has been granted.
+            /// Queries the supported camera configurations.
             /// </summary>
+            /// <param name="defaultCameraConfiguration">A default value used to fill the returned array before copying
+            /// in real values. This ensures future additions to this struct are backwards compatible.</param>
+            /// <param name="allocator">The allocation strategy to use for the returned data.</param>
             /// <returns>
-            /// <c>true</c> if camera permission has been granted for this app. Otherwise, <c>false</c>.
+            /// The supported camera configurations.
             /// </returns>
-            public override bool permissionGranted
+            public override NativeArray<XRCameraConfiguration> GetConfigurations(XRCameraConfiguration defaultCameraConfiguration,
+                                                                                 Allocator allocator)
+            {
+                int configurationsCount;
+                int configurationSize;
+                IntPtr configurations = NativeApi.UnityARCore_Camera_AcquireConfigurations(out configurationsCount,
+                                                                                           out configurationSize);
+                try
+                {
+                    unsafe
+                    {
+                        return NativeCopyUtility.PtrToNativeArrayWithDefault(defaultCameraConfiguration,
+                                                                             (void*)configurations,
+                                                                             configurationSize, configurationsCount,
+                                                                             allocator);
+                    }
+                }
+                finally
+                {
+                    NativeApi.UnityARCore_Camera_ReleaseConfigurations(configurations);
+                }
+            }
+
+            /// <summary>
+            /// The current camera configuration.
+            /// </summary>
+            /// <value>
+            /// The current camera configuration if it exists. Otherise, <c>null</c>.
+            /// </value>
+            /// <exception cref="System.ArgumentException">Thrown when setting the current configuration if the given
+            /// configuration is not a valid, supported camera configuration.</exception>
+            /// <exception cref="System.InvalidOperationException">Thrown when setting the current configuration if the
+            /// implementation is unable to set the current camera configuration for various reasons such as:
+            /// <list type="bullet">
+            /// <item><description>ARCore session is invalid</description></item>
+            /// <item><description>Captured <c>XRCameraImages</c> have not been disposed</description></item>
+            /// </list>
+            /// </exception>
+            /// <seealso cref="TryAcquireLatestImage"/>
+            public override XRCameraConfiguration? currentConfiguration
             {
                 get
                 {
-                    return ARCorePermissionManager.IsPermissionGranted(k_CameraPermissionName);
+                    XRCameraConfiguration cameraConfiguration;
+                    if (NativeApi.UnityARCore_Camera_TryGetCurrentConfiguration(out cameraConfiguration))
+                    {
+                        return cameraConfiguration;
+                    }
+
+                    return null;
+                }
+                set
+                {
+                    // Assert that the camera configuration is not null.
+                    // The XRCameraSubsystem should have already checked this.
+                    Debug.Assert(value != null, "Cannot set the current camera configuration to null");
+
+                    switch (NativeApi.UnityARCore_Camera_TrySetCurrentConfiguration((XRCameraConfiguration)value))
+                    {
+                        case CameraConfigurationResult.Success:
+                            break;
+                        case CameraConfigurationResult.InvalidCameraConfiguration:
+                            throw new ArgumentException("Camera configuration does not exist in the available "
+                                                        + "configurations", "value");
+                        case CameraConfigurationResult.InvalidSession:
+                            throw new InvalidOperationException("Cannot set camera configuration because the ARCore "
+                                                                + "session is not valid");
+                        case CameraConfigurationResult.ErrorImagesNotDisposed:
+                            throw new InvalidOperationException("Cannot set camera configuration because you have not "
+                                                                + "disposed of all XRCameraImages and allowed all "
+                                                                + "asynchronous conversion jobs to complete");
+                        default:
+                            throw new InvalidOperationException("cannot set camera configuration for ARCore");
+                    }
                 }
             }
 
@@ -213,6 +333,176 @@ namespace UnityEngine.XR.ARCore
                 {
                     NativeApi.UnityARCore_Camera_ReleaseTextureDescriptors(textureDescriptors);
                 }
+            }
+
+            /// <summary>
+            /// Query for the latest native camera image.
+            /// </summary>
+            /// <param name="cameraImageCinfo">The metadata required to construct a <see cref="XRCameraImage"/></param>
+            /// <returns>
+            /// <c>true</c> if the camera image is acquired. Otherwise, <c>false</c>.
+            /// </returns>
+            public override bool TryAcquireLatestImage(out CameraImageCinfo cameraImageCinfo)
+            {
+                return NativeApi.UnityARCore_Camera_TryAcquireLatestImage(out cameraImageCinfo);
+            }
+
+            /// <summary>
+            /// Get the status of an existing asynchronous conversion request.
+            /// </summary>
+            /// <param name="requestId">The unique identifier associated with a request.</param>
+            /// <returns>The state of the request.</returns>
+            /// <seealso cref="ConvertAsync(int, XRCameraImageConversionParams)"/>
+            public override AsyncCameraImageConversionStatus GetAsyncRequestStatus(int requestId)
+            {
+                return NativeApi.UnityARCore_Camera_GetAsyncRequestStatus(requestId);
+            }
+
+            /// <summary>
+            /// Dispose an existing native image identified by <paramref name="nativeHandle"/>.
+            /// </summary>
+            /// <param name="nativeHandle">A unique identifier for this camera image.</param>
+            /// <seealso cref="TryAcquireLatestImage"/>
+            public override void DisposeImage(int nativeHandle)
+            {
+                NativeApi.UnityARCore_Camera_DisposeImage(nativeHandle);
+            }
+
+            /// <summary>
+            /// Dispose an existing async conversion request.
+            /// </summary>
+            /// <param name="requestId">A unique identifier for the request.</param>
+            /// <seealso cref="ConvertAsync(int, XRCameraImageConversionParams)"/>
+            public override void DisposeAsyncRequest(int requestId)
+            {
+                NativeApi.UnityARCore_Camera_DisposeAsyncRequest(requestId);
+            }
+
+            /// <summary>
+            /// Get information about an image plane from a native image handle by index.
+            /// </summary>
+            /// <param name="nativeHandle">A unique identifier for this camera image.</param>
+            /// <param name="planeIndex">The index of the plane to get.</param>
+            /// <param name="planeCinfo">The returned camera plane information if successful.</param>
+            /// <returns>
+            /// <c>true</c> if the image plane was acquired. Otherwise, <c>false</c>.
+            /// </returns>
+            /// <seealso cref="TryAcquireLatestImage"/>
+            public override bool TryGetPlane(
+                int nativeHandle,
+                int planeIndex,
+                out CameraImagePlaneCinfo planeCinfo)
+            {
+                return NativeApi.UnityARCore_Camera_TryGetPlane(nativeHandle, planeIndex, out planeCinfo);
+            }
+
+            /// <summary>
+            /// Determine whether a native image handle returned by <see cref="TryAcquireLatestImage"/> is currently
+            /// valid. An image may become invalid if it has been disposed.
+            /// </summary>
+            /// <remarks>
+            /// If a handle is valid, <see cref="TryConvert"/> and <see cref="TryGetConvertedDataSize"/> should not fail.
+            /// </remarks>
+            /// <param name="nativeHandle">A unique identifier for the camera image in question.</param>
+            /// <returns><c>true</c>, if it is a valid handle. Otherwise, <c>false</c>.</returns>
+            /// <seealso cref="DisposeImage"/>
+            public override bool NativeHandleValid(
+                int nativeHandle)
+            {
+
+                return NativeApi.UnityARCore_Camera_HandleValid(nativeHandle);
+            }
+
+            /// <summary>
+            /// Get the number of bytes required to store an image with the iven dimensions and <c>TextureFormat</c>.
+            /// </summary>
+            /// <param name="nativeHandle">A unique identifier for the camera image to convert.</param>
+            /// <param name="dimensions">The dimensions of the output image.</param>
+            /// <param name="format">The <c>TextureFormat</c> for the image.</param>
+            /// <param name="size">The number of bytes required to store the converted image.</param>
+            /// <returns><c>true</c> if the output <paramref name="size"/> was set.</returns>
+            public override bool TryGetConvertedDataSize(
+                int nativeHandle,
+                Vector2Int dimensions,
+                TextureFormat format,
+                out int size)
+            {
+                return NativeApi.UnityARCore_Camera_TryGetConvertedDataSize(nativeHandle, dimensions, format, out size);
+            }
+
+            /// <summary>
+            /// Convert the image with handle <paramref name="nativeHandle"/> using the provided
+            /// <paramref cref="conversionParams"/>.
+            /// </summary>
+            /// <param name="nativeHandle">A unique identifier for the camera image to convert.</param>
+            /// <param name="conversionParams">The parameters to use during the conversion.</param>
+            /// <param name="destinationBuffer">A buffer to write the converted image to.</param>
+            /// <param name="bufferLength">The number of bytes available in the buffer.</param>
+            /// <returns>
+            /// <c>true</c> if the image was converted and stored in <paramref name="destinationBuffer"/>.
+            /// </returns>
+            public override bool TryConvert(
+                int nativeHandle,
+                XRCameraImageConversionParams conversionParams,
+                IntPtr destinationBuffer,
+                int bufferLength)
+            {
+                return NativeApi.UnityARCore_Camera_TryConvert(
+                    nativeHandle, conversionParams, destinationBuffer, bufferLength);
+            }
+
+            /// <summary>
+            /// Create an asynchronous request to convert a camera image, similar to <see cref="TryConvert"/> except
+            /// the conversion should happen on a thread other than the calling (main) thread.
+            /// </summary>
+            /// <param name="nativeHandle">A unique identifier for the camera image to convert.</param>
+            /// <param name="conversionParams">The parameters to use during the conversion.</param>
+            /// <returns>A unique identifier for this request.</returns>
+            public override int ConvertAsync(
+                int nativeHandle,
+                XRCameraImageConversionParams conversionParams)
+            {
+                return NativeApi.UnityARCore_Camera_CreateAsyncConversionRequest(nativeHandle, conversionParams);
+            }
+
+            /// <summary>
+            /// Get a pointer to the image data from a completed asynchronous request. This method should only succeed
+            /// if <see cref="GetAsyncRequestStatus"/> returns <see cref="AsyncCameraImageConversionStatus.Ready"/>.
+            /// </summary>
+            /// <param name="requestId">The unique identifier associated with a request.</param>
+            /// <param name="dataPtr">A pointer to the native buffer containing the data.</param>
+            /// <param name="dataLength">The number of bytes in <paramref name="dataPtr"/>.</param>
+            /// <returns><c>true</c> if <paramref name="dataPtr"/> and <paramref name="dataLength"/> were set and point
+            ///  to the image data.</returns>
+            public override bool TryGetAsyncRequestData(int requestId, out IntPtr dataPtr, out int dataLength)
+            {
+                return NativeApi.UnityARCore_Camera_TryGetAsyncRequestData(requestId, out dataPtr, out dataLength);
+            }
+
+            /// <summary>
+            /// Similar to <see cref="ConvertAsync(int, XRCameraImageConversionParams)"/> but takes a delegate to
+            /// invoke when the request is complete, rather than returning a request id.
+            /// </summary>
+            /// <remarks>
+            /// If the first parameter to <paramref name="callback"/> is
+            /// <see cref="AsyncCameraImageConversionStatus.Ready"/> then the <c>dataPtr</c> parameter must be valid
+            /// for the duration of the invocation. The data may be destroyed immediately upon return. The
+            /// <paramref name="context"/> parameter must be passed back to the <paramref name="callback"/>.
+            /// </remarks>
+            /// <param name="nativeHandle">A unique identifier for the camera image to convert.</param>
+            /// <param name="conversionParams">The parameters to use during the conversion.</param>
+            /// <param name="callback">A delegate which must be invoked when the request is complete, whether the
+            /// conversion was successfully or not.</param>
+            /// <param name="context">A native pointer which must be passed back unaltered to
+            /// <paramref name="callback"/>.</param>
+            public override void ConvertAsync(
+                int nativeHandle,
+                XRCameraImageConversionParams conversionParams,
+                OnImageRequestCompleteDelegate callback,
+                IntPtr context)
+            {
+                NativeApi.UnityARCore_Camera_CreateAsyncConversionRequestWithCallback(
+                    nativeHandle, conversionParams, callback, context);
             }
         }
 
@@ -248,12 +538,73 @@ namespace UnityEngine.XR.ARCore
             public static extern bool UnityARCore_Camera_TryGetIntrinsics(out XRCameraIntrinsics cameraIntrinsics);
 
             [DllImport("UnityARCore")]
+            public static extern IntPtr UnityARCore_Camera_AcquireConfigurations(out int configurationsCount,
+                                                                                 out int configurationSize);
+
+            [DllImport("UnityARCore")]
+            public static extern void UnityARCore_Camera_ReleaseConfigurations(IntPtr configurations);
+
+            [DllImport("UnityARCore")]
+            public static extern bool UnityARCore_Camera_TryGetCurrentConfiguration(out XRCameraConfiguration cameraConfiguration);
+
+            [DllImport("UnityARCore")]
+            public static extern CameraConfigurationResult UnityARCore_Camera_TrySetCurrentConfiguration(XRCameraConfiguration cameraConfiguration);
+
+            [DllImport("UnityARCore")]
             public static unsafe extern void* UnityARCore_Camera_AcquireTextureDescriptors(
                 out int length, out int elementSize);
 
             [DllImport("UnityARCore")]
             public static unsafe extern void UnityARCore_Camera_ReleaseTextureDescriptors(
                 void* descriptors);
+
+            [DllImport("UnityARCore")]
+            public static extern bool UnityARCore_Camera_ShouldInvertCulling();
+
+            [DllImport("UnityARCore")]
+            public static extern bool UnityARCore_Camera_TryAcquireLatestImage(out CameraImageCinfo cameraImageCinfo);
+
+            [DllImport("UnityARCore")]
+            public static extern AsyncCameraImageConversionStatus
+                UnityARCore_Camera_GetAsyncRequestStatus(int requestId);
+
+            [DllImport("UnityARCore")]
+            public static extern void UnityARCore_Camera_DisposeImage(
+                int nativeHandle);
+
+            [DllImport("UnityARCore")]
+            public static extern void UnityARCore_Camera_DisposeAsyncRequest(
+                int requestHandle);
+
+            [DllImport("UnityARCore")]
+            public static extern bool UnityARCore_Camera_TryGetPlane(int nativeHandle, int planeIndex,
+                                                                     out CameraImagePlaneCinfo planeCinfo);
+
+            [DllImport("UnityARCore")]
+            public static extern bool UnityARCore_Camera_HandleValid(
+                int nativeHandle);
+
+            [DllImport("UnityARCore")]
+            public static extern bool UnityARCore_Camera_TryGetConvertedDataSize(
+                int nativeHandle, Vector2Int dimensions, TextureFormat format, out int size);
+
+            [DllImport("UnityARCore")]
+            public static extern bool UnityARCore_Camera_TryConvert(
+                int nativeHandle, XRCameraImageConversionParams conversionParams,
+                IntPtr buffer, int bufferLength);
+
+            [DllImport("UnityARCore")]
+            public static extern int UnityARCore_Camera_CreateAsyncConversionRequest(
+                int nativeHandle, XRCameraImageConversionParams conversionParams);
+
+            [DllImport("UnityARCore")]
+            public static extern bool UnityARCore_Camera_TryGetAsyncRequestData(
+                int requestHandle, out IntPtr dataPtr, out int dataLength);
+
+            [DllImport("UnityARCore")]
+            public static extern void UnityARCore_Camera_CreateAsyncConversionRequestWithCallback(
+                int nativeHandle, XRCameraImageConversionParams conversionParams,
+                XRCameraSubsystem.OnImageRequestCompleteDelegate callback, IntPtr context);
 #else
             public static void UnityARCore_Camera_Construct(int mainTexPropertyNameId) {}
 
@@ -279,6 +630,27 @@ namespace UnityEngine.XR.ARCore
                 return false;
             }
 
+            public static IntPtr UnityARCore_Camera_AcquireConfigurations(out int configurationsCount,
+                                                                          out int configurationSize)
+            {
+                configurationsCount = 0;
+                configurationSize = 0;
+                return IntPtr.Zero;
+            }
+
+            public static void UnityARCore_Camera_ReleaseConfigurations(IntPtr configurations) {}
+
+            public static bool UnityARCore_Camera_TryGetCurrentConfiguration(out XRCameraConfiguration cameraConfiguration)
+            {
+                cameraConfiguration = default(XRCameraConfiguration);
+                return false;
+            }
+
+            public static CameraConfigurationResult UnityARCore_Camera_TrySetCurrentConfiguration(XRCameraConfiguration cameraConfiguration)
+            {
+                return CameraConfigurationResult.Success;
+            }
+
             public static unsafe void* UnityARCore_Camera_AcquireTextureDescriptors(
                 out int length, out int elementSize)
             {
@@ -289,6 +661,79 @@ namespace UnityEngine.XR.ARCore
             public static unsafe void UnityARCore_Camera_ReleaseTextureDescriptors(
                 void* descriptors)
             { }
+
+            public static bool UnityARCore_Camera_ShouldInvertCulling()
+            {
+                return false;
+            }
+
+            public static bool UnityARCore_Camera_TryAcquireLatestImage(out CameraImageCinfo cameraImageCinfo)
+            {
+                cameraImageCinfo = default(CameraImageCinfo);
+                return false;
+            }
+
+            public static AsyncCameraImageConversionStatus
+                UnityARCore_Camera_GetAsyncRequestStatus(int requestId)
+            {
+                return AsyncCameraImageConversionStatus.Disposed;
+            }
+
+            public static void UnityARCore_Camera_DisposeImage(
+                int nativeHandle)
+            { }
+
+            public static void UnityARCore_Camera_DisposeAsyncRequest(
+                int requestHandle)
+            { }
+
+            public static bool UnityARCore_Camera_TryGetPlane(int nativeHandle, int planeIndex,
+                                                              out CameraImagePlaneCinfo planeCinfo)
+            {
+                planeCinfo = default(CameraImagePlaneCinfo);
+                return false;
+            }
+
+            public static bool UnityARCore_Camera_HandleValid(
+                int nativeHandle)
+            {
+                return false;
+            }
+
+            public static bool UnityARCore_Camera_TryGetConvertedDataSize(
+                int nativeHandle, Vector2Int dimensions, TextureFormat format, out int size)
+            {
+                size = default(int);
+                return false;
+            }
+
+            public static bool UnityARCore_Camera_TryConvert(
+                int nativeHandle, XRCameraImageConversionParams conversionParams,
+                IntPtr buffer, int bufferLength)
+            {
+                return false;
+            }
+
+            public static int UnityARCore_Camera_CreateAsyncConversionRequest(
+                int nativeHandle, XRCameraImageConversionParams conversionParams)
+            {
+                return 0;
+            }
+
+            public static bool UnityARCore_Camera_TryGetAsyncRequestData(
+                int requestHandle, out IntPtr dataPtr, out int dataLength)
+            {
+                dataPtr = default(IntPtr);
+                dataLength = default(int);
+                return false;
+            }
+
+            public static void UnityARCore_Camera_CreateAsyncConversionRequestWithCallback(
+                int nativeHandle, XRCameraImageConversionParams conversionParams,
+                XRCameraSubsystem.OnImageRequestCompleteDelegate callback, IntPtr context)
+            {
+                callback(AsyncCameraImageConversionStatus.Disposed, conversionParams, IntPtr.Zero, 0, context);
+            }
 #endif
         }
     }
