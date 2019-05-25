@@ -2,15 +2,15 @@
 
 Use the *ARCore XR Plugin* package to enable ARCore support via Unity's multi-platform XR API. This package implements the following XR Subsystems:
 
-* [Session](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/manual/session-subsystem.md)
-* [Camera](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/manual/camera-subsystem.md)
-* [Depth](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/manual/depth-subsystem.md)
+* [Session](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/manual/session-subsystem.html)
+* [Camera](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/manual/camera-subsystem.html)
+* [Depth](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/manual/depth-subsystem.html)
 * [Input](https://docs.unity3d.com/2018.1/Documentation/ScriptReference/Experimental.XR.XRInputSubsystem.html)
-* [Planes](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/manual/plane-subsystem.md)
-* [Raycast](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/manual/raycast-subsystem.md)
-* [ReferencePoints](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/manual/reference-point-subsystem.md)
-* [Face Tracking](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/manual/face-tracking.md)
-* [Image Tracking](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/manual/image-tracking.md)
+* [Planes](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/manual/plane-subsystem.html)
+* [Raycast](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/manual/raycast-subsystem.html)
+* [ReferencePoints](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/manual/reference-point-subsystem.html)
+* [Face Tracking](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/manual/face-tracking.html)
+* [Image Tracking](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/manual/image-tracking.html)
 
 This version of *ARCore XR Plugin* supports only the functionality available as of ARCore 1.7:
 
@@ -30,8 +30,8 @@ This version of *ARCore XR Plugin* supports only the functionality available as 
 
 It does not support the following subsystems:
 
-* [Object Tracking](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/manual/object-tracking.md)
-* [Environment Probes](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/manual/environment-probe-subsystem.md)
+* [Object Tracking](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/manual/object-tracking.html)
+* [Environment Probes](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/manual/environment-probe-subsystem.html)
 
 # Installing ARCore XR Plugin
 
@@ -57,13 +57,13 @@ ARCore may be either "required" or "optional". If ARCore is optional, the Play S
 
 ## Session
 
-See the [ARSubsystems Session](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/manual/session-subsystem.md) documentation. ARCore's implementation of `XRSessionSubsystem.GetAvailabilityAsync` is somewhat complex. The list of supported ARCore devices is frequently updated to include additional devices, so if ARCore is not already installed on the device, the app needs to check with the Play Store to see if there is a version of ARCore which supports that device. `GetAvailabilityAsync` returns a `Promise` which can be used in a coroutine. For ARCore, this check may take some time.
+See the [ARSubsystems Session](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/manual/session-subsystem.html) documentation. ARCore's implementation of `XRSessionSubsystem.GetAvailabilityAsync` is somewhat complex. The list of supported ARCore devices is frequently updated to include additional devices, so if ARCore is not already installed on the device, the app needs to check with the Play Store to see if there is a version of ARCore which supports that device. `GetAvailabilityAsync` returns a `Promise` which can be used in a coroutine. For ARCore, this check may take some time.
 
 If the device is supported, but ARCore is not installed (or requires an update), then you will need to call `XRSessionSubsystem.InstallAsync` which again returns a `Promise`.
 
 ## Depth Subsystem
 
-See the [ARSubsystems Depth Subsystem](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/manual/depth-subsystem.md) documentation for more details. Raycasts always return a `Pose` for the item the raycast hit. When raycasting against feature points, the pose is oriented to provide an estimate for the surface the feature point might represent.
+See the [ARSubsystems Depth Subsystem](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/manual/depth-subsystem.html) documentation for more details. Raycasts always return a `Pose` for the item the raycast hit. When raycasting against feature points, the pose is oriented to provide an estimate for the surface the feature point might represent.
 
 The depth subsystem does not require additional resources, so enabling it does not incur any performance impact.
 
@@ -71,7 +71,7 @@ ARCore's depth subsystem will only ever produce a single [`XRPointCloud`](https:
 
 ## Plane Tracking
 
-See the [ARSubsystems Plane Subsystem](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/manual/plane-subsystem.md) documentation for more details. ARCore supports plane subsumption, i.e., one plane may be subsumed by another. When this happens, the subsumed plane will not be removed, but will also not be updated any further.
+See the [ARSubsystems Plane Subsystem](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/manual/plane-subsystem.html) documentation for more details. ARCore supports plane subsumption, i.e., one plane may be subsumed by another. When this happens, the subsumed plane will not be removed, but will also not be updated any further.
 
 ARCore provides boundary points for all its planes.
 
@@ -81,7 +81,7 @@ Setting the plane detection mode to `PlaneDetectionMode.None` is equivalent to `
 
 ## Image Tracking
 
-To use image tracking on ARCore, you will first need to create a Reference Image Library. See the [AR Subsystems documentation on image tracking](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/image-tracking.md) for instructions.
+To use image tracking on ARCore, you will first need to create a Reference Image Library. See the [AR Subsystems documentation on image tracking](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/image-tracking.html) for instructions.
 
 When building the Player for Android, each reference image library is used to generate a corresponding `imgdb` file, ARCore's representation of the reference image library. These files are placed in your project's `StreamingAssets` folder in a subdirectory called `HiddenARCore` to allow them to be accessible at runtime.
 
@@ -93,7 +93,7 @@ Image dimensions are optional on ARCore; however, specifying them can improve im
 
 ## Face Tracking
 
-See the [ARSubsystems Face Tracking](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/manual/face-tracking.md) documentation for more details regarding face tracking.
+See the [ARSubsystems Face Tracking](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/manual/face-tracking.html) documentation for more details regarding face tracking.
 
 In addition to the core functionality, there are additional methods on the ARCore face subsystem to allow access to ARCore-specific features. ARCore provides access to "regions", which are specific features on a face. Currently, the features are
 - Nose tip

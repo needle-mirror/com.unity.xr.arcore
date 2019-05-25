@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -188,7 +189,7 @@ namespace UnityEditor.XR.ARCore
                                 }
 
                                 if (referenceImage.specifySize)
-                                    entry.Append('|').Append(referenceImage.width);
+                                    entry.Append('|').Append(referenceImage.width.ToString("G", CultureInfo.InvariantCulture));
 
                                 writer.WriteLine(entry.ToString());
                             }
@@ -217,7 +218,7 @@ namespace UnityEditor.XR.ARCore
                         string extension = "";
     #endif
                         var arcoreimgPath = Path.Combine(packagePath, "Tools~", platformName, "arcoreimg" + extension);
-                        
+
     #if UNITY_EDITOR_OSX
                         SetExecutablePermission(arcoreimgPath);
     #endif
@@ -234,8 +235,8 @@ namespace UnityEditor.XR.ARCore
 
                         startInfo.Arguments = string.Format(
                             "build-db --input_image_list_path={0} --output_db_path={1}",
-                            inputImageListPath,
-                            outputDbPath);
+                            $"\"{inputImageListPath}\"",
+                            $"\"{outputDbPath}\"");
 
                         startInfo.UseShellExecute = false;
                         startInfo.RedirectStandardOutput = true;

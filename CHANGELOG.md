@@ -4,6 +4,15 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.1.0-preview.5] - 2019-05-26
+### Fixes
+- Enabling managed code stripping or IL2CPP would cause apps to fail to initialize ARCore on the first launch, just after the prompt for camera permissions. This has been fixed.
+- Remove debug log from the image tracking subsystem.
+- Fix documnentation links
+- Reference image library generation would fail if the user's culture settings were not US-standard (e.g., using "," instead of "." for decimal values). This has been fixed.
+- Fix `XRSessionSubsystem.Reset`. Previously, this did not properly resume a running session.
+- The session subsystem reported that it did not support ARCore APK installation, which meant that consumers of this API (e.g., ARFoundation) would never prompt for installation and report the device as unsupported. This has been fixed.
+
 ## [2.1.0-preview.4] - 2019-05-08
 ### Improvements
 - Add support for [image tracking](https://developers.google.com/ar/discover/concepts#augmented_images).

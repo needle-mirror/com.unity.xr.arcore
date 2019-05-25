@@ -1,4 +1,5 @@
 using System;
+using UnityEngine.Scripting;
 
 namespace UnityEngine.XR.ARCore
 {
@@ -50,6 +51,7 @@ namespace UnityEngine.XR.ARCore
         }
 
         // UnityAndroidPermissions interface
+        [Preserve]
         void OnPermissionGranted(string permissionName)
         {
             s_CurrentCallback(permissionName, true);
@@ -57,6 +59,7 @@ namespace UnityEngine.XR.ARCore
         }
 
         // UnityAndroidPermissions interface
+        [Preserve]
         void OnPermissionDenied(string permissionName)
         {
             s_CurrentCallback(permissionName, false);
@@ -64,6 +67,7 @@ namespace UnityEngine.XR.ARCore
         }
 
         // UnityAndroidPermissions interface (unused)
+        [Preserve]
         void OnActivityResult() { }
 
         ARCorePermissionManager()

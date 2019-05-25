@@ -18,13 +18,17 @@ namespace UnityEngine.XR.ARCore
         /// <returns>The provider interface for ARCore</returns>
         protected override IProvider CreateProvider()
         {
-            return new Provider();
+            return new Provider(this);
         }
 
         class Provider : IProvider
         {
-            public Provider()
+            ARCoreSessionSubsystem m_Subsystem;
+
+            public Provider(ARCoreSessionSubsystem subsystem)
             {
+                m_Subsystem = subsystem;
+
                 NativeApi.UnityARCore_session_construct(CameraPermissionRequestProvider);
                 if (SystemInfo.graphicsMultiThreaded)
                 {
@@ -59,6 +63,8 @@ namespace UnityEngine.XR.ARCore
             public override void Reset()
             {
                 NativeApi.UnityARCore_session_reset();
+                if (m_Subsystem.running)
+                    Resume();
             }
 
             public override void OnApplicationPause()
@@ -235,7 +241,7 @@ namespace UnityEngine.XR.ARCore
             {
                 id = "ARCore-Session",
                 subsystemImplementationType = typeof(ARCoreSessionSubsystem),
-                supportsInstall = false
+                supportsInstall = true
             });
         }
 
