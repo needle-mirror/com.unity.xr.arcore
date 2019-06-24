@@ -1,6 +1,4 @@
-#if UNITY_ANDROID && !UNITY_EDITOR
 using System.Runtime.InteropServices;
-#endif
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Collections.LowLevel.Unsafe;
@@ -132,7 +130,6 @@ namespace UnityEngine.XR.ARCore
                 }
             }
 
-#if UNITY_ANDROID && !UNITY_EDITOR
             [DllImport("UnityARCore")]
             static extern void UnityARCore_planeTracking_startTracking();
 
@@ -166,55 +163,12 @@ namespace UnityEngine.XR.ARCore
             static extern unsafe bool UnityARCore_planeTracking_tryCopyBoundary(
                 void* plane,
                 void* boundaryOut);
-#else
-            static void UnityARCore_planeTracking_startTracking()
-            { }
-
-            static void UnityARCore_planeTracking_stopTracking()
-            { }
-
-            static unsafe void* UnityARCore_planeTracking_acquireChanges(
-                out void* addedPtr, out int addedLength,
-                out void* updatedPtr, out int updatedLength,
-                out void* removedPtr, out int removedLength,
-                out int elementSize)
-            {
-                addedPtr = updatedPtr = removedPtr = null;
-                addedLength = updatedLength = removedLength = elementSize = 0;
-                return null;
-            }
-
-            static unsafe void UnityARCore_planeTracking_releaseChanges(
-                void* changes)
-            { }
-
-            static void UnityARCore_planeTracking_setPlaneDetectionMode(
-                PlaneDetectionMode mode)
-            { }
-
-            static void UnityARCore_planeTracking_destroy()
-            { }
-
-            static unsafe void* UnityARCore_planeTracking_acquireBoundary(
-                TrackableId trackableId,
-                out int numPoints)
-            {
-                numPoints = 0;
-                return null;
-            }
-
-            static unsafe bool UnityARCore_planeTracking_tryCopyBoundary(
-                void* plane,
-                void* boundaryOut)
-            {
-                return false;
-            }
-#endif
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         static void RegisterDescriptor()
         {
+#if UNITY_ANDROID && !UNITY_EDITOR
             var cinfo = new XRPlaneSubsystemDescriptor.Cinfo
             {
                 id = "ARCore-Plane",
@@ -226,6 +180,7 @@ namespace UnityEngine.XR.ARCore
             };
 
             XRPlaneSubsystemDescriptor.Create(cinfo);
+#endif
         }
     }
 }

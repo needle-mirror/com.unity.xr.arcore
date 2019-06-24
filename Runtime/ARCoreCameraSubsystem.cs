@@ -10,7 +10,7 @@ namespace UnityEngine.XR.ARCore
     /// <summary>
     /// The camera subsystem implementation for ARCore.
     /// </summary>
-   [Preserve]
+    [Preserve]
     public sealed class ARCoreCameraSubsystem : XRCameraSubsystem
     {
         /// <summary>
@@ -52,6 +52,7 @@ namespace UnityEngine.XR.ARCore
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         static void Register()
         {
+#if UNITY_ANDROID && !UNITY_EDITOR
             XRCameraSubsystemCinfo cameraSubsystemCinfo = new XRCameraSubsystemCinfo
             {
                 id = k_SubsystemId,
@@ -70,6 +71,7 @@ namespace UnityEngine.XR.ARCore
             {
                 Debug.LogErrorFormat("Cannot register the {0} subsystem", k_SubsystemId);
             }
+#endif
         }
 
         /// <summary>
@@ -511,7 +513,6 @@ namespace UnityEngine.XR.ARCore
         /// </summary>
         static class NativeApi
         {
-#if UNITY_ANDROID && !UNITY_EDITOR
             [DllImport("UnityARCore")]
             public static extern void UnityARCore_Camera_Construct(int mainTexPropertyNameId);
 
@@ -605,136 +606,6 @@ namespace UnityEngine.XR.ARCore
             public static extern void UnityARCore_Camera_CreateAsyncConversionRequestWithCallback(
                 int nativeHandle, XRCameraImageConversionParams conversionParams,
                 XRCameraSubsystem.OnImageRequestCompleteDelegate callback, IntPtr context);
-#else
-            public static void UnityARCore_Camera_Construct(int mainTexPropertyNameId) {}
-
-            public static void UnityARCore_Camera_Destruct() {}
-
-            public static void UnityARCore_Camera_Start() {}
-
-            public static void UnityARCore_Camera_Stop() {}
-
-            public static bool UnityARCore_Camera_TryGetFrame(XRCameraParams cameraParams, out XRCameraFrame cameraFrame)
-            {
-                cameraFrame = default(XRCameraFrame);
-                return false;
-            }
-
-            public static bool UnityARCore_Camera_TrySetFocusMode(CameraFocusMode cameraFocusMode) { return false; }
-
-            public static bool UnityARCore_Camera_TrySetLightEstimationMode(LightEstimationMode lightEstimationMode) { return false; }
-
-            public static bool UnityARCore_Camera_TryGetIntrinsics(out XRCameraIntrinsics cameraIntrinsics)
-            {
-                cameraIntrinsics = default(XRCameraIntrinsics);
-                return false;
-            }
-
-            public static IntPtr UnityARCore_Camera_AcquireConfigurations(out int configurationsCount,
-                                                                          out int configurationSize)
-            {
-                configurationsCount = 0;
-                configurationSize = 0;
-                return IntPtr.Zero;
-            }
-
-            public static void UnityARCore_Camera_ReleaseConfigurations(IntPtr configurations) {}
-
-            public static bool UnityARCore_Camera_TryGetCurrentConfiguration(out XRCameraConfiguration cameraConfiguration)
-            {
-                cameraConfiguration = default(XRCameraConfiguration);
-                return false;
-            }
-
-            public static CameraConfigurationResult UnityARCore_Camera_TrySetCurrentConfiguration(XRCameraConfiguration cameraConfiguration)
-            {
-                return CameraConfigurationResult.Success;
-            }
-
-            public static unsafe void* UnityARCore_Camera_AcquireTextureDescriptors(
-                out int length, out int elementSize)
-            {
-                length = elementSize = 0;
-                return null;
-            }
-
-            public static unsafe void UnityARCore_Camera_ReleaseTextureDescriptors(
-                void* descriptors)
-            { }
-
-            public static bool UnityARCore_Camera_ShouldInvertCulling()
-            {
-                return false;
-            }
-
-            public static bool UnityARCore_Camera_TryAcquireLatestImage(out CameraImageCinfo cameraImageCinfo)
-            {
-                cameraImageCinfo = default(CameraImageCinfo);
-                return false;
-            }
-
-            public static AsyncCameraImageConversionStatus
-                UnityARCore_Camera_GetAsyncRequestStatus(int requestId)
-            {
-                return AsyncCameraImageConversionStatus.Disposed;
-            }
-
-            public static void UnityARCore_Camera_DisposeImage(
-                int nativeHandle)
-            { }
-
-            public static void UnityARCore_Camera_DisposeAsyncRequest(
-                int requestHandle)
-            { }
-
-            public static bool UnityARCore_Camera_TryGetPlane(int nativeHandle, int planeIndex,
-                                                              out CameraImagePlaneCinfo planeCinfo)
-            {
-                planeCinfo = default(CameraImagePlaneCinfo);
-                return false;
-            }
-
-            public static bool UnityARCore_Camera_HandleValid(
-                int nativeHandle)
-            {
-                return false;
-            }
-
-            public static bool UnityARCore_Camera_TryGetConvertedDataSize(
-                int nativeHandle, Vector2Int dimensions, TextureFormat format, out int size)
-            {
-                size = default(int);
-                return false;
-            }
-
-            public static bool UnityARCore_Camera_TryConvert(
-                int nativeHandle, XRCameraImageConversionParams conversionParams,
-                IntPtr buffer, int bufferLength)
-            {
-                return false;
-            }
-
-            public static int UnityARCore_Camera_CreateAsyncConversionRequest(
-                int nativeHandle, XRCameraImageConversionParams conversionParams)
-            {
-                return 0;
-            }
-
-            public static bool UnityARCore_Camera_TryGetAsyncRequestData(
-                int requestHandle, out IntPtr dataPtr, out int dataLength)
-            {
-                dataPtr = default(IntPtr);
-                dataLength = default(int);
-                return false;
-            }
-
-            public static void UnityARCore_Camera_CreateAsyncConversionRequestWithCallback(
-                int nativeHandle, XRCameraImageConversionParams conversionParams,
-                XRCameraSubsystem.OnImageRequestCompleteDelegate callback, IntPtr context)
-            {
-                callback(AsyncCameraImageConversionStatus.Disposed, conversionParams, IntPtr.Zero, 0, context);
-            }
-#endif
         }
     }
 }

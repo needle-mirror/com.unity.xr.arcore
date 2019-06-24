@@ -1,7 +1,5 @@
 using System;
-#if UNITY_ANDROID && !UNITY_EDITOR
 using System.Runtime.InteropServices;
-#endif
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
@@ -299,7 +297,6 @@ namespace UnityEngine.XR.ARCore
             }
         }
 
-#if UNITY_ANDROID && !UNITY_EDITOR
         [DllImport("UnityARCore")]
         static extern void UnityARCore_faceTracking_Start();
 
@@ -332,51 +329,12 @@ namespace UnityEngine.XR.ARCore
 
         [DllImport("UnityARCore")]
         static extern unsafe void UnityARCore_faceTracking_deallocateTemp(void* regions);
-#else
-        static void UnityARCore_faceTracking_Start() { }
-
-        static void UnityARCore_faceTracking_Stop() { }
-
-        static void UnityARCore_faceTracking_Destroy() { }
-
-        static unsafe bool UnityARCore_faceTracking_TryGetFaceData(
-            TrackableId faceId,
-            out void* vertexPtr, out void* normalPtr, out void* uvPtr, out int vertexCount,
-            out void* indexPtr, out int triangleCount)
-        {
-            vertexPtr = normalPtr = uvPtr = indexPtr = null;
-            vertexCount = triangleCount = 0;
-            return false;
-        }
-
-        static unsafe void* UnityARCore_faceTracking_AcquireChanges(
-            out void* addedPtr, out int addedCount,
-            out void* updatedPtr, out int updatedCount,
-            out void* removedPtr, out int removedCount,
-            out int elementSize)
-        {
-            addedPtr = updatedPtr = removedPtr = null;
-            addedCount = updatedCount = removedCount = elementSize = 0;
-            return null;
-        }
-
-        static unsafe void UnityARCore_faceTracking_ReleaseChanges(void* changes) { }
-
-        static unsafe void* UnityARCore_faceTracking_acquireRegions(
-            TrackableId trackableId,
-            out int count)
-        {
-            count = 0;
-            return null;
-        }
-
-        static unsafe void UnityARCore_faceTracking_deallocateTemp(void* regions) { }
-#endif
 
         // this method is run on startup of the app to register this provider with XR Subsystem Manager
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         static void RegisterDescriptor()
         {
+#if UNITY_ANDROID && !UNITY_EDITOR
             var descriptorParams = new FaceSubsystemParams
             {
                 supportsFacePose = true,
@@ -388,6 +346,7 @@ namespace UnityEngine.XR.ARCore
             };
 
             XRFaceSubsystemDescriptor.Create(descriptorParams);
+#endif
         }
     }
 }

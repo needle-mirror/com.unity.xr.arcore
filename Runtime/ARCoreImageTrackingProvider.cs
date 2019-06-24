@@ -115,6 +115,12 @@ namespace UnityEngine.XR.ARCore
                 UnityARCore_imageTracking_destroy();
             }
 
+            // This must be implemented if supportsMovingImages is true.
+            public override int maxNumberOfMovingImages
+            {
+                set { }
+            }
+
             [DllImport("UnityARCore")]
             static unsafe extern void UnityARCore_imageTracking_setDatabase(
                 void* databaseBytes, int databaseSize, void* sourceGuidBytes, int sourceGuidLength);
@@ -140,7 +146,8 @@ namespace UnityEngine.XR.ARCore
             XRImageTrackingSubsystemDescriptor.Create(new XRImageTrackingSubsystemDescriptor.Cinfo
             {
                 id = "ARCore-ImageTracking",
-                subsystemImplementationType = typeof(ARCoreImageTrackingProvider)
+                subsystemImplementationType = typeof(ARCoreImageTrackingProvider),
+                supportsMovingImages = true
             });
 #endif
         }

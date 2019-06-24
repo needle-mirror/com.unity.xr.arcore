@@ -109,6 +109,32 @@ namespace UnityEngine.XR.ARCore
                 }
             }
 
+            public override NotTrackingReason notTrackingReason
+            {
+                get
+                {
+                    return NativeApi.UnityARCore_session_getNotTrackingReason();
+                }
+            }
+
+            public override bool matchFrameRate
+            {
+                get
+                {
+                    return NativeApi.UnityARCore_session_getMatchFrameRateEnabled();
+                }
+
+                set
+                {
+                    NativeApi.UnityARCore_session_setMatchFrameRateEnabled(value);
+                }
+            }
+
+            public override int frameRate
+            {
+                get { return 30; }
+            }
+
             static Promise<T> ExecuteAsync<T>(Action<IntPtr> apiMethod)
             {
                 var promise = new ARCorePromise<T>();
@@ -237,12 +263,15 @@ namespace UnityEngine.XR.ARCore
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         static void RegisterDescriptor()
         {
+#if UNITY_ANDROID && !UNITY_EDITOR
             XRSessionSubsystemDescriptor.RegisterDescriptor(new XRSessionSubsystemDescriptor.Cinfo
             {
                 id = "ARCore-Session",
                 subsystemImplementationType = typeof(ARCoreSessionSubsystem),
-                supportsInstall = true
+                supportsInstall = true,
+                supportsMatchFrameRate = true
             });
+#endif
         }
 
         static class NativeApi
@@ -282,7 +311,6 @@ namespace UnityEngine.XR.ARCore
                 bool granted,
                 IntPtr context);
 
-#if UNITY_ANDROID && !UNITY_EDITOR
             [DllImport("UnityARCore")]
             public static extern IntPtr UnityARCore_session_getNativePtr();
 
@@ -325,6 +353,9 @@ namespace UnityEngine.XR.ARCore
             public static extern TrackingState UnityARCore_session_getTrackingState();
 
             [DllImport("UnityARCore")]
+            public static extern NotTrackingReason UnityARCore_session_getNotTrackingReason();
+
+            [DllImport("UnityARCore")]
             public static extern IntPtr UnityARCore_session_getRenderEventFunc();
 
             [DllImport("UnityARCore")]
@@ -338,73 +369,12 @@ namespace UnityEngine.XR.ARCore
 
             [DllImport("UnityARCore")]
             public static extern void UnityARCore_session_deleteTextureMainThread();
-#else
-            public static IntPtr UnityARCore_session_getNativePtr()
-            {
-                return IntPtr.Zero;
-            }
 
-            public static void ArPresto_checkApkAvailability(
-                Action<ArAvailability, IntPtr> onResult, IntPtr context)
-            {
-                onResult(ArAvailability.UnsupportedDeviceNotCapable, context);
-            }
+            [DllImport("UnityARCore")]
+            public static extern bool UnityARCore_session_getMatchFrameRateEnabled();
 
-            public static void ArPresto_requestApkInstallation(
-                bool userRequested, Action<ArPrestoApkInstallStatus, IntPtr> onResult, IntPtr context)
-            {
-                onResult(ArPrestoApkInstallStatus.ErrorDeviceNotCompatible, context);
-            }
-
-            public static void UnityARCore_session_update(
-                ScreenOrientation orientation,
-                Vector2Int screenDimensions)
-            { }
-
-            public static void UnityARCore_session_construct(
-                CameraPermissionRequestProviderDelegate cameraPermissionRequestProvider)
-            { }
-
-            public static void UnityARCore_session_destroy()
-            { }
-
-            public static void UnityARCore_session_resume()
-            { }
-
-            public static void UnityARCore_session_pause()
-            { }
-
-            public static void UnityARCore_session_onApplicationResume()
-            { }
-
-            public static void UnityARCore_session_onApplicationPause()
-            { }
-
-            public static void UnityARCore_session_reset()
-            { }
-
-            public static TrackingState UnityARCore_session_getTrackingState()
-            {
-                return TrackingState.None;
-            }
-
-            public static IntPtr UnityARCore_session_getRenderEventFunc()
-            {
-                return IntPtr.Zero;
-            }
-
-            public static void UnityARCore_session_setRenderEventPending()
-            {}
-
-            public static void UnityARCore_session_waitForRenderEvent()
-            {}
-
-            public static void UnityARCore_session_createTextureMainThread()
-            {}
-
-            public static void UnityARCore_session_deleteTextureMainThread()
-            {}
-#endif
+            [DllImport("UnityARCore")]
+            public static extern void UnityARCore_session_setMatchFrameRateEnabled(bool enabled);
         }
     }
 }
