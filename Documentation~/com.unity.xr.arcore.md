@@ -12,7 +12,7 @@ Use the *ARCore XR Plugin* package to enable ARCore support via Unity's multi-pl
 * [Face Tracking](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/manual/face-tracking.html)
 * [Image Tracking](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/manual/image-tracking.html)
 
-This version of *ARCore XR Plugin* supports only the functionality available as of ARCore 1.7:
+This version of *ARCore XR Plugin* uses ARCore 1.10 and supports the following functionality:
 
 * Device Localization
 * Horizontal Plane Detection

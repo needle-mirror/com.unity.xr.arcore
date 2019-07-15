@@ -4,7 +4,27 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.1.0-preview.5] - 2019-05-26
+## [2.2.0-preview.1] - 2019-07-16
+### New
+- Update ARCore to version 1.10.
+- Add support for getting the ambient light intensity in lumens.
+
+## [2.1.0] - 2019-06-25
+- 2019.3 verified release
+
+## [2.1.0-preview.7] - 2019-06-18
+### New
+- Add support for `NotTrackingReason`.
+
+## [2.1.0-preview.6] - 2019-06-03
+### Improvements
+- Update to ARCore 1.9.
+- Add support for matching the ARCore framerate with the Unity one. See `ARSession.matchFrameRate`.
+
+### Fixes
+- Conditionally compile subsystem registrations. This means the subsystems wont't register themselves in the Editor (and won't generate warnings if there are other subsystems for other platforms).
+
+## [2.1.0-preview.5] - 2019-05-27
 ### Fixes
 - Enabling managed code stripping or IL2CPP would cause apps to fail to initialize ARCore on the first launch, just after the prompt for camera permissions. This has been fixed.
 - Remove debug log from the image tracking subsystem.

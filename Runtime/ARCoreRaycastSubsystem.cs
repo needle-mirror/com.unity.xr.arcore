@@ -1,6 +1,4 @@
-#if UNITY_ANDROID && !UNITY_EDITOR
 using System.Runtime.InteropServices;
-#endif
 using UnityEngine.Scripting;
 using UnityEngine.XR.ARSubsystems;
 using Unity.Collections;
@@ -79,7 +77,6 @@ namespace UnityEngine.XR.ARCore
                 }
             }
 
-#if UNITY_ANDROID && !UNITY_EDITOR
             [DllImport("UnityARCore")]
             static unsafe extern void UnityARCore_raycast_acquireHitResults(
                 Vector2 screenPoint,
@@ -100,39 +97,16 @@ namespace UnityEngine.XR.ARCore
             [DllImport("UnityARCore")]
             static unsafe extern void UnityARCore_raycast_releaseHitResults(
                 void* buffer);
-#else
-            static unsafe void UnityARCore_raycast_acquireHitResults(
-                Vector2 screenPoint,
-                TrackableType filter,
-                out void* hitBuffer,
-                out int hitCount,
-                out int elementSize)
-            {
-                hitBuffer = null;
-                hitCount = elementSize = 0;
-            }
-
-            static unsafe void UnityARCore_raycast_acquireHitResultsRay(
-                Vector3 rayOrigin,
-                Vector3 rayDirection,
-                TrackableType filter,
-                out void* hitBuffer,
-                out int hitCount,
-                out int elementSize)
-            {
-                hitBuffer = null;
-                hitCount = elementSize = 0;
-            }
-
-            static unsafe void UnityARCore_raycast_releaseHitResults(
-                void* buffer)
-            { }
-#endif
         }
 
+#if UNITY_2019_2_OR_NEWER
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+#else
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+#endif
         static void RegisterDescriptor()
         {
+#if UNITY_ANDROID && !UNITY_EDITOR
             XRRaycastSubsystemDescriptor.RegisterDescriptor(new XRRaycastSubsystemDescriptor.Cinfo
             {
                 id = "ARCore-Raycast",
@@ -143,6 +117,7 @@ namespace UnityEngine.XR.ARCore
                     (TrackableType.Planes & ~TrackableType.PlaneWithinInfinity) |
                     TrackableType.FeaturePoint
             });
+#endif
         }
     }
 }

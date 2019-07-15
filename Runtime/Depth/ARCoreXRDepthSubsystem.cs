@@ -222,9 +222,14 @@ namespace UnityEngine.XR.ARCore
         }
 
         // this method is run on startup of the app to register this provider with XR Subsystem Manager
+#if UNITY_2019_2_OR_NEWER
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+#else
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+#endif
         static void RegisterDescriptor()
         {
+#if UNITY_ANDROID && !UNITY_EDITOR
             var descriptorParams = new XRDepthSubsystemDescriptor.Cinfo
             {
                 id = "ARCore-Depth",
@@ -235,6 +240,7 @@ namespace UnityEngine.XR.ARCore
             };
 
             XRDepthSubsystemDescriptor.RegisterDescriptor(descriptorParams);
+#endif
         }
     }
 }

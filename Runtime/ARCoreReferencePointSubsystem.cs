@@ -1,6 +1,4 @@
-#if UNITY_ANDROID && !UNITY_EDITOR
 using System.Runtime.InteropServices;
-#endif
 using Unity.Collections;
 using UnityEngine.Scripting;
 using UnityEngine.XR.ARSubsystems;
@@ -83,7 +81,6 @@ namespace UnityEngine.XR.ARCore
                 return UnityARCore_refPoints_tryRemove(referencePointId);
             }
 
-#if UNITY_ANDROID && !UNITY_EDITOR
             [DllImport("UnityARCore")]
             static extern void UnityARCore_refPoints_start();
 
@@ -117,59 +114,16 @@ namespace UnityEngine.XR.ARCore
 
             [DllImport("UnityARCore")]
             static extern bool UnityARCore_refPoints_tryRemove(TrackableId referencePointId);
-#else
-            static void UnityARCore_refPoints_start()
-            { }
-
-            static void UnityARCore_refPoints_stop()
-            { }
-
-            static void UnityARCore_refPoints_onDestroy()
-            { }
-
-            static unsafe void* UnityARCore_refPoints_acquireChanges(
-                out void* addedPtr, out int addedCount,
-                out void* updatedPtr, out int updatedCount,
-                out void* removedPtr, out int removedCount,
-                out int elementSize)
-            {
-                addedPtr = updatedPtr = removedPtr = null;
-                addedCount = updatedCount = removedCount = elementSize = 0;
-                return null;
-            }
-
-            static unsafe void UnityARCore_refPoints_releaseChanges(
-                void* changes)
-            { }
-
-            static bool UnityARCore_refPoints_tryAdd(
-                Pose pose,
-                out XRReferencePoint referencePoint)
-            {
-                referencePoint = default(XRReferencePoint);
-                return false;
-            }
-
-            static bool UnityARCore_refPoints_tryAttach(
-                TrackableId trackableToAffix,
-                Pose pose,
-                out XRReferencePoint referencePoint)
-            {
-                referencePoint = default(XRReferencePoint);
-                return false;
-            }
-
-            static bool UnityARCore_refPoints_tryRemove(
-                TrackableId referencePointId)
-            {
-                return false;
-            }
-#endif
         }
 
+#if UNITY_2019_2_OR_NEWER
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+#else
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+#endif
         static void RegisterDescriptor()
         {
+#if UNITY_ANDROID && !UNITY_EDITOR
             var cinfo = new XRReferencePointSubsystemDescriptor.Cinfo
             {
                 id = "ARCore-ReferencePoint",
@@ -178,6 +132,7 @@ namespace UnityEngine.XR.ARCore
             };
 
             XRReferencePointSubsystemDescriptor.Create(cinfo);
+#endif
         }
     }
 }
