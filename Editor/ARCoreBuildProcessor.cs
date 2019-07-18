@@ -219,10 +219,13 @@ namespace UnityEditor.XR.ARCore
     #elif UNITY_EDITOR_OSX
                         platformName = "MacOS";
                         extension = "";
+    #elif UNITY_EDITOR_LINUX
+                        platformName = "Linux";
+                        extension = "";
     #endif
                         var arcoreimgPath = Path.Combine(packagePath, "Tools~", platformName, "arcoreimg" + extension);
 
-    #if UNITY_EDITOR_OSX
+    #if UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
                         SetExecutablePermission(arcoreimgPath);
     #endif
 
