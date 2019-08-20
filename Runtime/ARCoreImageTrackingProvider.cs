@@ -2,8 +2,6 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
-using UnityEngine.Networking;
 using UnityEngine.Scripting;
 using UnityEngine.XR.ARSubsystems;
 
@@ -32,54 +30,29 @@ namespace UnityEngine.XR.ARCore
 
         class Provider : IProvider
         {
-            public unsafe override XRReferenceImageLibrary imageLibrary
+            public override RuntimeReferenceImageLibrary imageLibrary
             {
                 set
                 {
                     if (value == null)
                     {
-                        UnityARCore_imageTracking_setDatabase(null, 0, null, 0);
+                        UnityARCore_imageTracking_setDatabase(IntPtr.Zero);
+                    }
+                    else if (value is ARCoreImageDatabase database)
+                    {
+                        UnityARCore_imageTracking_setDatabase(database.nativePtr);
                     }
                     else
                     {
-                        using (var uwr = new UnityWebRequest(GetPathForLibrary(value)))
-                        {
-                            uwr.downloadHandler = new DownloadHandlerBuffer();
-                            uwr.disposeDownloadHandlerOnDispose = true;
-                            uwr.SendWebRequest();
-                            while (!uwr.isDone) {}
-
-                            byte[] libraryBlob = uwr.downloadHandler.data;
-                            if (libraryBlob == null || libraryBlob.Length == 0)
-                            {
-                                throw new InvalidOperationException(string.Format(
-                                    "Failed to load image library '{0}' - file was empty!", value.name));
-                            }
-
-                            var guids = new NativeArray<Guid>(value.count, Allocator.Temp);
-                            try
-                            {
-                                for (int i = 0; i < value.count; ++i)
-                                {
-                                    guids[i] = value[i].guid;
-                                }
-
-                                fixed (byte* blob = libraryBlob)
-                                {
-                                    UnityARCore_imageTracking_setDatabase(
-                                        blob,
-                                        libraryBlob.Length,
-                                        guids.GetUnsafePtr(),
-                                        guids.Length);
-                                }
-                            }
-                            finally
-                            {
-                                guids.Dispose();
-                            }
-                        }
+                        throw new ArgumentException($"The {value.GetType().Name} is not a valid ARCore image library.");
                     }
                 }
+            }
+
+            public unsafe override RuntimeReferenceImageLibrary CreateRuntimeLibrary(
+                XRReferenceImageLibrary serializedLibrary)
+            {
+                return new ARCoreImageDatabase(serializedLibrary);
             }
 
             public unsafe override TrackableChanges<XRTrackedImage> GetChanges(
@@ -122,8 +95,7 @@ namespace UnityEngine.XR.ARCore
             }
 
             [DllImport("UnityARCore")]
-            static unsafe extern void UnityARCore_imageTracking_setDatabase(
-                void* databaseBytes, int databaseSize, void* sourceGuidBytes, int sourceGuidLength);
+            static unsafe extern void UnityARCore_imageTracking_setDatabase(IntPtr imageDatabase);
 
             [DllImport("UnityARCore")]
             static extern void UnityARCore_imageTracking_destroy();
@@ -151,7 +123,8 @@ namespace UnityEngine.XR.ARCore
             {
                 id = "ARCore-ImageTracking",
                 subsystemImplementationType = typeof(ARCoreImageTrackingProvider),
-                supportsMovingImages = true
+                supportsMovingImages = true,
+                supportsMutableLibrary = true
             });
 #endif
         }

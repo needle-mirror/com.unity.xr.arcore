@@ -6,7 +6,6 @@
 // pointers can safely check the version prior to casting to the
 // appropriate struct.
 
-// XRSessionExtensions.GetNativePtr
 typedef struct UnityXRNativeSession_1
 {
     int version;

@@ -4,9 +4,19 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.0.0-preview.1] - 2019-08-21
+### New
+- Add support for [XR Management](https://docs.unity3d.com/Packages/com.unity.xr.management@3.0/manual/index.html).
+- Add support for building image libraries on linux.
+- Add support for runtime modifiable reference image libraries. This allows you to add new reference images for image tracking at runtime.
+
 ## [2.2.0-preview.2] - 2019-07-19
 ### Fixes
 - Previously, we reported the tracking state of augmented images using an [ARCore API](https://developers.google.com/ar/reference/c/group/trackable#group__trackable_1ga5759851a9b20b4df46d74d4ce4a1376c) that always returned `TrackingState.Tracking`, even when the image had been removed from view. We now use the method [ArAugmentedImage_getTrackingMethod](https://developers.google.com/ar/reference/c/group/augmented-image#group__augmented__image_1ga82c184a0984a95254476696cf57c12a3) instead, which will change the tracking state to `TrackingState.Limited` if the image cannot be seen.
+
+## [2.2.0-preview.2] - 2019-08-09
+### New
+- Add support for Lightweight Render Pipeline and Universal Render Pipeline.
 
 ## [2.2.0-preview.1] - 2019-07-16
 ### New

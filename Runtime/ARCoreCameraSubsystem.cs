@@ -21,6 +21,14 @@ namespace UnityEngine.XR.ARCore
         /// </value>
         const string k_SubsystemId = "ARCore-Camera";
 
+        /// <summary>
+        /// The name for the shader for rendering the camera texture.
+        /// </summary>
+        /// <value>
+        /// The name for the shader for rendering the camera texture.
+        /// </value>
+        const string k_DefaultBackgroundShaderName = "Unlit/ARCoreBackground";
+
         enum CameraConfigurationResult
         {
             /// <summary>
@@ -44,6 +52,19 @@ namespace UnityEngine.XR.ARCore
             /// </summary>
             ErrorImagesNotDisposed = 3,
         }
+
+        /// <summary>
+        /// The name for the background shader based on the current render pipeline.
+        /// </summary>
+        /// <value>
+        /// The name for the background shader based on the current render pipeline. Or, <c>null</c> if the current
+        /// render pipeline is incompatible with the set of shaders.
+        /// </value>
+        /// <remarks>
+        /// The value for the <c>GraphicsSettings.renderPipelineAsset</c> is not expected to change within the lifetime
+        /// of the application.
+        /// </remarks>
+        public static string backgroundShaderName { get => k_DefaultBackgroundShaderName; }
 
         /// <summary>
         /// Create and register the camera subsystem descriptor to advertise a providing implementation for camera
@@ -120,15 +141,13 @@ namespace UnityEngine.XR.ARCore
             static readonly int k_MainTexPropertyNameId = Shader.PropertyToID(k_MainTexPropertyName);
 
             /// <summary>
-            /// Get the shader name used by <c>XRCameraSubsystem</c> to render texture.
+            /// Get the material used by <c>XRCameraSubsystem</c> to render the camera texture.
             /// </summary>
-            /// <value>
-            /// Get the shader name used by <c>XRCameraSubsystem</c> to render texture.
-            /// </value>
-            public override string shaderName
-            {
-                get { return "Unlit/ARCoreBackground"; }
-            }
+            /// <returns>
+            /// The material to render the camera texture.
+            /// </returns>
+            public override Material cameraMaterial { get => m_CameraMaterial; }
+            Material m_CameraMaterial;
 
             /// <summary>
             /// Determine whether camera permission has been granted.
@@ -155,6 +174,7 @@ namespace UnityEngine.XR.ARCore
             public Provider()
             {
                 NativeApi.UnityARCore_Camera_Construct(k_MainTexPropertyNameId);
+                m_CameraMaterial = CreateCameraMaterial(ARCoreCameraSubsystem.backgroundShaderName);
             }
 
             /// <summary>
