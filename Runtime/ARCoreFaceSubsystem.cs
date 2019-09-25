@@ -124,32 +124,15 @@ namespace UnityEngine.XR.ARCore
             }
         }
 
-        protected override IProvider CreateProvider()
+        protected override Provider CreateProvider() => new ARCoreProvider();
+
+        class ARCoreProvider : Provider
         {
-            return new Provider();
-        }
+            public override void Start() => UnityARCore_faceTracking_Start();
 
-        class Provider : IProvider
-        {
-            public override void Start()
-            {
-                UnityARCore_faceTracking_Start();
-            }
+            public override void Stop() => UnityARCore_faceTracking_Stop();
 
-            public override void Stop()
-            {
-                UnityARCore_faceTracking_Stop();
-            }
-
-            public override void Destroy()
-            {
-                UnityARCore_faceTracking_Destroy();
-            }
-
-            public override bool supported
-            {
-                get { return true; }
-            }
+            public override void Destroy() => UnityARCore_faceTracking_Destroy();
 
             public unsafe override void GetFaceMesh(
                 TrackableId faceId,
@@ -331,11 +314,7 @@ namespace UnityEngine.XR.ARCore
         static extern unsafe void UnityARCore_faceTracking_deallocateTemp(void* regions);
 
         // this method is run on startup of the app to register this provider with XR Subsystem Manager
-#if UNITY_2019_2_OR_NEWER
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-#else
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-#endif
         static void RegisterDescriptor()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR

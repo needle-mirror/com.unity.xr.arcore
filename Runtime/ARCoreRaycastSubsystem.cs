@@ -11,12 +11,9 @@ namespace UnityEngine.XR.ARCore
     [Preserve]
     public sealed class ARCoreRaycastSubsystem : XRRaycastSubsystem
     {
-        protected override IProvider CreateProvider()
-        {
-            return new Provider();
-        }
+        protected override Provider CreateProvider() => new ARCoreProvider();
 
-        class Provider : IProvider
+        class ARCoreProvider : Provider
         {
             public override unsafe NativeArray<XRRaycastHit> Raycast(
                 XRRaycastHit defaultRaycastHit,
@@ -99,11 +96,7 @@ namespace UnityEngine.XR.ARCore
                 void* buffer);
         }
 
-#if UNITY_2019_2_OR_NEWER
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-#else
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-#endif
         static void RegisterDescriptor()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR

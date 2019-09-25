@@ -28,7 +28,7 @@ namespace UnityEngine.XR.ARCore
             return Path.Combine(k_StreamingAssetsPath, library.guid.ToString() + ".imgdb");
         }
 
-        class Provider : IProvider
+        class ARCoreProvider : Provider
         {
             public override RuntimeReferenceImageLibrary imageLibrary
             {
@@ -83,10 +83,7 @@ namespace UnityEngine.XR.ARCore
                 }
             }
 
-            public override void Destroy()
-            {
-                UnityARCore_imageTracking_destroy();
-            }
+            public override void Destroy() => UnityARCore_imageTracking_destroy();
 
             // This must be implemented if supportsMovingImages is true.
             public override int maxNumberOfMovingImages
@@ -111,11 +108,7 @@ namespace UnityEngine.XR.ARCore
             static extern unsafe void UnityARCore_imageTracking_releaseChanges(void* changes);
         }
 
-#if UNITY_2019_2_OR_NEWER
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-#else
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-#endif
         static void RegisterDescriptor()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
@@ -129,9 +122,6 @@ namespace UnityEngine.XR.ARCore
 #endif
         }
 
-        protected override IProvider CreateProvider()
-        {
-            return new Provider();
-        }
+        protected override Provider CreateProvider() => new ARCoreProvider();
     }
 }

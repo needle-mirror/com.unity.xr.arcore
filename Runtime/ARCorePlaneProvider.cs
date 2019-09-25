@@ -13,22 +13,13 @@ namespace UnityEngine.XR.ARCore
     [Preserve]
     public sealed class ARCorePlaneProvider : XRPlaneSubsystem
     {
-        protected override IProvider CreateProvider()
-        {
-            return new Provider();
-        }
+        protected override Provider CreateProvider() => new ARCoreProvider();
 
-        class Provider : IProvider
+        class ARCoreProvider : Provider
         {
-            public override void Start()
-            {
-                UnityARCore_planeTracking_startTracking();
-            }
+            public override void Start() => UnityARCore_planeTracking_startTracking();
 
-            public override void Stop()
-            {
-                UnityARCore_planeTracking_stopTracking();
-            }
+            public override void Stop() => UnityARCore_planeTracking_stopTracking();
 
             public override unsafe void GetBoundary(
                 TrackableId trackableId,
@@ -117,17 +108,11 @@ namespace UnityEngine.XR.ARCore
                 }
             }
 
-            public override void Destroy()
-            {
-                UnityARCore_planeTracking_destroy();
-            }
+            public override void Destroy() => UnityARCore_planeTracking_destroy();
 
             public override PlaneDetectionMode planeDetectionMode
             {
-                set
-                {
-                    UnityARCore_planeTracking_setPlaneDetectionMode(value);
-                }
+                set => UnityARCore_planeTracking_setPlaneDetectionMode(value);
             }
 
             [DllImport("UnityARCore")]
@@ -165,11 +150,7 @@ namespace UnityEngine.XR.ARCore
                 void* boundaryOut);
         }
 
-#if UNITY_2019_2_OR_NEWER
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-#else
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-#endif
         static void RegisterDescriptor()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR

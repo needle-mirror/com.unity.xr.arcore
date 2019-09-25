@@ -4,6 +4,15 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.0.0-preview.3] - 2019-09-26
+### New
+- Google's AR Presto library is now distributed as a separate AAR so that it can be overriden.
+- Added support for both linear and gamma color spaces.
+- Added tracking input support for the [Input System](https://github.com/Unity-Technologies/InputSystem)
+
+### Fixes
+- Fixed image tracking when building with IL2CPP.
+
 ## [3.0.0-preview.2] - 2019-09-05
 ### Improvements
 - Update [ARSubsystems](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.0) dependency to 3.0.0-preview.2

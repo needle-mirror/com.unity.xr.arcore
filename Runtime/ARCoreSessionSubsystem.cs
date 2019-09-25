@@ -16,16 +16,13 @@ namespace UnityEngine.XR.ARCore
         /// Creates the provider interface.
         /// </summary>
         /// <returns>The provider interface for ARCore</returns>
-        protected override IProvider CreateProvider()
-        {
-            return new Provider(this);
-        }
+        protected override Provider CreateProvider() => new ARCoreProvider(this);
 
-        class Provider : IProvider
+        class ARCoreProvider : Provider
         {
             ARCoreSessionSubsystem m_Subsystem;
 
-            public Provider(ARCoreSessionSubsystem subsystem)
+            public ARCoreProvider(ARCoreSessionSubsystem subsystem)
             {
                 m_Subsystem = subsystem;
 
@@ -42,10 +39,7 @@ namespace UnityEngine.XR.ARCore
                 NativeApi.UnityARCore_session_resume();
             }
 
-            public override void Pause()
-            {
-                NativeApi.UnityARCore_session_pause();
-            }
+            public override void Pause() => NativeApi.UnityARCore_session_pause();
 
             public override void Update(XRSessionUpdateParams updateParams)
             {
@@ -67,15 +61,9 @@ namespace UnityEngine.XR.ARCore
                     Resume();
             }
 
-            public override void OnApplicationPause()
-            {
-                NativeApi.UnityARCore_session_onApplicationPause();
-            }
+            public override void OnApplicationPause() => NativeApi.UnityARCore_session_onApplicationPause();
 
-            public override void OnApplicationResume()
-            {
-                NativeApi.UnityARCore_session_onApplicationResume();
-            }
+            public override void OnApplicationResume() => NativeApi.UnityARCore_session_onApplicationResume();
 
             public override Promise<SessionAvailability> GetAvailabilityAsync()
             {
@@ -93,47 +81,19 @@ namespace UnityEngine.XR.ARCore
                 });
             }
 
-            public override IntPtr nativePtr
-            {
-                get
-                {
-                    return NativeApi.UnityARCore_session_getNativePtr();
-                }
-            }
+            public override IntPtr nativePtr => NativeApi.UnityARCore_session_getNativePtr();
 
-            public override TrackingState trackingState
-            {
-                get
-                {
-                    return NativeApi.UnityARCore_session_getTrackingState();
-                }
-            }
+            public override TrackingState trackingState => NativeApi.UnityARCore_session_getTrackingState();
 
-            public override NotTrackingReason notTrackingReason
-            {
-                get
-                {
-                    return NativeApi.UnityARCore_session_getNotTrackingReason();
-                }
-            }
+            public override NotTrackingReason notTrackingReason => NativeApi.UnityARCore_session_getNotTrackingReason();
 
             public override bool matchFrameRate
             {
-                get
-                {
-                    return NativeApi.UnityARCore_session_getMatchFrameRateEnabled();
-                }
-
-                set
-                {
-                    NativeApi.UnityARCore_session_setMatchFrameRateEnabled(value);
-                }
+                get => NativeApi.UnityARCore_session_getMatchFrameRateEnabled();
+                set => NativeApi.UnityARCore_session_setMatchFrameRateEnabled(value);
             }
 
-            public override int frameRate
-            {
-                get { return 30; }
-            }
+            public override int frameRate => 30;
 
             static Promise<T> ExecuteAsync<T>(Action<IntPtr> apiMethod)
             {
@@ -260,11 +220,7 @@ namespace UnityEngine.XR.ARCore
             IntPtr m_RenderEventFunc;
         }
 
-#if UNITY_2019_2_OR_NEWER
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-#else
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-#endif
         static void RegisterDescriptor()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR

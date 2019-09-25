@@ -11,27 +11,15 @@ namespace UnityEngine.XR.ARCore
     [Preserve]
     public sealed class ARCoreReferencePointSubsystem : XRReferencePointSubsystem
     {
-        protected override IProvider CreateProvider()
+        protected override Provider CreateProvider() => new ARCoreProvider();
+
+        class ARCoreProvider : Provider
         {
-            return new Provider();
-        }
+            public override void Start() => UnityARCore_refPoints_start();
 
-        class Provider : IProvider
-        {
-            public override void Start()
-            {
-                UnityARCore_refPoints_start();
-            }
+            public override void Stop() => UnityARCore_refPoints_stop();
 
-            public override void Stop()
-            {
-                UnityARCore_refPoints_stop();
-            }
-
-            public override void Destroy()
-            {
-                UnityARCore_refPoints_onDestroy();
-            }
+            public override void Destroy() => UnityARCore_refPoints_onDestroy();
 
             public override unsafe TrackableChanges<XRReferencePoint> GetChanges(
                 XRReferencePoint defaultReferencePoint,
@@ -116,11 +104,7 @@ namespace UnityEngine.XR.ARCore
             static extern bool UnityARCore_refPoints_tryRemove(TrackableId referencePointId);
         }
 
-#if UNITY_2019_2_OR_NEWER
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-#else
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-#endif
         static void RegisterDescriptor()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR

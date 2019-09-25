@@ -1,7 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
 using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine.Scripting;
 using UnityEngine.XR.ARSubsystems;
 
@@ -64,17 +63,13 @@ namespace UnityEngine.XR.ARCore
         /// The value for the <c>GraphicsSettings.renderPipelineAsset</c> is not expected to change within the lifetime
         /// of the application.
         /// </remarks>
-        public static string backgroundShaderName { get => k_DefaultBackgroundShaderName; }
+        public static string backgroundShaderName => k_DefaultBackgroundShaderName;
 
         /// <summary>
         /// Create and register the camera subsystem descriptor to advertise a providing implementation for camera
         /// functionality.
         /// </summary>
-#if UNITY_2019_2_OR_NEWER
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-#else
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-#endif
         static void Register()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
@@ -106,15 +101,12 @@ namespace UnityEngine.XR.ARCore
         /// <returns>
         /// The ARCore camera functionality provider for the camera subsystem.
         /// </returns>
-        protected override IProvider CreateProvider()
-        {
-            return new Provider();
-        }
+        protected override Provider CreateProvider() => new ARCoreProvider();
 
         /// <summary>
         /// Provides the camera functionality for the ARCore implementation.
         /// </summary>
-        class Provider : IProvider
+        class ARCoreProvider : Provider
         {
             /// <summary>
             /// The shader property name for the main texture of the camera video frame.
@@ -146,7 +138,7 @@ namespace UnityEngine.XR.ARCore
             /// <returns>
             /// The material to render the camera texture.
             /// </returns>
-            public override Material cameraMaterial { get => m_CameraMaterial; }
+            public override Material cameraMaterial => m_CameraMaterial;
             Material m_CameraMaterial;
 
             /// <summary>
@@ -155,23 +147,14 @@ namespace UnityEngine.XR.ARCore
             /// <returns>
             /// <c>true</c> if camera permission has been granted for this app. Otherwise, <c>false</c>.
             /// </returns>
-            public override bool permissionGranted
-            {
-                get
-                {
-                    return ARCorePermissionManager.IsPermissionGranted(k_CameraPermissionName);
-                }
-            }
+            public override bool permissionGranted => ARCorePermissionManager.IsPermissionGranted(k_CameraPermissionName);
 
-            public override bool invertCulling
-            {
-                get { return NativeApi.UnityARCore_Camera_ShouldInvertCulling(); }
-            }
+            public override bool invertCulling => NativeApi.UnityARCore_Camera_ShouldInvertCulling();
 
             /// <summary>
             /// Construct the camera functionality provider for ARCore.
             /// </summary>
-            public Provider()
+            public ARCoreProvider()
             {
                 NativeApi.UnityARCore_Camera_Construct(k_MainTexPropertyNameId);
                 m_CameraMaterial = CreateCameraMaterial(ARCoreCameraSubsystem.backgroundShaderName);
@@ -180,26 +163,17 @@ namespace UnityEngine.XR.ARCore
             /// <summary>
             /// Start the camera functionality.
             /// </summary>
-            public override void Start()
-            {
-                NativeApi.UnityARCore_Camera_Start();
-            }
+            public override void Start() => NativeApi.UnityARCore_Camera_Start();
 
             /// <summary>
             /// Stop the camera functionality.
             /// </summary>
-            public override void Stop()
-            {
-                NativeApi.UnityARCore_Camera_Stop();
-            }
+            public override void Stop() => NativeApi.UnityARCore_Camera_Stop();
 
             /// <summary>
             /// Destroy any resources required for the camera functionality.
             /// </summary>
-            public override void Destroy()
-            {
-                NativeApi.UnityARCore_Camera_Destruct();
-            }
+            public override void Destroy() => NativeApi.UnityARCore_Camera_Destruct();
 
             /// <summary>
             /// Get the camera frame for the subsystem.

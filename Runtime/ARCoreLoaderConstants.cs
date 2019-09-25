@@ -1,6 +1,3 @@
-#if UNITY_2019_2_OR_NEWER
-using System;
-
 namespace UnityEngine.XR.ARCore
 {
     /// <summary>
@@ -14,4 +11,3 @@ namespace UnityEngine.XR.ARCore
         public const string k_SettingsKey = "com.unity.xr.management.arcore_loader";
     }
 }
-#endif

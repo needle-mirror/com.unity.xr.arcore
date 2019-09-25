@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.InteropServices;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
@@ -9,7 +10,7 @@ namespace UnityEngine.XR.ARCore
     /// into a contiguous array of memory. Used to interop with C.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    internal unsafe struct NativeView<T> where T : struct
+    internal unsafe struct NativeView
     {
         void* m_Ptr;
         int m_Length;
@@ -20,19 +21,7 @@ namespace UnityEngine.XR.ARCore
             m_Length = length;
         }
 
-        public NativeView(NativeArray<T> array)
-        {
-            m_Ptr = array.GetUnsafePtr();
-            m_Length = array.Length;
-        }
-
-        public NativeView(NativeSlice<T> slice)
-        {
-            m_Ptr = slice.GetUnsafePtr();
-            m_Length = slice.Length;
-        }
-
-        public static implicit operator NativeView<T>(NativeArray<T> array) => new NativeView<T>(array);
-        public static implicit operator NativeView<T>(NativeSlice<T> slice) => new NativeView<T>(slice);
+        public static NativeView Create<T>(NativeArray<T> array) where T : struct => new NativeView(array.GetUnsafePtr(), array.Length);
+        public static NativeView Create<T>(NativeSlice<T> slice) where T : struct => new NativeView(slice.GetUnsafePtr(), slice.Length);
     }
 }

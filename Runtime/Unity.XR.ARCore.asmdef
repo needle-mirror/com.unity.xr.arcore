@@ -2,9 +2,9 @@
     "name": "Unity.XR.ARCore",
     "references": [
         "Unity.XR.ARSubsystems",
-        "Unity.XR.Management"
+        "Unity.XR.Management",
+        "Unity.InputSystem"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [
         "Android",
         "Editor"
@@ -15,5 +15,12 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": []
+    "versionDefines": [
+        {
+            "name": "com.unity.inputsystem",
+            "expression": "",
+            "define": "UNITY_INPUT_SYSTEM"
+        }
+    ],
+    "noEngineReferences": false
 }

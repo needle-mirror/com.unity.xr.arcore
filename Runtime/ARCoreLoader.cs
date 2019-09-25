@@ -1,11 +1,6 @@
-#if UNITY_2019_2_OR_NEWER
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System;
 using UnityEngine.XR.ARSubsystems;
 using UnityEngine.XR.Management;
-using UnityEngine.XR;
-using UnityEngine;
 
 namespace UnityEngine.XR.ARCore
 {
@@ -149,7 +144,7 @@ namespace UnityEngine.XR.ARCore
                 StopSubsystem<XRImageTrackingSubsystem>();
                 StopSubsystem<XRInputSubsystem>();
                 StopSubsystem<XRFaceSubsystem>();
-            }            
+            }
             return true;
         }
 
@@ -183,4 +178,3 @@ namespace UnityEngine.XR.ARCore
         }
     }
 }
-#endif

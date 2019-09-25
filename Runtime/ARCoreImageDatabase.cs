@@ -56,7 +56,7 @@ namespace UnityEngine.XR.ARCore
         {
             if (serializedLibrary == null)
             {
-                m_NativePtr = UnityARCore_ImageDatabase_deserialize(default(NativeView<byte>), default(NativeView<ManagedReferenceImage>));
+                m_NativePtr = UnityARCore_ImageDatabase_deserialize(default(NativeView), default(NativeView));
             }
             else
             {
@@ -84,7 +84,7 @@ namespace UnityEngine.XR.ARCore
 
                         fixed (byte* blob = libraryBlob)
                         {
-                            m_NativePtr = UnityARCore_ImageDatabase_deserialize(new NativeView<byte>(blob, libraryBlob.Length), managedReferenceImages);
+                            m_NativePtr = UnityARCore_ImageDatabase_deserialize(new NativeView(blob, libraryBlob.Length), NativeView.Create(managedReferenceImages));
                         }
                     }
                     finally
@@ -189,6 +189,6 @@ namespace UnityEngine.XR.ARCore
         static extern int UnityARCore_ImageDatabase_getReferenceImageCount(IntPtr imageDatabase);
 
         [DllImport("UnityARCore")]
-        static extern IntPtr UnityARCore_ImageDatabase_deserialize(NativeView<byte> serializedDatabase, NativeView<ManagedReferenceImage> referenceImages);
+        static extern IntPtr UnityARCore_ImageDatabase_deserialize(NativeView serializedDatabase, NativeView referenceImages);
     }
 }
