@@ -93,7 +93,18 @@ namespace UnityEngine.XR.ARCore
                 set => NativeApi.UnityARCore_session_setMatchFrameRateEnabled(value);
             }
 
-            public override int frameRate => 30;
+            public override int frameRate
+            {
+                get
+                {
+                    if (ARCoreCameraSubsystem.TryGetCurrentConfiguration(out XRCameraConfiguration configuration) && configuration.framerate.HasValue)
+                    {
+                        return configuration.framerate.Value;
+                    }
+
+                    return 30;
+                }
+            }
 
             static Promise<T> ExecuteAsync<T>(Action<IntPtr> apiMethod)
             {

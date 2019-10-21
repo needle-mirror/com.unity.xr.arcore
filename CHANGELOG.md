@@ -4,10 +4,24 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.0.0-preview.4] - 2019-10-22
+### New
+- Add getter for the camera focus mode.
+- Update to ARCore 1.12
+- Add support for 60 fps devices.
+
+### Fixes
+- Fixed an issue where generating a reference image library could fail with "Access denied" on macOS and Linux. This was because spaces in project paths were not handled when setting execution privileges for `arcoreimg` on macOS and Linux.
+- The camera texture dimensions were incorrectly reported as the current screen dimensions. This has been fixed.
+- The build could fail if reference images used for image tracking had a non-lowercase extension. This has been fixed.
+- Improved error reporting when Google's ARCore SDK for Unity is detected in the project. The build will continue to fail even after removing Google's plugin until the Editor is restarted. A note explaining this has been added to the error message.
+- Fixed a potential crash when changing image libraries.
+
 ## [3.0.0-preview.3] - 2019-09-26
 ### New
 - Google's AR Presto library is now distributed as a separate AAR so that it can be overriden.
 - Added support for both linear and gamma color spaces.
+- Added support for environment probes.
 - Added tracking input support for the [Input System](https://github.com/Unity-Technologies/InputSystem)
 
 ### Fixes

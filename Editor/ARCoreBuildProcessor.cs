@@ -75,7 +75,9 @@ namespace UnityEditor.XR.ARCore
         {
             var googleARAssetPath = AssetDatabase.GUIDToAssetPath("afb3e05691ff94d2cbad20643e5c5879");
             if (!string.IsNullOrEmpty(googleARAssetPath))
-                throw new BuildFailedException("GoogleARCore detected. Google's \"ARCore SDK for Unity\" and Unity's \"ARCore XR Plugin\" package cannot be used together.");
+            {
+                throw new BuildFailedException("GoogleARCore detected. Google's \"ARCore SDK for Unity\" and Unity's \"ARCore XR Plugin\" package cannot be used together. If you have already removed GoogleARCore, you may need to restart the Editor.");
+            }
         }
 
         void EnsureOnlyOpenGLES3IsUsed()
@@ -95,11 +97,7 @@ namespace UnityEditor.XR.ARCore
             var startInfo = new Diag.ProcessStartInfo();
             startInfo.WindowStyle = Diag.ProcessWindowStyle.Hidden;
             startInfo.FileName = "/bin/chmod";
-
-            startInfo.Arguments = string.Format(
-                "+x {0}",
-                pathToARCoreImg);
-
+            startInfo.Arguments = $"+x \"{pathToARCoreImg}\"";
             startInfo.UseShellExecute = false;
             startInfo.RedirectStandardOutput = true;
             startInfo.RedirectStandardError = true;
@@ -172,18 +170,30 @@ namespace UnityEditor.XR.ARCore
 
                                 var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(assetPath);
                                 if (texture == null)
+                                {
                                     throw new BuildFailedException(string.Format(
                                         "ARCore Image Library Generation: Reference library at '{0}' is missing a texture at index {1}.",
                                         libraryPath, i));
+                                }
 
                                 var extension = Path.GetExtension(assetPath);
-
                                 var entry = new StringBuilder();
 
-                                if (string.Equals(extension, ".jpg", StringComparison.OrdinalIgnoreCase) ||
-                                    string.Equals(extension, ".png", StringComparison.OrdinalIgnoreCase))
+                                if (string.Equals(extension, ".jpg" , StringComparison.Ordinal) ||
+                                    string.Equals(extension, ".jpeg", StringComparison.Ordinal) ||
+                                    string.Equals(extension, ".png" , StringComparison.Ordinal))
                                 {
-                                    entry.Append(referenceImageName).Append('|').Append(assetPath);
+                                    // If lowercase jpg or png, use image as is
+                                    entry.Append($"{referenceImageName}|{assetPath}");
+                                }
+                                else if (string.Equals(extension, ".jpg" , StringComparison.OrdinalIgnoreCase) ||
+                                         string.Equals(extension, ".jpeg", StringComparison.OrdinalIgnoreCase) ||
+                                         string.Equals(extension, ".png" , StringComparison.OrdinalIgnoreCase))
+                                {
+                                    // If jpg or png but NOT lowercase, then copy it to a temporary file that uses lowercase
+                                    var pathWithLowercaseExtension = Path.Combine(tempDirectory, textureGuid + extension.ToLower());
+                                    File.Copy(assetPath, pathWithLowercaseExtension);
+                                    entry.Append($"{referenceImageName}|{pathWithLowercaseExtension}");
                                 }
                                 else
                                 {
@@ -197,11 +207,13 @@ namespace UnityEditor.XR.ARCore
                                     }
 
                                     File.WriteAllBytes(pngFilename, bytes);
-                                    entry.Append(referenceImageName).Append('|').Append(pngFilename);
+                                    entry.Append($"{referenceImageName}|{pngFilename}");
                                 }
 
                                 if (referenceImage.specifySize)
-                                    entry.Append('|').Append(referenceImage.width.ToString("G", CultureInfo.InvariantCulture));
+                                {
+                                    entry.Append($"|{referenceImage.width.ToString("G", CultureInfo.InvariantCulture)}");
+                                }
 
                                 writer.WriteLine(entry.ToString());
                             }

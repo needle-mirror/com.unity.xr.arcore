@@ -85,7 +85,8 @@ namespace UnityEngine.XR.ARCore
                 supportsTimestamp = true,
                 supportsCameraConfigurations = true,
                 supportsCameraImage = true,
-                supportsAverageIntensityInLumens = false
+                supportsAverageIntensityInLumens = false,
+                supportsFocusModes = true,
             };
 
             if (!XRCameraSubsystem.Register(cameraSubsystemCinfo))
@@ -189,15 +190,12 @@ namespace UnityEngine.XR.ARCore
             }
 
             /// <summary>
-            /// Set the focus mode for the camera.
+            /// Get or set the focus mode for the camera.
             /// </summary>
-            /// <param name="cameraFocusMode">The focus mode to set for the camera.</param>
-            /// <returns>
-            /// <c>true</c> if the method successfully set the focus mode for the camera. Otherwise, <c>false</c>.
-            /// </returns>
-            public override bool TrySetFocusMode(CameraFocusMode cameraFocusMode)
+            public override CameraFocusMode cameraFocusMode
             {
-                return NativeApi.UnityARCore_Camera_TrySetFocusMode(cameraFocusMode);
+                get => NativeApi.UnityARCore_Camera_GetFocusMode();
+                set => NativeApi.UnityARCore_Camera_SetFocusMode(value);
             }
 
             /// <summary>
@@ -219,10 +217,7 @@ namespace UnityEngine.XR.ARCore
             /// <returns>
             /// <c>true</c> if the method successfully gets the camera intrinsics information. Otherwise, <c>false</c>.
             /// </returns>
-            public override bool TryGetIntrinsics(out XRCameraIntrinsics cameraIntrinsics)
-            {
-                return NativeApi.UnityARCore_Camera_TryGetIntrinsics(out cameraIntrinsics);
-            }
+            public override bool TryGetIntrinsics(out XRCameraIntrinsics cameraIntrinsics) => NativeApi.UnityARCore_Camera_TryGetIntrinsics(out cameraIntrinsics);
 
             /// <summary>
             /// Queries the supported camera configurations.
@@ -236,10 +231,8 @@ namespace UnityEngine.XR.ARCore
             public override NativeArray<XRCameraConfiguration> GetConfigurations(XRCameraConfiguration defaultCameraConfiguration,
                                                                                  Allocator allocator)
             {
-                int configurationsCount;
-                int configurationSize;
-                IntPtr configurations = NativeApi.UnityARCore_Camera_AcquireConfigurations(out configurationsCount,
-                                                                                           out configurationSize);
+                IntPtr configurations = NativeApi.UnityARCore_Camera_AcquireConfigurations(out int configurationsCount,
+                                                                                           out int configurationSize);
                 try
                 {
                     unsafe
@@ -276,8 +269,7 @@ namespace UnityEngine.XR.ARCore
             {
                 get
                 {
-                    XRCameraConfiguration cameraConfiguration;
-                    if (NativeApi.UnityARCore_Camera_TryGetCurrentConfiguration(out cameraConfiguration))
+                    if (TryGetCurrentConfiguration(out XRCameraConfiguration cameraConfiguration))
                     {
                         return cameraConfiguration;
                     }
@@ -507,6 +499,8 @@ namespace UnityEngine.XR.ARCore
             }
         }
 
+        internal static bool TryGetCurrentConfiguration(out XRCameraConfiguration configuration) => NativeApi.UnityARCore_Camera_TryGetCurrentConfiguration(out configuration);
+
         /// <summary>
         /// Container to wrap the native ARCore camera APIs.
         /// </summary>
@@ -529,7 +523,10 @@ namespace UnityEngine.XR.ARCore
                                                                     out XRCameraFrame cameraFrame);
 
             [DllImport("UnityARCore")]
-            public static extern bool UnityARCore_Camera_TrySetFocusMode(CameraFocusMode cameraFocusMode);
+            public static extern void UnityARCore_Camera_SetFocusMode(CameraFocusMode cameraFocusMode);
+
+            [DllImport("UnityARCore")]
+            public static extern CameraFocusMode UnityARCore_Camera_GetFocusMode();
 
             [DllImport("UnityARCore")]
             public static extern bool UnityARCore_Camera_TrySetLightEstimationMode(LightEstimationMode lightEstimationMode);
