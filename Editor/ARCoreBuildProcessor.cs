@@ -210,16 +210,21 @@ namespace UnityEditor.XR.ARCore
                             overallProgress + progressPerLibrary * (numSteps - 1) / numSteps);
 
                         var packagePath = Path.GetFullPath("Packages/com.unity.xr.arcore");
-    #if UNITY_EDITOR_WIN
-                        string platformName = "Windows";
-                        string extension = ".exe";
-    #elif UNITY_EDITOR_OSX
-                        string platformName = "MacOS";
                         string extension = "";
+                        string platformName = "Undefined";
+    #if UNITY_EDITOR_WIN
+                        platformName = "Windows";
+                        extension = ".exe";
+    #elif UNITY_EDITOR_OSX
+                        platformName = "MacOS";
+                        extension = "";
+    #elif UNITY_EDITOR_LINUX
+                        platformName = "Linux";
+                        extension = "";
     #endif
                         var arcoreimgPath = Path.Combine(packagePath, "Tools~", platformName, "arcoreimg" + extension);
 
-    #if UNITY_EDITOR_OSX
+    #if UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
                         SetExecutablePermission(arcoreimgPath);
     #endif
 

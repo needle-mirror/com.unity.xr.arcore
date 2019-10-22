@@ -6,7 +6,6 @@
 // pointers can safely check the version prior to casting to the
 // appropriate struct.
 
-// XRSessionExtensions.GetNativePtr
 typedef struct UnityXRNativeSession_1
 {
     int version;
@@ -45,12 +44,19 @@ typedef struct UnityXRNativeImage_1
     void* imageTrackable;
 } UnityXRNativeImage_1;
 
+typedef struct UnityXRNativeEnvironmentProbe_1
+{
+    int version;
+    void* arImageCubemap[6];
+} UnityXRNativeEnvironmentProbe_1;
+
 static const int kUnityXRNativeSessionVersion = 1;
 static const int kUnityXRNativeFrameVersion = 1;
 static const int kUnityXRNativePlaneVersion = 1;
 static const int kUnityXRNativeReferencePointVersion = 1;
 static const int kUnityXRNativePointCloudVersion = 1;
 static const int kUnityXRNativeImageVersion = 1;
+static const int kUnityXRNativeEnvironmentProbeVersion = 1;
 
 typedef UnityXRNativeSession_1 UnityXRNativeSession;
 typedef UnityXRNativeFrame_1 UnityXRNativeFrame;
@@ -58,3 +64,4 @@ typedef UnityXRNativePlane_1 UnityXRNativePlane;
 typedef UnityXRNativeReferencePoint_1 UnityXRNativeReferencePoint;
 typedef UnityXRNativePointCloud_1 UnityXRNativePointCloud;
 typedef UnityXRNativeImage_1 UnityXRNativeImage;
+typedef UnityXRNativeEnvironmentProbe_1 UnityXRNativeEnvironmentProbe;
