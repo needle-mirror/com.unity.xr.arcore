@@ -5,13 +5,26 @@
         _MainTex("Texture", 2D) = "white" {}
     }
 
-    // For GLES3
     SubShader
     {
+        Tags
+        {
+            "Queue" = "Background"
+            "RenderType" = "Background"
+            "ForceNoShadowCasting" = "True"
+        }
+
         Pass
         {
-            ZWrite Off
             Cull Off
+            ZTest Always
+            ZWrite On
+            Lighting Off
+            LOD 100
+            Tags
+            {
+                "LightMode" = "Always"
+            }
 
             GLSLPROGRAM
 
@@ -21,6 +34,7 @@
 #extension GL_OES_EGL_image_external_essl3 : require
 #endif // SHADER_API_GLES3
 
+            // Device display transform is provided by the AR Foundation camera background renderer.
             uniform mat4 _UnityDisplayTransform;
 
 #ifdef VERTEX
@@ -29,10 +43,11 @@
             void main()
             {
 #ifdef SHADER_API_GLES3
-                float flippedV = 1.0 - gl_MultiTexCoord0.y;
-                textureCoord.x = _UnityDisplayTransform[0].x * gl_MultiTexCoord0.x + _UnityDisplayTransform[1].x * flippedV + _UnityDisplayTransform[2].x;
-                textureCoord.y = _UnityDisplayTransform[0].y * gl_MultiTexCoord0.x + _UnityDisplayTransform[1].y * flippedV + _UnityDisplayTransform[2].y;
+                // Transform the position from object space to clip space.
                 gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
+
+                // Remap the texture coordinates based on the device rotation.
+                textureCoord = (_UnityDisplayTransform * vec4(gl_MultiTexCoord0.x, 1.0f - gl_MultiTexCoord0.y, 1.0f, 0.0f)).xy;
 #endif // SHADER_API_GLES3
             }
 #endif // VERTEX
@@ -72,6 +87,7 @@
 #endif // !UNITY_COLORSPACE_GAMMA
 
                 gl_FragColor = vec4(result, 1);
+                gl_FragDepth = 1.0f;
 #endif // SHADER_API_GLES3
             }
 

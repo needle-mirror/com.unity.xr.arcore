@@ -8,7 +8,7 @@ Use the *ARCore XR Plugin* package to enable ARCore support via Unity's multi-pl
 * [Input](https://docs.unity3d.com/2018.1/Documentation/ScriptReference/Experimental.XR.XRInputSubsystem.html)
 * [Planes](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.0/manual/plane-subsystem.html)
 * [Raycast](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.0/manual/raycast-subsystem.html)
-* [ReferencePoints](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.0/manual/reference-point-subsystem.html)
+* [Anchors](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.0/manual/anchor-subsystem.html)
 * [Face Tracking](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.0/manual/face-tracking.html)
 * [Image Tracking](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.0/manual/image-tracking.html)
 
@@ -20,7 +20,7 @@ This version of *ARCore XR Plugin* uses ARCore 1.12 and supports the following f
 * Point Clouds
 * Pass-through Camera View
 * Light Estimation
-* Reference Points
+* Anchors
 * Oriented Feature Points
 * Hit Testing
 * Session Management

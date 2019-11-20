@@ -4,6 +4,19 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.1.0-preview.1] - 2019-11-21
+### Breaking changes
+- Renamed the concept of `Reference Points` to `Anchors`. Public API changes are in `AR Foundation` and `AR Subsystems` packages.
+
+### New
+- No longer checking for presence of player setting for ARCore enabled in Unity 2020.1 or newer. This setting has been removed from Unity and was deprecated in 2019.3.
+
+### Fixes
+- Fixed issue for Mali GPU's where environment probes would be not have the texture bound properly.
+
+### Improvements
+- Updated the background shader in unison with the changes for the new `AROcclusionManager` component and in preparation for the future when ARCore supports occlusion.
+
 ## [3.0.0-preview.4] - 2019-10-22
 ### New
 - Add getter for the camera focus mode.
@@ -12,7 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixes
 - Fixed an issue where generating a reference image library could fail with "Access denied" on macOS and Linux. This was because spaces in project paths were not handled when setting execution privileges for `arcoreimg` on macOS and Linux.
-- The camera texture dimensions were incorrectly reported as the current screen dimensions. This has been fixed.
+- The GPU camera texture dimensions were incorrectly reported as the current screen dimensions. This has been fixed.
 - The build could fail if reference images used for image tracking had a non-lowercase extension. This has been fixed.
 - Improved error reporting when Google's ARCore SDK for Unity is detected in the project. The build will continue to fail even after removing Google's plugin until the Editor is restarted. A note explaining this has been added to the error message.
 - Fixed a potential crash when changing image libraries.
