@@ -10,7 +10,7 @@ namespace UnityEngine.XR.ARCore
         private static List<XRCameraSubsystemDescriptor> s_CameraSubsystemDescriptors = new List<XRCameraSubsystemDescriptor>();
         private static List<XRDepthSubsystemDescriptor> s_DepthSubsystemDescriptors = new List<XRDepthSubsystemDescriptor>();
         private static List<XRPlaneSubsystemDescriptor> s_PlaneSubsystemDescriptors = new List<XRPlaneSubsystemDescriptor>();
-        private static List<XRReferencePointSubsystemDescriptor> s_ReferencePointSubsystemDescriptors = new List<XRReferencePointSubsystemDescriptor>();
+        private static List<XRAnchorSubsystemDescriptor> s_AnchorSubsystemDescriptors = new List<XRAnchorSubsystemDescriptor>();
         private static List<XRRaycastSubsystemDescriptor> s_RaycastSubsystemDescriptors = new List<XRRaycastSubsystemDescriptor>();
         private static List<XRImageTrackingSubsystemDescriptor> s_ImageTrackingSubsystemDescriptors = new List<XRImageTrackingSubsystemDescriptor>();
         private static List<XRInputSubsystemDescriptor> s_InputSubsystemDescriptors = new List<XRInputSubsystemDescriptor>();
@@ -48,11 +48,11 @@ namespace UnityEngine.XR.ARCore
             }
         }
 
-        public XRReferencePointSubsystem referencePointSubsystem
+        public XRAnchorSubsystem anchorSubsystem
         {
             get
             {
-                return GetLoadedSubsystem<XRReferencePointSubsystem>();
+                return GetLoadedSubsystem<XRAnchorSubsystem>();
             }
         }
 
@@ -95,7 +95,7 @@ namespace UnityEngine.XR.ARCore
             CreateSubsystem<XRCameraSubsystemDescriptor, XRCameraSubsystem>(s_CameraSubsystemDescriptors, "ARCore-Camera");
             CreateSubsystem<XRDepthSubsystemDescriptor, XRDepthSubsystem>(s_DepthSubsystemDescriptors, "ARCore-Depth");
             CreateSubsystem<XRPlaneSubsystemDescriptor, XRPlaneSubsystem>(s_PlaneSubsystemDescriptors, "ARCore-Plane");
-            CreateSubsystem<XRReferencePointSubsystemDescriptor, XRReferencePointSubsystem>(s_ReferencePointSubsystemDescriptors, "ARCore-ReferencePoint");
+            CreateSubsystem<XRAnchorSubsystemDescriptor, XRAnchorSubsystem>(s_AnchorSubsystemDescriptors, "ARCore-Anchor");
             CreateSubsystem<XRRaycastSubsystemDescriptor, XRRaycastSubsystem>(s_RaycastSubsystemDescriptors, "ARCore-Raycast");
             CreateSubsystem<XRImageTrackingSubsystemDescriptor, XRImageTrackingSubsystem>(s_ImageTrackingSubsystemDescriptors, "ARCore-ImageTracking");
             CreateSubsystem<XRInputSubsystemDescriptor, XRInputSubsystem>(s_InputSubsystemDescriptors, "ARCore-Input");
@@ -121,7 +121,7 @@ namespace UnityEngine.XR.ARCore
                 StartSubsystem<XRCameraSubsystem>();
                 StartSubsystem<XRDepthSubsystem>();
                 StartSubsystem<XRPlaneSubsystem>();
-                StartSubsystem<XRReferencePointSubsystem>();
+                StartSubsystem<XRAnchorSubsystem>();
                 StartSubsystem<XRRaycastSubsystem>();
                 StartSubsystem<XRImageTrackingSubsystem>();
                 StartSubsystem<XRInputSubsystem>();
@@ -139,7 +139,7 @@ namespace UnityEngine.XR.ARCore
                 StopSubsystem<XRCameraSubsystem>();
                 StopSubsystem<XRDepthSubsystem>();
                 StopSubsystem<XRPlaneSubsystem>();
-                StopSubsystem<XRReferencePointSubsystem>();
+                StopSubsystem<XRAnchorSubsystem>();
                 StopSubsystem<XRRaycastSubsystem>();
                 StopSubsystem<XRImageTrackingSubsystem>();
                 StopSubsystem<XRInputSubsystem>();
@@ -155,7 +155,7 @@ namespace UnityEngine.XR.ARCore
             DestroySubsystem<XRCameraSubsystem>();
             DestroySubsystem<XRDepthSubsystem>();
             DestroySubsystem<XRPlaneSubsystem>();
-            DestroySubsystem<XRReferencePointSubsystem>();
+            DestroySubsystem<XRAnchorSubsystem>();
             DestroySubsystem<XRRaycastSubsystem>();
             DestroySubsystem<XRImageTrackingSubsystem>();
             DestroySubsystem<XRInputSubsystem>();

@@ -18,7 +18,7 @@ namespace UnityEngine.XR.ARCore
 #endif
     public class InputLayoutLoader
     {
-#if UNITY_EDITOR      
+#if UNITY_EDITOR
         static InputLayoutLoader()
         {
             RegisterLayouts();
@@ -30,10 +30,10 @@ namespace UnityEngine.XR.ARCore
         {
             Inputs.RegisterLayout<HandheldARInputDevice>(
                 matches: new InputDeviceMatcher()
-                    .WithInterface(XRUtilities.kXRInterfaceMatchAnyVersion)
+                    .WithInterface(XRUtilities.InterfaceMatchAnyVersion)
                     .WithProduct("(ARCore)")
                 );
-        }      
+        }
     }
 }
 #endif
