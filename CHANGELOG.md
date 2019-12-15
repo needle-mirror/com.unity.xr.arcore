@@ -4,18 +4,42 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.1.0-preview.2] - 2019-12-16
+### New
+- Added support for HDR Light Estimation Mode
+- Enforced platform-specific configurations for Light Estimation.  HDR Light Estimation mode is only supported when using the back-facing camera and can't be used while face tracking.  Ambient Light Estimation mode is only supported when not using EnvironmentProbes and will be taken over by the EnvironmentProbeSubsystem.
+- Exposed native camera configuration object by surfacing the index into the list of configurations on the native side.
+
+### Fixes
+- Fixed black camera background texture when environment probes where enabled while tracking faces.
+- Update documentation links to point to the 3.1 versions.
+- Updating dependent version of com.unity.xr.management package to eliminate build warning message.
+
 ## [3.1.0-preview.1] - 2019-11-21
-### Breaking changes
-- Renamed the concept of `Reference Points` to `Anchors`. Public API changes are in `AR Foundation` and `AR Subsystems` packages.
 
 ### New
 - No longer checking for presence of player setting for ARCore enabled in Unity 2020.1 or newer. This setting has been removed from Unity and was deprecated in 2019.3.
 
-### Fixes
-- Fixed issue for Mali GPU's where environment probes would be not have the texture bound properly.
-
 ### Improvements
 - Updated the background shader in unison with the changes for the new `AROcclusionManager` component and in preparation for the future when ARCore supports occlusion.
+
+## [3.0.2] - 2019-12-03
+
+### Fixes
+- Adding a minimum version restriction to the com.unity.inputsystem package for the conditional code that depends on that package.
+
+## [3.0.1] - 2019-11-27
+- 2020.1 verified release
+
+### Fixes
+- Correcting script compilation error when the com.unity.inputsystem package is also included in the project.
+
+## [3.0.0] - 2019-11-05
+### Breaking changes
+- Renamed the concept of `Reference Points` to `Anchors`. Public API changes are in `AR Foundation` and `AR Subsystems` packages.
+
+### Fixes
+- Fixed issue for Mali GPU's where environment probes would be not have the texture bound properly.
 
 ## [3.0.0-preview.4] - 2019-10-22
 ### New
@@ -42,11 +66,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [3.0.0-preview.2] - 2019-09-05
 ### Improvements
-- Update [ARSubsystems](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.0) dependency to 3.0.0-preview.2
+- Update [ARSubsystems](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.1) dependency to 3.0.0-preview.2
 
 ## [3.0.0-preview.1] - 2019-08-21
 ### New
-- Add support for [XR Management](https://docs.unity3d.com/Packages/com.unity.xr.management@3.0/manual/index.html).
+- Add support for [XR Management](https://docs.unity3d.com/Packages/com.unity.xr.management@3.1/manual/index.html).
 - Add support for building image libraries on linux.
 - Add support for runtime modifiable reference image libraries. This allows you to add new reference images for image tracking at runtime.
 
