@@ -52,7 +52,7 @@ namespace UnityEngine.XR.ARCore
 
         class ARCoreProvider : Provider
         {
-            public ARCoreProvider() => NativeApi.UnityARCore_EnvironmentProbeProvider_Construct();
+            public ARCoreProvider() => NativeApi.UnityARCore_EnvironmentProbeProvider_Construct(QualitySettings.activeColorSpace);
 
             /// <summary>
             /// Starts the environment probe subsystem by enabling the HDR Environmental Light Estimation.
@@ -129,7 +129,7 @@ namespace UnityEngine.XR.ARCore
     static class NativeApi
     {
         [DllImport("UnityARCore")]
-        internal static extern void UnityARCore_EnvironmentProbeProvider_Construct();
+        internal static extern void UnityARCore_EnvironmentProbeProvider_Construct(ColorSpace activeColorSpace);
 
         [DllImport("UnityARCore")]
         internal static extern void UnityARCore_EnvironmentProbeProvider_Start();

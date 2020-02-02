@@ -4,6 +4,22 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.1.0-preview.6] - 2020-02-03
+### New
+- Added support for gamma colorspace for the surfaced environment probe cubemap textures.
+
+### Fixes
+- Fixed a crash when attempting to destroy ARSession component.
+- Fixed issue where Environment Probe cubemaps were not generating mipmaps.
+- Fixed a crash when querying whether the "match frame rate" option was enabled. This could happen when resuming the ARSession.
+- Fixed a potential crash when using image tracking or adding an image to an existing library at runtime.
+- Fixed an issue where cubemap texture had incorrect Z-faces.
+- Fixed an issue where the reported main light direction was incorrectly reporting the Z component of the vector.
+
+### Improvements
+- Refactored native ARCore `XRCameraConfig` native handle representation.  Instead of an index into the list of available `ArCameraConfig`s, the `IntPtr` surfaced is the pointer to the actual `ArCameraConfig`.  See the following [ARCore documentation](https://developers.google.com/ar/reference/c/group/cameraconfig#arcameraconfig) for more information.
+- Provider now provides the the maximum fps supported by the configuration as the `framerate` field in `XRCameraConfig` instead of the minimum framerate.
+
 ## [3.1.0-preview.4] - 2020-01-10
 ### New
 - Update ARCore to version 1.14.
