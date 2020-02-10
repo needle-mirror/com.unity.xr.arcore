@@ -331,7 +331,7 @@ namespace UnityEngine.XR.ARCore
         static extern unsafe void UnityARCore_faceTracking_deallocateTemp(void* regions);
 
         // this method is run on startup of the app to register this provider with XR Subsystem Manager
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void RegisterDescriptor()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR

@@ -260,7 +260,7 @@ namespace UnityEngine.XR.ARCore
             IntPtr m_RenderEventFunc;
         }
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void RegisterDescriptor()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR

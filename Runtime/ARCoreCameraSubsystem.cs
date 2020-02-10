@@ -49,7 +49,7 @@ namespace UnityEngine.XR.ARCore
         /// Create and register the camera subsystem descriptor to advertise a providing implementation for camera
         /// functionality.
         /// </summary>
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void Register()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR

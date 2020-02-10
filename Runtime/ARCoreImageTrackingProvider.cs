@@ -139,7 +139,7 @@ namespace UnityEngine.XR.ARCore
             static extern unsafe void UnityARCore_imageTracking_releaseChanges(void* changes);
         }
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void RegisterDescriptor()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
