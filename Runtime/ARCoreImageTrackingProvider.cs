@@ -85,11 +85,18 @@ namespace UnityEngine.XR.ARCore
 
             public override void Destroy() => UnityARCore_imageTracking_destroy();
 
-            // This must be implemented if supportsMovingImages is true.
-            public override int maxNumberOfMovingImages
+            /// <summary>
+            /// This must be implemented if supportsMovingImages is true.
+            /// ARCore doesn't let you set the max number -- it just tracks everything
+            /// </summary>
+            public override int requestedMaxNumberOfMovingImages
             {
-                set { }
+                get => m_RequestedMaxNumberOfMovingImages;
+                set => m_RequestedMaxNumberOfMovingImages = value;
             }
+            int m_RequestedMaxNumberOfMovingImages;
+
+            public override int currentMaxNumberOfMovingImages => Mathf.Max(m_RequestedMaxNumberOfMovingImages, GetNumberOfTrackedImages());
 
             [DllImport("UnityARCore")]
             static unsafe extern void UnityARCore_imageTracking_setDatabase(IntPtr imageDatabase);
@@ -106,6 +113,9 @@ namespace UnityEngine.XR.ARCore
 
             [DllImport("UnityARCore")]
             static extern unsafe void UnityARCore_imageTracking_releaseChanges(void* changes);
+
+            [DllImport("UnityARCore", EntryPoint="UnityARCore_imageTracking_getNumberOfTrackedImages")]
+            static extern int GetNumberOfTrackedImages();
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]

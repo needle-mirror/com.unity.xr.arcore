@@ -1,6 +1,9 @@
 using AOT;
 using System;
 using System.Runtime.InteropServices;
+using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
+using UnityEngine.Assertions;
 using UnityEngine.Scripting;
 using UnityEngine.XR.ARSubsystems;
 
@@ -41,11 +44,31 @@ namespace UnityEngine.XR.ARCore
 
             public override void Pause() => NativeApi.UnityARCore_session_pause();
 
-            public override void Update(XRSessionUpdateParams updateParams)
+            public override void Update(XRSessionUpdateParams updateParams, Configuration configuration)
             {
                 NativeApi.UnityARCore_session_update(
                     updateParams.screenOrientation,
-                    updateParams.screenDimensions);
+                    updateParams.screenDimensions,
+                    configuration.descriptor.identifier,
+                    configuration.features);
+            }
+
+            public unsafe override NativeArray<ConfigurationDescriptor> GetConfigurationDescriptors(Allocator allocator)
+            {
+                NativeApi.UnityARCore_session_getConfigurationDescriptors(out IntPtr ptr, out int count, out int stride);
+                Assert.AreNotEqual(IntPtr.Zero, ptr, "Configuration descriptors pointer was null.");
+                Assert.IsTrue(count > 0, "There are no configuration descriptors.");
+
+                var descriptors = new NativeArray<ConfigurationDescriptor>(count, allocator);
+                unsafe
+                {
+                    UnsafeUtility.MemCpyStride(
+                        descriptors.GetUnsafePtr(),
+                        UnsafeUtility.SizeOf<ConfigurationDescriptor>(),
+                        (void*)ptr, stride, stride, count);
+                }
+
+                return descriptors;
             }
 
             public override void Destroy()
@@ -87,10 +110,26 @@ namespace UnityEngine.XR.ARCore
 
             public override NotTrackingReason notTrackingReason => NativeApi.UnityARCore_session_getNotTrackingReason();
 
-            public override bool matchFrameRate
+            public override Feature requestedFeatures => Api.GetRequestedFeatures();
+
+            public override Feature requestedTrackingMode
             {
-                get => NativeApi.UnityARCore_session_getMatchFrameRateEnabled();
-                set => NativeApi.UnityARCore_session_setMatchFrameRateEnabled(value);
+                get => Api.GetRequestedFeatures();
+                set
+                {
+                    Api.SetFeatureRequested(Feature.AnyTracking, false);
+                    Api.SetFeatureRequested(value, true);
+                }
+            }
+
+            public override Feature currentTrackingMode => NativeApi.GetCurrentTrackingMode();
+
+            public override bool matchFrameRateEnabled => NativeApi.UnityARCore_session_getMatchFrameRateEnabled();
+
+            public override bool matchFrameRateRequested
+            {
+                get => NativeApi.UnityARCore_session_getMatchFrameRateRequested();
+                set => NativeApi.UnityARCore_session_setMatchFrameRateRequested(value);
             }
 
             public override int frameRate
@@ -234,7 +273,9 @@ namespace UnityEngine.XR.ARCore
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void RegisterDescriptor()
         {
-#if UNITY_ANDROID && !UNITY_EDITOR
+            if (!Api.Android)
+                return;
+
             XRSessionSubsystemDescriptor.RegisterDescriptor(new XRSessionSubsystemDescriptor.Cinfo
             {
                 id = "ARCore-Session",
@@ -242,10 +283,9 @@ namespace UnityEngine.XR.ARCore
                 supportsInstall = true,
                 supportsMatchFrameRate = true
             });
-#endif
         }
 
-        static class NativeApi
+        internal static class NativeApi
         {
             public enum ArPrestoApkInstallStatus
             {
@@ -296,7 +336,13 @@ namespace UnityEngine.XR.ARCore
             [DllImport("UnityARCore")]
             public static extern void UnityARCore_session_update(
                 ScreenOrientation orientation,
-                Vector2Int screenDimensions);
+                Vector2Int screenDimensions,
+                IntPtr configId,
+                Feature features);
+
+            [DllImport("UnityARCore")]
+            public static extern void UnityARCore_session_getConfigurationDescriptors(
+                out IntPtr ptr, out int count, out int stride);
 
             [DllImport("UnityARCore")]
             public static extern void UnityARCore_session_construct(
@@ -345,7 +391,16 @@ namespace UnityEngine.XR.ARCore
             public static extern bool UnityARCore_session_getMatchFrameRateEnabled();
 
             [DllImport("UnityARCore")]
+            public static extern bool UnityARCore_session_getMatchFrameRateRequested();
+
+            [DllImport("UnityARCore")]
+            public static extern void UnityARCore_session_setMatchFrameRateRequested(bool value);
+
+            [DllImport("UnityARCore")]
             public static extern void UnityARCore_session_setMatchFrameRateEnabled(bool enabled);
+
+            [DllImport("UnityARCore", EntryPoint="UnityARCore_session_getCurrentTrackingMode")]
+            public static extern Feature GetCurrentTrackingMode();
         }
     }
 }

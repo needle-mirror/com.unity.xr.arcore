@@ -110,10 +110,13 @@ namespace UnityEngine.XR.ARCore
 
             public override void Destroy() => UnityARCore_planeTracking_destroy();
 
-            public override PlaneDetectionMode planeDetectionMode
+            public override PlaneDetectionMode requestedPlaneDetectionMode
             {
-                set => UnityARCore_planeTracking_setPlaneDetectionMode(value);
+                get => GetRequestedPlaneDetectionMode();
+                set => SetRequestedPlaneDetectionMode(value);
             }
+
+            public override PlaneDetectionMode currentPlaneDetectionMode => GetCurrentPlaneDetectionMode();
 
             [DllImport("UnityARCore")]
             static extern void UnityARCore_planeTracking_startTracking();
@@ -132,9 +135,14 @@ namespace UnityEngine.XR.ARCore
             static extern unsafe void UnityARCore_planeTracking_releaseChanges(
                 void* changes);
 
-            [DllImport("UnityARCore")]
-            static extern void UnityARCore_planeTracking_setPlaneDetectionMode(
-                PlaneDetectionMode mode);
+            [DllImport("UnityARCore", EntryPoint="UnityARCore_planeTracking_getRequestedPlaneDetectionMode")]
+            static extern PlaneDetectionMode GetRequestedPlaneDetectionMode();
+
+            [DllImport("UnityARCore", EntryPoint="UnityARCore_planeTracking_setRequestedPlaneDetectionMode")]
+            static extern void SetRequestedPlaneDetectionMode(PlaneDetectionMode mode);
+
+            [DllImport("UnityARCore", EntryPoint="UnityARCore_planeTracking_getCurrentPlaneDetectionMode")]
+            static extern PlaneDetectionMode GetCurrentPlaneDetectionMode();
 
             [DllImport("UnityARCore")]
             static extern void UnityARCore_planeTracking_destroy();
@@ -153,7 +161,9 @@ namespace UnityEngine.XR.ARCore
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void RegisterDescriptor()
         {
-#if UNITY_ANDROID && !UNITY_EDITOR
+            if (!Api.Android)
+                return;
+
             var cinfo = new XRPlaneSubsystemDescriptor.Cinfo
             {
                 id = "ARCore-Plane",
@@ -165,7 +175,6 @@ namespace UnityEngine.XR.ARCore
             };
 
             XRPlaneSubsystemDescriptor.Create(cinfo);
-#endif
         }
     }
 }

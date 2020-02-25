@@ -72,8 +72,10 @@ namespace UnityEngine.XR.ARCore
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void Register()
         {
-#if UNITY_ANDROID && !UNITY_EDITOR
-            XRCameraSubsystemCinfo cameraSubsystemCinfo = new XRCameraSubsystemCinfo
+            if (!Api.Android)
+                return;
+
+            var cameraSubsystemCinfo = new XRCameraSubsystemCinfo
             {
                 id = k_SubsystemId,
                 implementationType = typeof(ARCoreCameraSubsystem),
@@ -95,9 +97,8 @@ namespace UnityEngine.XR.ARCore
 
             if (!XRCameraSubsystem.Register(cameraSubsystemCinfo))
             {
-                Debug.LogErrorFormat("Cannot register the {0} subsystem", k_SubsystemId);
+                Debug.LogError($"Failed to register the {k_SubsystemId} subsystem.");
             }
-#endif
         }
 
         /// <summary>
@@ -166,6 +167,24 @@ namespace UnityEngine.XR.ARCore
             }
 
             /// <summary>
+            /// Get the camera facing direction.
+            /// </summary>
+            public override Feature currentCamera => NativeApi.GetCurrentFacingDirection();
+
+            /// <summary>
+            /// Get the currently active camera or set the requested camera
+            /// </summary>
+            public override Feature requestedCamera
+            {
+                get => Api.GetRequestedFeatures();
+                set
+                {
+                    Api.SetFeatureRequested(Feature.AnyCamera, false);
+                    Api.SetFeatureRequested(value, true);
+                }
+            }
+
+            /// <summary>
             /// Start the camera functionality.
             /// </summary>
             public override void Start() => NativeApi.UnityARCore_Camera_Start();
@@ -196,23 +215,34 @@ namespace UnityEngine.XR.ARCore
             /// <summary>
             /// Get or set the focus mode for the camera.
             /// </summary>
-            public override CameraFocusMode cameraFocusMode
+            public override bool autoFocusRequested
             {
-                get => NativeApi.UnityARCore_Camera_GetFocusMode();
-                set => NativeApi.UnityARCore_Camera_SetFocusMode(value);
+                get => Api.GetRequestedFeatures().All(Feature.AutoFocus);
+                set => Api.SetFeatureRequested(Feature.AutoFocus, value);
             }
 
             /// <summary>
-            /// Set the light estimation mode.
+            /// Get the actual auto focus state
             /// </summary>
-            /// <param name="lightEstimationMode">The light estimation mode to set.</param>
-            /// <returns>
-            /// <c>true</c> if the method successfully set the light estimation mode. Otherwise, <c>false</c>.
-            /// </returns>
-            public override bool TrySetLightEstimationMode(LightEstimationMode lightEstimationMode)
+            public override bool autoFocusEnabled => NativeApi.GetAutoFocusEnabled();
+
+            /// <summary>
+            /// Get or set the light estimation mode.
+            /// </summary>
+            public override Feature requestedLightEstimation
             {
-                return NativeApi.UnityARCore_Camera_TrySetLightEstimationMode(lightEstimationMode);
+                get => Api.GetRequestedFeatures();
+                set
+                {
+                    Api.SetFeatureRequested(Feature.AnyLightEstimation, false);
+                    Api.SetFeatureRequested(value, true);
+                }
             }
+
+            /// <summary>
+            /// Get the light estimation features currently enabled
+            /// </summary>
+            public override Feature currentLightEstimation => NativeApi.GetCurrentLightEstimation();
 
             /// <summary>
             /// Get the camera intrinisics information.
@@ -526,14 +556,11 @@ namespace UnityEngine.XR.ARCore
             public static extern bool UnityARCore_Camera_TryGetFrame(XRCameraParams cameraParams,
                                                                     out XRCameraFrame cameraFrame);
 
-            [DllImport("UnityARCore")]
-            public static extern void UnityARCore_Camera_SetFocusMode(CameraFocusMode cameraFocusMode);
+            [DllImport("UnityARCore", EntryPoint="UnityARCore_Camera_GetAutoFocusEnabled")]
+            public static extern bool GetAutoFocusEnabled();
 
-            [DllImport("UnityARCore")]
-            public static extern CameraFocusMode UnityARCore_Camera_GetFocusMode();
-
-            [DllImport("UnityARCore")]
-            public static extern bool UnityARCore_Camera_TrySetLightEstimationMode(LightEstimationMode lightEstimationMode);
+            [DllImport("UnityARCore", EntryPoint="UnityARCore_Camera_GetCurrentLightEstimation")]
+            public static extern Feature GetCurrentLightEstimation();
 
             [DllImport("UnityARCore")]
             public static extern bool UnityARCore_Camera_TryGetIntrinsics(out XRCameraIntrinsics cameraIntrinsics);
@@ -606,6 +633,9 @@ namespace UnityEngine.XR.ARCore
             public static extern void UnityARCore_Camera_CreateAsyncConversionRequestWithCallback(
                 int nativeHandle, XRCameraImageConversionParams conversionParams,
                 XRCameraSubsystem.OnImageRequestCompleteDelegate callback, IntPtr context);
+
+            [DllImport("UnityARCore", EntryPoint="UnityARCore_Camera_GetCurrentFacingDirection")]
+            public static extern Feature GetCurrentFacingDirection();
         }
     }
 }

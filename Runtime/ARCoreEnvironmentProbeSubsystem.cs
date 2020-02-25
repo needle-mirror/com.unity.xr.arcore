@@ -20,7 +20,9 @@ namespace UnityEngine.XR.ARCore
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void Register()
         {
-#if UNITY_ANDROID && !UNITY_EDITOR
+            if (!Api.Android)
+                return;
+
             const string subsystemId = "ARCore-EnvironmentProbe";
             XREnvironmentProbeSubsystemCinfo environmentProbeSubsystemInfo = new XREnvironmentProbeSubsystemCinfo()
             {
@@ -36,9 +38,8 @@ namespace UnityEngine.XR.ARCore
 
             if (!XREnvironmentProbeSubsystem.Register(environmentProbeSubsystemInfo))
             {
-                Debug.LogErrorFormat("Cannot register the {0} subsystem", subsystemId);
+                Debug.LogError($"Cannot register the {subsystemId} subsystem");
             }
-#endif
         }
     }
 
@@ -76,32 +77,43 @@ namespace UnityEngine.XR.ARCore
             /// <param name='value'><c>true</c> if the provider should automatically place environment probes in the scene.
             /// Otherwise, <c>false</c></param>.
             /// <remarks>ARCore does not allow Environment Probes to be placed manually.  Regardless of value this will always be automatic.</remarks>
-            public override void SetAutomaticPlacement(bool value)
+            public override bool automaticPlacementRequested
             {
-                if (!value)
-                    throw new NotSupportedException("ARCore only supports the automatic placement of environment probes.");
+                get => true;
+                set
+                {
+                    if (!value)
+                        throw new NotSupportedException("ARCore only supports the automatic placement of environment probes.");
+                }
             }
 
             /// <summary>
-            /// Set the state of HDR environment texture generation.
+            /// Get whether automatic placement is enabled. This property is always true.
             /// </summary>
-            /// <param name="value">Whether HDR environment texture generation is enabled (<c>true</c>) or disabled
-            /// (<c>false</c>).</param>
-            /// <returns>
-            /// Whether the HDR environment texture generation state was set.
+            public override bool automaticPlacementEnabled => true;
+
+            /// <summary>
+            /// Get or set whether HDR environment texture generation is requested.
+            /// </summary>
+            /// Whether the HDR environment texture generation state is requested.
             /// </returns>
             /// <remarks>ARCore will only ever return environmental textures that are HDR.  This can only be set to <c>true</c>.</remarks>
-            public override bool TrySetEnvironmentTextureHDREnabled(bool value)
+            public override bool environmentTextureHDRRequested
             {
-                if (value)
+                get => true;
+                set
                 {
-                    return true;
-                }
-                else
-                {
-                    throw new NotSupportedException("ARCore only supports HDR for environment textures.  Attempting to turn it off will not work.");
+                    if (!value)
+                    {
+                        throw new NotSupportedException("ARCore only supports HDR for environment textures.");
+                    }
                 }
             }
+
+            /// <summary>
+            /// Get whether HDR environment textures are enabled. This always returns true.
+            /// </summary>
+            public override bool environmentTextureHDREnabled => true;
 
             public override TrackableChanges<XREnvironmentProbe> GetChanges(XREnvironmentProbe defaultEnvironmentProbe,
                                                                             Allocator allocator)

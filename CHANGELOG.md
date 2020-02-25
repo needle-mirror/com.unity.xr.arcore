@@ -4,9 +4,10 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [3.1.0-preview.8] - 2020-03-12
-
-## [3.1.0-preview.7] - 2020-02-27
+## [4.0.0-preview.1] - 2020-02-26
+### Changes
+- The ARSubsystem implementions have been updated to reflect changes in the ARSubsystems API.
+- See the [ARFoundation Migration Guide](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@4.0/manual/migration-guide-3.html) for more details.
 
 ## [3.1.0-preview.6] - 2020-02-03
 ### New
@@ -14,7 +15,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixes
 - Fixed a crash when attempting to destroy ARSession component.
-- Fixed issue where Environment Probe cubemaps were not generating mipmaps.
 - Fixed a crash when querying whether the "match frame rate" option was enabled. This could happen when resuming the ARSession.
 - Fixed a potential crash when using image tracking or adding an image to an existing library at runtime.
 - Fixed an issue where cubemap texture had incorrect Z-faces.

@@ -70,7 +70,7 @@ namespace UnityEditor.XR.ARCore
 #if !UNITY_2020_1_OR_NEWER
             if (PlayerSettings.Android.ARCoreEnabled)
                 throw new BuildFailedException("\"ARCore Supported\" (Player Settings > XR Settings) refers to the built-in ARCore support in Unity and conflicts with the \"ARCore XR Plugin\" package.");
-#endif                
+#endif
         }
 
         void EnsureGoogleARCoreIsNotPresent()

@@ -2,16 +2,16 @@
 
 Use the ARCore XR Plugin package to enable ARCore support via Unity's multi-platform XR API. This package implements the following XR Subsystems:
 
-* [Session](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.1/manual/session-subsystem.html)
-* [Camera](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.1/manual/camera-subsystem.html)
-* [Depth](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.1/manual/depth-subsystem.html)
+* [Session](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.0/manual/session-subsystem.html)
+* [Camera](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.0/manual/camera-subsystem.html)
+* [Depth](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.0/manual/depth-subsystem.html)
 * [Input](https://docs.unity3d.com/2018.1/Documentation/ScriptReference/Experimental.XR.XRInputSubsystem.html)
-* [Planes](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.1/manual/plane-subsystem.html)
-* [Raycast](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.1/manual/raycast-subsystem.html)
-* [Anchors](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.1/manual/anchor-subsystem.html)
-* [Face tracking](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.1/manual/face-tracking.html)
-* [Image tracking](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.1/manual/image-tracking.html)
-* [Environment probes](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.1/manual/environment-probe-subsystem.html)
+* [Planes](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.0/manual/plane-subsystem.html)
+* [Raycast](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.0/manual/raycast-subsystem.html)
+* [Anchors](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.0/manual/anchor-subsystem.html)
+* [Face tracking](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.0/manual/face-tracking.html)
+* [Image tracking](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.0/manual/image-tracking.html)
+* [Environment probes](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.0/manual/environment-probe-subsystem.html)
 
 This version of ARCore XR Plugin uses ARCore 1.14 and supports the following functionality:
 
@@ -32,14 +32,14 @@ This version of ARCore XR Plugin uses ARCore 1.14 and supports the following fun
 
 It doesn't support the following subsystems:
 
-* [Object tracking](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.1/manual/object-tracking.html)
-* [Participant](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.1/manual/participant-subsystem.html)
+* [Object tracking](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.0/manual/object-tracking.html)
+* [Participant](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.0/manual/participant-subsystem.html)
 
 # Installing ARCore XR Plugin
 
 To install this package, follow the instructions in the [Package Manager documentation](https://docs.unity3d.com/Packages/com.unity.package-manager-ui@latest/index.html).
 
-In addition, install the AR Foundation package, which uses ARCore XR Plugin and provides many useful scripts and prefabs. For more information about this package, see the [AR Foundation documentation](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@3.1).
+In addition, install the AR Foundation package, which uses ARCore XR Plugin and provides many useful scripts and prefabs. For more information about this package, see the [AR Foundation documentation](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@4.0).
 
 # Using ARCore XR Plugin
 
@@ -67,7 +67,7 @@ ARCore implements `XRSessionSubsystem.GetAvailabilityAsync`. The list of devices
 
 If the device is supported, but ARCore is not installed (or requires an update), you need to call `XRSessionSubsystem.InstallAsync`, which also returns a `Promise`.
 
-For more information, see the [ARSubsystems session documentation](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.1/manual/session-subsystem.html).
+For more information, see the [ARSubsystems session documentation](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.0/manual/session-subsystem.html).
 
 ## Depth subsystem
 
@@ -75,9 +75,9 @@ Raycasts always return a `Pose` for the item the raycast hit. When raycasting ag
 
 The depth subsystem doesn't require additional resources, so enabling it doesn't affect performance
 
-ARCore's depth subsystem will only ever produce a single [`XRPointCloud`](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.1/api/UnityEngine.XR.ARSubsystems.XRPointCloud.html).
+ARCore's depth subsystem will only ever produce a single [`XRPointCloud`](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.0/api/UnityEngine.XR.ARSubsystems.XRPointCloud.html).
 
-For more information, see the [ARSubsystems depth subsystem documentation](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.1/manual/depth-subsystem.html).
+For more information, see the [ARSubsystems depth subsystem documentation](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.0/manual/depth-subsystem.html).
 
 ## Plane tracking
 
@@ -89,11 +89,11 @@ The ARCore plane subsystem requires additional CPU resources and can be energy-i
 
 Setting the plane detection mode to `PlaneDetectionMode.None` is equivalent to `Stop`ping subsystem.
 
-For more information, see the [ARSubsystems plane subsystem documentation](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.1/manual/plane-subsystem.html). 
+For more information, see the [ARSubsystems plane subsystem documentation](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.0/manual/plane-subsystem.html).
 
 ## Image tracking
 
-To use image tracking on ARCore, you must first create a reference image library. To learn how to do this, see the [AR Subsystems documentation on image tracking](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.1/image-tracking.html).
+To use image tracking on ARCore, you must first create a reference image library. To learn how to do this, see the [AR Subsystems documentation on image tracking](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.0/image-tracking.html).
 
 When building the Player for Android, each reference image library is used to generate a corresponding `imgdb` file, which is how ARCore represents reference image libraries. These files are placed in your project's `StreamingAssets` folder, in a subdirectory called `HiddenARCore`, so they can be accessed at runtime.
 
@@ -105,7 +105,7 @@ Image dimensions are optional on ARCore; however, specifying them can improve im
 
 ## Face tracking
 
-For information about face tracking, see the [ARSubsystems Face Tracking](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.1/manual/face-tracking.html) documentation.
+For information about face tracking, see the [ARSubsystems Face Tracking](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.0/manual/face-tracking.html) documentation.
 
 In addition to the core functionality, the ARCore face subsystem has methods that allow access to ARCore-specific features. ARCore provides access to regions, which are specific features on a face. Currently, these features are:
 
@@ -137,7 +137,7 @@ if (arcoreFaceSubsystem != null)
 
 ARCore light estimation has two modes of operation: `LightEstimationMode.AmbientIntensity` and `LightEstimationMode.EnvironmentalHDR`. `LightEstimationMode.AmbientIntensity` providers color correction and average pixel intensity information, while `LightEstimationMode.EnvironmentalHDR` provides an estimated Main Light Direction, HDR Color, and the ambient SphericalHarmonicsL2 (see [SphericalHarmonicsL2](https://docs.unity3d.com/ScriptReference/Rendering.SphericalHarmonicsL2.html) for more information on Spherical Harmonics). The two modes can't be used simultaneously.
 
-Additionally, the light estimation modes are either used or affected by other subsystems, namely the [ARCoreFaceSubsystem](https://docs.unity3d.com/Packages/com.unity.xr.arcore@3.1/api/UnityEngine.XR.ARCore.ARCoreFaceSubsystem.html) and the [ARCoreEnvironmentProbeSubsystem](https://docs.unity3d.com/Packages/com.unity.xr.arcore@3.1/api/UnityEngine.XR.ARCore.ARCoreEnvironmentProbeSubsystem.html).  If one or both of these subsystems is present and `enabled`, the light estimation mode will have its behaviour modified depending on the configuration.
+Additionally, the light estimation modes are either used or affected by other subsystems, namely the [ARCoreFaceSubsystem](https://docs.unity3d.com/Packages/com.unity.xr.arcore@4.0/api/UnityEngine.XR.ARCore.ARCoreFaceSubsystem.html) and the [ARCoreEnvironmentProbeSubsystem](https://docs.unity3d.com/Packages/com.unity.xr.arcore@4.0/api/UnityEngine.XR.ARCore.ARCoreEnvironmentProbeSubsystem.html).  If one or both of these subsystems is present and `enabled`, the light estimation mode will have its behaviour modified depending on the configuration.
 
 | Functionality      | Supported light estimation modes                                       | Modifiable |
 |--------------------|------------------------------------------------------------------------|------------|
@@ -150,14 +150,15 @@ Additionally, the light estimation modes are either used or affected by other su
 
 ## Camera configuration
 
-[XRCameraConfiguration](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.1/api/UnityEngine.XR.ARSubsystems.XRCameraConfiguration.html) contains an `IntPtr` field `nativeConfigurationHandle`, which is a platform-specific handle. For ARCore, this handle is the pointer to the `ArCameraConfiguration`. The native object is managed by Unity and should not be manually destroyed.
+[XRCameraConfiguration](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.0/api/UnityEngine.XR.ARSubsystems.XRCameraConfiguration.html) contains an `IntPtr` field `nativeConfigurationHandle`, which is a platform-specific handle. For ARCore, this handle is the pointer to the `ArCameraConfiguration`. The native object is managed by Unity and should not be manually destroyed.
 
 # Technical details
 ## Requirements
 
 This version of ARCore XR Plugin is compatible with the following versions of the Unity Editor:
 
-* 2019.2 and later (recommended)
+* 2019.2
+* 2019.3
 
 ## Known limitations
 
