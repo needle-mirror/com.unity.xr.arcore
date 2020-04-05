@@ -3,7 +3,8 @@
     "references": [
         "Unity.XR.ARCore",
         "Unity.XR.ARSubsystems",
-        "Unity.XR.ARSubsystems.Editor"
+        "Unity.XR.ARSubsystems.Editor",
+        "Unity.XR.Management.Editor"
     ],
     "includePlatforms": [
         "Editor"

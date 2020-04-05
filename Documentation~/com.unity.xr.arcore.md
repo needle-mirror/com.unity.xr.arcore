@@ -31,7 +31,7 @@ This version of *ARCore XR Plugin* uses ARCore 1.12 and supports the following f
 It does not support the following subsystems:
 
 * [Object Tracking](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.0/manual/object-tracking.html)
-* [Environment Probes](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.0/manual/environment-probe-subsystem.html)
+* [Participant](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.0/manual/participant-subsystem.html)
 
 # Installing ARCore XR Plugin
 

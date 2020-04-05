@@ -114,37 +114,19 @@ namespace UnityEngine.XR.ARCore
 
         public override bool Start()
         {
-            var settings = GetSettings();
-            if (settings != null && settings.startAndStopSubsystems)
-            {
-                StartSubsystem<XRSessionSubsystem>();
-                StartSubsystem<XRCameraSubsystem>();
-                StartSubsystem<XRDepthSubsystem>();
-                StartSubsystem<XRPlaneSubsystem>();
-                StartSubsystem<XRAnchorSubsystem>();
-                StartSubsystem<XRRaycastSubsystem>();
-                StartSubsystem<XRImageTrackingSubsystem>();
-                StartSubsystem<XRInputSubsystem>();
-                StartSubsystem<XRFaceSubsystem>();
-            }
+            StartSubsystem<XRSessionSubsystem>();
+            StartSubsystem<XRCameraSubsystem>();
+            StartSubsystem<XRInputSubsystem>();
+
             return true;
         }
 
         public override bool Stop()
         {
-            var settings = GetSettings();
-            if (settings != null && settings.startAndStopSubsystems)
-            {
-                StopSubsystem<XRSessionSubsystem>();
-                StopSubsystem<XRCameraSubsystem>();
-                StopSubsystem<XRDepthSubsystem>();
-                StopSubsystem<XRPlaneSubsystem>();
-                StopSubsystem<XRAnchorSubsystem>();
-                StopSubsystem<XRRaycastSubsystem>();
-                StopSubsystem<XRImageTrackingSubsystem>();
-                StopSubsystem<XRInputSubsystem>();
-                StopSubsystem<XRFaceSubsystem>();
-            }
+            StopSubsystem<XRSessionSubsystem>();
+            StopSubsystem<XRCameraSubsystem>();
+            StopSubsystem<XRInputSubsystem>();
+
             return true;
         }
 
@@ -162,19 +144,6 @@ namespace UnityEngine.XR.ARCore
             DestroySubsystem<XRFaceSubsystem>();
 #endif
             return true;
-        }
-
-        ARCoreLoaderSettings GetSettings()
-        {
-            ARCoreLoaderSettings settings = null;
-            // When running in the Unity Editor, we have to load user's customization of configuration data directly from
-            // EditorBuildSettings. At runtime, we need to grab it from the static instance field instead.
-            #if UNITY_EDITOR
-            UnityEditor.EditorBuildSettings.TryGetConfigObject(ARCoreLoaderConstants.k_SettingsKey, out settings);
-            #else
-            settings = ARCoreLoaderSettings.s_RuntimeInstance;
-            #endif
-            return settings;
         }
     }
 }
