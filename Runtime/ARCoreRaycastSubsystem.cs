@@ -99,7 +99,7 @@ namespace UnityEngine.XR.ARCore
                 void* buffer);
         }
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void RegisterDescriptor()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR

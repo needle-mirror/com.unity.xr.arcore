@@ -165,7 +165,7 @@ namespace UnityEngine.XR.ARCore
                 void* boundaryOut);
         }
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void RegisterDescriptor()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR

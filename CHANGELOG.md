@@ -4,6 +4,17 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.1.8] - 2020-04-08
+### New
+- Added XR Management loader for ARCore
+
+### Breaking Changes
+If you receive this error:
+
+> We were unable to create an instance of the requested type UnityEngine.XR.ARCore.ARCoreLoader. Please make sure that all packages are updated to support this version of XR Plug-In Management. See the Unity documentation for XR Plug-In Management for information on resolving this issue.
+
+It means you need to update to at least version 2.1.7 of the ARCore XR Plugin package.
+
 ## [2.1.2] - 2019-07-19
 ### New
 - Add support for building image libraries on linux.
