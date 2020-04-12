@@ -4,53 +4,19 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [3.1.0-preview.8] - 2020-03-12
+## [3.1.3] - 2020-04-13
+- Updating the dependency on AR Subsystems to 3.1.3.
 
-## [3.1.0-preview.7] - 2020-02-27
+## [3.0.4] - 2020-04-08
+- Changed hard dependency on XR Management to 3.0.6.
 
-## [3.1.0-preview.6] - 2020-02-03
-### New
-- Added support for gamma colorspace for the surfaced environment probe cubemap textures.
-
-### Fixes
-- Fixed a crash when attempting to destroy ARSession component.
-- Fixed issue where Environment Probe cubemaps were not generating mipmaps.
-- Fixed a crash when querying whether the "match frame rate" option was enabled. This could happen when resuming the ARSession.
-- Fixed a potential crash when using image tracking or adding an image to an existing library at runtime.
-- Fixed an issue where cubemap texture had incorrect Z-faces.
-- Fixed an issue where the reported main light direction was incorrectly reporting the Z component of the vector.
-
-### Improvements
-- Refactored native ARCore `XRCameraConfig` native handle representation.  Instead of an index into the list of available `ArCameraConfig`s, the `IntPtr` surfaced is the pointer to the actual `ArCameraConfig`.  See the following [ARCore documentation](https://developers.google.com/ar/reference/c/group/cameraconfig#arcameraconfig) for more information.
-- Provider now provides the the maximum fps supported by the configuration as the `framerate` field in `XRCameraConfig` instead of the minimum framerate.
-
-## [3.1.0-preview.4] - 2020-01-10
-### New
-- Update ARCore to version 1.14.
-
-## [3.1.0-preview.2] - 2019-12-16
-### New
-- Added support for HDR Light Estimation Mode
-- Enforced platform-specific configurations for Light Estimation.  HDR Light Estimation mode is only supported when using the back-facing camera and can't be used while face tracking.  Ambient Light Estimation mode is only supported when not using EnvironmentProbes and will be taken over by the EnvironmentProbeSubsystem.
-- Exposed native camera configuration object by surfacing the index into the list of configurations on the native side.
-
-### Fixes
-- Fixed black camera background texture when environment probes where enabled while tracking faces.
-- Update documentation links to point to the 3.1 versions.
-- Updating dependent version of com.unity.xr.management package to eliminate build warning message.
-
-## [3.1.0-preview.1] - 2019-11-21
-
-### New
-- No longer checking for presence of player setting for ARCore enabled in Unity 2020.1 or newer. This setting has been removed from Unity and was deprecated in 2019.3.
-
-### Improvements
-- Updated the background shader in unison with the changes for the new `AROcclusionManager` component and in preparation for the future when ARCore supports occlusion.
-
-## [3.0.2] - 2019-12-03
-
+## [3.0.3] - 2020-04-06
 ### Fixes
 - Adding a minimum version restriction to the com.unity.inputsystem package for the conditional code that depends on that package.
+- Fixed list of supported subsystems in the documentation.
+
+### Changes
+- Default ARCore loader for XR Management will now only start and stop the implementations of XRInputSubsystem, XRCameraSubsystem, and XRSessionSubsystem when the _Initialize on Startup_ option in XR Management is enabled.
 
 ## [3.0.1] - 2019-11-27
 - 2020.1 verified release
@@ -90,11 +56,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [3.0.0-preview.2] - 2019-09-05
 ### Improvements
-- Update [ARSubsystems](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.1) dependency to 3.0.0-preview.2
+- Update [ARSubsystems](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.0) dependency to 3.0.0-preview.2
 
 ## [3.0.0-preview.1] - 2019-08-21
 ### New
-- Add support for [XR Management](https://docs.unity3d.com/Packages/com.unity.xr.management@3.1/manual/index.html).
+- Add support for [XR Management](https://docs.unity3d.com/Packages/com.unity.xr.management@3.0/manual/index.html).
 - Add support for building image libraries on linux.
 - Add support for runtime modifiable reference image libraries. This allows you to add new reference images for image tracking at runtime.
 
