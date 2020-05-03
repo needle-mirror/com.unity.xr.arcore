@@ -132,6 +132,10 @@ namespace UnityEngine.XR.ARCore
 #endif
         }
 
+        /// <summary>
+        /// Creates the ARCore-specific implementation which will service the `XRImageTrackingSubsystem`.
+        /// </summary>
+        /// <returns>A new instance of the `Provider` specific to ARCore.</returns>
         protected override Provider CreateProvider() => new ARCoreProvider();
     }
 }

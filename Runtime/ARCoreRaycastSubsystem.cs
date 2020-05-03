@@ -11,6 +11,10 @@ namespace UnityEngine.XR.ARCore
     [Preserve]
     public sealed class ARCoreRaycastSubsystem : XRRaycastSubsystem
     {
+        /// <summary>
+        /// Creates the ARCore-specific implementation which will service the `XRRaycastSubsystem`.
+        /// </summary>
+        /// <returns>A new instance of the `Provider` specific to ARCore.</returns>
         protected override Provider CreateProvider() => new ARCoreProvider();
 
         class ARCoreProvider : Provider

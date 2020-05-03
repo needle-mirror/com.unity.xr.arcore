@@ -34,6 +34,11 @@ namespace UnityEngine.XR.ARCore
             m_Pose = pose;
         }
 
+        /// <summary>
+        /// Tests for equality.
+        /// </summary>
+        /// <param name="other">The other <see cref="ARCoreFaceRegionData"/> to compare against.</param>
+        /// <returns>`True` if every field in <paramref name="other"/> is equal to this <see cref="ARCoreFaceRegionData"/>, otherwise false.</returns>
         public bool Equals(ARCoreFaceRegionData other)
         {
             return
@@ -41,6 +46,10 @@ namespace UnityEngine.XR.ARCore
                 m_Pose.Equals(other.m_Pose);
         }
 
+        /// <summary>
+        /// Generates a hash suitable for use with containers like `HashSet` and `Dictionary`.
+        /// </summary>
+        /// <returns>A hash code generated from this object's fields.</returns>
         public override int GetHashCode()
         {
             unchecked
@@ -51,27 +60,37 @@ namespace UnityEngine.XR.ARCore
             }
         }
 
-        public override bool Equals(object obj)
-        {
-            if (!(obj is ARCoreFaceRegionData))
-                return false;
+        /// <summary>
+        /// Tests for equality.
+        /// </summary>
+        /// <param name="obj">The `object` to compare against.</param>
+        /// <returns>`True` if <paramref name="obj"/> is of type <see cref="ARCoreFaceRegionData"/> and
+        /// <see cref="Equals(ARCoreFaceRegionData)"/> also returns `true`; otherwise `false`.</returns>
+        public override bool Equals(object obj) => obj is ARCoreFaceRegionData other && Equals(other);
 
-            return Equals((ARCoreFaceRegionData)obj);
-        }
-
+        /// <summary>
+        /// Generates a string representation of this <see cref="ARCoreFaceRegionData"/>.
+        /// </summary>
+        /// <returns>A string representation of this <see cref="ARCoreFaceRegionData"/>.</returns>
         public override string ToString()
         {
             return string.Format("Region: {0}, Pose: {1}", m_Region, m_Pose);
         }
 
-        public static bool operator ==(ARCoreFaceRegionData lhs, ARCoreFaceRegionData rhs)
-        {
-            return lhs.Equals(rhs);
-        }
+        /// <summary>
+        /// Tests for equality. Same as <see cref="Equals(ARCoreFaceRegionData)"/>.
+        /// </summary>
+        /// <param name="lhs">The left-hand side of the comparison.</param>
+        /// <param name="rhs">The right-hand side of the comparison.</param>
+        /// <returns>`True` if <paramref name="lhs"/> is equal to <paramref name="rhs"/>, otherwise `false`.</returns>
+        public static bool operator ==(ARCoreFaceRegionData lhs, ARCoreFaceRegionData rhs) => lhs.Equals(rhs);
 
-        public static bool operator !=(ARCoreFaceRegionData lhs, ARCoreFaceRegionData rhs)
-        {
-            return !lhs.Equals(rhs);
-        }
+        /// <summary>
+        /// Tests for inequality. Same as `!`<see cref="Equals(ARCoreFaceRegionData)"/>.
+        /// </summary>
+        /// <param name="lhs">The left-hand side of the comparison.</param>
+        /// <param name="rhs">The right-hand side of the comparison.</param>
+        /// <returns>`True` if <paramref name="lhs"/> is not equal to <paramref name="rhs"/>, otherwise `false`.</returns>
+        public static bool operator !=(ARCoreFaceRegionData lhs, ARCoreFaceRegionData rhs) => !lhs.Equals(rhs);
     }
 }

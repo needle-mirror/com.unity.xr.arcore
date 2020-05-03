@@ -4,10 +4,31 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [4.0.0-preview.3] - 2020-05-04
+### Fixes
+- Fixed all broken or missing scripting API documentation.
+
+### Changes
+- Added callback event `beforeSetConfiguration` in `ARCoreSessionSubsystem` that is triggered when the native [ArConfig](https://developers.google.com/ar/reference/c/group/config#arconfig) object is dirty.
+- Added `SetConfigurationDirty()` to `ARCoreSessionSubsystem` which notifies that there is a change in the [ArConfig](https://developers.google.com/ar/reference/c/group/config#arconfig) object and triggers the `beforeSetConfiguration` event.
+- Updating dependency on com.unity.xr.management to 3.2.10.
+
+
 ## [4.0.0-preview.1] - 2020-02-26
 ### Changes
 - The ARSubsystem implementions have been updated to reflect changes in the ARSubsystems API.
 - See the [ARFoundation Migration Guide](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@4.0/manual/migration-guide-3.html) for more details.
+
+## [3.1.3] - 2020-04-13
+- Updating the dependency on AR Subsystems to 3.1.3.
+
+## [3.1.0-preview.9] - 2020-03-13
+### Fixes
+- Setting [XRSessionSubsystem.matchFrameRate](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@3.1/api/UnityEngine.XR.ARSubsystems.XRSessionSubsystem.html#UnityEngine_XR_ARSubsystems_XRSessionSubsystem_matchFrameRate) after the session subsystem was started had no effect. This has been fixed.
+
+## [3.1.0-preview.8] - 2020-03-12
+
+## [3.1.0-preview.7] - 2020-02-27
 
 ## [3.1.0-preview.6] - 2020-02-03
 ### New
@@ -15,6 +36,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixes
 - Fixed a crash when attempting to destroy ARSession component.
+- Fixed issue where Environment Probe cubemaps were not generating mipmaps.
 - Fixed a crash when querying whether the "match frame rate" option was enabled. This could happen when resuming the ARSession.
 - Fixed a potential crash when using image tracking or adding an image to an existing library at runtime.
 - Fixed an issue where cubemap texture had incorrect Z-faces.
@@ -47,14 +69,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Improvements
 - Updated the background shader in unison with the changes for the new `AROcclusionManager` component and in preparation for the future when ARCore supports occlusion.
 
-## [3.0.2] - 2019-12-03
+## [3.0.4] - 2020-04-08
+- Changed hard dependency on XR Management to 3.0.6.
 
+## [3.0.3] - 2020-04-06
 ### Fixes
 - Adding a minimum version restriction to the com.unity.inputsystem package for the conditional code that depends on that package.
+- Fixed list of supported subsystems in the documentation.
+
+### Changes
+- Default ARCore loader for XR Management will now only start and stop the implementations of XRInputSubsystem, XRCameraSubsystem, and XRSessionSubsystem when the _Initialize on Startup_ option in XR Management is enabled.
 
 ## [3.0.1] - 2019-11-27
-- 2020.1 verified release
-
 ### Fixes
 - Correcting script compilation error when the com.unity.inputsystem package is also included in the project.
 

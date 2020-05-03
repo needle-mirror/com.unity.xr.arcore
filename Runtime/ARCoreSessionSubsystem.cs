@@ -12,18 +12,49 @@ namespace UnityEngine.XR.ARCore
     /// <summary>
     /// ARCore implementation of the <c>XRSessionSubsystem</c>. Do not create this directly. Use the <c>SubsystemManager</c> instead.
     /// </summary>
+
     [Preserve]
     public sealed class ARCoreSessionSubsystem : XRSessionSubsystem
     {
+
+        /// <summary>
+        /// Notifies that there has been a change in the ARCore configuration object which triggers <see cref="beforeSetConfiguration"/>.
+        /// </summary>
+        public void SetConfigurationDirty()
+        {
+            NativeApi.UnityARCore_session_setConfigurationDirty();
+        }
+
+        /// <summary>
+        /// Event that is triggered right before the configuration is set on the session. Allows changes to be made to the configuration before it is set.
+        /// </summary>
+        public event Action<ARCoreBeforeSetConfigurationEventArgs> beforeSetConfiguration;
+
+        [MonoPInvokeCallback(typeof(Action<IntPtr, IntPtr, IntPtr>))]
+        static void SetConfigurationCallback(IntPtr session, IntPtr config, IntPtr context)
+        {
+            var instanceHandle = (GCHandle) context;
+
+            if (instanceHandle.Target is ARCoreSessionSubsystem instance && instance.beforeSetConfiguration != null)
+            {
+                instance.beforeSetConfiguration(new ARCoreBeforeSetConfigurationEventArgs(session, config));
+            }
+        }
+
         /// <summary>
         /// Creates the provider interface.
         /// </summary>
         /// <returns>The provider interface for ARCore</returns>
-        protected override Provider CreateProvider() => new ARCoreProvider(this);
+        protected override Provider CreateProvider()
+        {
+            return new ARCoreProvider(this);
+        }
 
         class ARCoreProvider : Provider
         {
             ARCoreSessionSubsystem m_Subsystem;
+            GCHandle m_SubsystemHandle;
+            Action<IntPtr, IntPtr, IntPtr> s_SetConfigurationCallback = SetConfigurationCallback;
 
             public ARCoreProvider(ARCoreSessionSubsystem subsystem)
             {
@@ -34,6 +65,9 @@ namespace UnityEngine.XR.ARCore
                 {
                     m_RenderEventFunc = NativeApi.UnityARCore_session_getRenderEventFunc();
                 }
+
+                m_SubsystemHandle = GCHandle.Alloc(subsystem);
+                NativeApi.UnityARCore_session_setConfigCallback(s_SetConfigurationCallback, GCHandle.ToIntPtr(m_SubsystemHandle));
             }
 
             public override void Resume()
@@ -73,6 +107,7 @@ namespace UnityEngine.XR.ARCore
 
             public override void Destroy()
             {
+                m_SubsystemHandle.Free();
                 DeleteTexture();
                 NativeApi.UnityARCore_session_destroy();
             }
@@ -401,6 +436,12 @@ namespace UnityEngine.XR.ARCore
 
             [DllImport("UnityARCore", EntryPoint="UnityARCore_session_getCurrentTrackingMode")]
             public static extern Feature GetCurrentTrackingMode();
+
+            [DllImport("UnityARCore")]
+            public static extern void UnityARCore_session_setConfigurationDirty();
+
+            [DllImport("UnityARCore")]
+            public static extern void UnityARCore_session_setConfigCallback(Action<IntPtr, IntPtr, IntPtr> callback, IntPtr context);
         }
     }
 }

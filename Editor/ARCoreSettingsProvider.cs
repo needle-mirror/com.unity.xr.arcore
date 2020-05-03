@@ -1,10 +1,11 @@
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using UnityEngine;
 
 namespace UnityEditor.XR.ARCore
 {
+    /// <summary>
+    /// Provides settings for the <see cref="ARCoreLoader"/>.
+    /// </summary>
     public static class ARCoreSettingsProvider
     {
         [SettingsProvider]

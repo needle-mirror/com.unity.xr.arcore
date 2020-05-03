@@ -173,6 +173,10 @@ namespace UnityEngine.XR.ARCore
             public override void Stop() => UnityARCore_depth_Stop();
         }
 
+        /// <summary>
+        /// Creates the ARCore-specific implementation which will service the `XRDepthSubsystem`.
+        /// </summary>
+        /// <returns>A new instance of the `Provider` specific to ARCore.</returns>
         protected override Provider CreateProvider() => new ARCoreProvider();
 
         // this method is run on startup of the app to register this provider with XR Subsystem Manager

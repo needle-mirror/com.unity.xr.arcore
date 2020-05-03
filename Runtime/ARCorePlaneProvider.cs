@@ -13,6 +13,10 @@ namespace UnityEngine.XR.ARCore
     [Preserve]
     public sealed class ARCorePlaneProvider : XRPlaneSubsystem
     {
+        /// <summary>
+        /// Creates the ARCore-specific implementation which will service the `XRPlaneSubsystem`.
+        /// </summary>
+        /// <returns>A new instance of the `Provider` specific to ARCore.</returns>
         protected override Provider CreateProvider() => new ARCoreProvider();
 
         class ARCoreProvider : Provider

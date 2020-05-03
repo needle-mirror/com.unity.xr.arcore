@@ -124,6 +124,10 @@ namespace UnityEngine.XR.ARCore
             }
         }
 
+        /// <summary>
+        /// Creates the ARCore-specific implementation which will service the `XRFaceSubsystem`.
+        /// </summary>
+        /// <returns>A new instance of the `Provider` specific to ARCore.</returns>
         protected override Provider CreateProvider() => new ARCoreProvider();
 
         class ARCoreProvider : Provider
