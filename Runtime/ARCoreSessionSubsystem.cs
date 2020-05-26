@@ -36,7 +36,7 @@ namespace UnityEngine.XR.ARCore
             public override void Resume()
             {
                 CreateTexture();
-                NativeApi.UnityARCore_session_resume();
+                NativeApi.UnityARCore_session_resume(Guid.NewGuid());
             }
 
             public override void Pause() => NativeApi.UnityARCore_session_pause();
@@ -306,7 +306,7 @@ namespace UnityEngine.XR.ARCore
             public static extern void UnityARCore_session_destroy();
 
             [DllImport("UnityARCore")]
-            public static extern void UnityARCore_session_resume();
+            public static extern void UnityARCore_session_resume(Guid guid);
 
             [DllImport("UnityARCore")]
             public static extern void UnityARCore_session_pause();

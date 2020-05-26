@@ -4,6 +4,11 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.1.4] - 2020-05-26
+### Fixes
+- Fixed a bug which caused a new point cloud to be reported each time the `XRDepthSubsystem` was stopped and restarted without removing the old point cloud, causing multiple point clouds to appear over time. Now, the point cloud's trackable id is unique to the session. Creating a new session, or resetting an existing session, will create a new point cloud and remove the old one (if there was one previously), but starting and stopping the `XRDepthSubsystem` no longer changes the trackable id. There is only ever one point cloud.
+- AAR files includes in this package are now compatible Android Gradle Plugin 3.6.3 and older.
+
 ## [3.1.3] - 2020-04-13
 - Updating the dependency on AR Subsystems to 3.1.3.
 

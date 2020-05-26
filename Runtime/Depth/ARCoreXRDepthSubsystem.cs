@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using AOT;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
@@ -17,16 +18,16 @@ namespace UnityEngine.XR.ARCore
         class ARCoreProvider : Provider
         {
             [DllImport("UnityARCore")]
-            static extern public void UnityARCore_depth_Initialize();
+            static extern void UnityARCore_depth_Create(Func<Guid> guidGenerator);
 
             [DllImport("UnityARCore")]
-            static extern public void UnityARCore_depth_Shutdown();
-
-            [DllImport("UnityARCore")]
-            static extern public void UnityARCore_depth_Start(Guid guid);
+            static extern public void UnityARCore_depth_Start();
 
             [DllImport("UnityARCore")]
             static extern public void UnityARCore_depth_Stop();
+
+            [DllImport("UnityARCore")]
+            static extern public void UnityARCore_depth_Destroy();
 
             [DllImport("UnityARCore")]
             static extern unsafe public void* UnityARCore_depth_AcquireChanges(
@@ -160,12 +161,19 @@ namespace UnityEngine.XR.ARCore
                 }
             }
 
-            public override void Destroy() { }
+            [MonoPInvokeCallback(typeof(Func<Guid>))]
+            static Guid GenerateGuid() => Guid.NewGuid();
+
+            static Func<Guid> s_GenerateGuidDelegate = GenerateGuid;
+
+            public ARCoreProvider() => UnityARCore_depth_Create(s_GenerateGuidDelegate);
+
+            public override void Destroy() => UnityARCore_depth_Destroy();
 
             /// <summary>
             /// Starts the DepthSubsystem provider to begin providing face data via the callback delegates
             /// </summary>
-            public override void Start() => UnityARCore_depth_Start(Guid.NewGuid());
+            public override void Start() => UnityARCore_depth_Start();
 
             /// <summary>
             /// Stops the DepthSubsystem provider from providing face data
