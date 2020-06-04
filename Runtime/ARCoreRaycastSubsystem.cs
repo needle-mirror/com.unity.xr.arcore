@@ -11,11 +11,13 @@ namespace UnityEngine.XR.ARCore
     [Preserve]
     public sealed class ARCoreRaycastSubsystem : XRRaycastSubsystem
     {
+#if !UNITY_2020_2_OR_NEWER
         /// <summary>
         /// Creates the ARCore-specific implementation which will service the `XRRaycastSubsystem`.
         /// </summary>
         /// <returns>A new instance of the `Provider` specific to ARCore.</returns>
         protected override Provider CreateProvider() => new ARCoreProvider();
+#endif
 
         class ARCoreProvider : Provider
         {
@@ -107,7 +109,12 @@ namespace UnityEngine.XR.ARCore
             XRRaycastSubsystemDescriptor.RegisterDescriptor(new XRRaycastSubsystemDescriptor.Cinfo
             {
                 id = "ARCore-Raycast",
+#if UNITY_2020_2_OR_NEWER
+                providerType = typeof(ARCoreRaycastSubsystem.ARCoreProvider),
+                subsystemTypeOverride = typeof(ARCoreRaycastSubsystem),
+#else
                 subsystemImplementationType = typeof(ARCoreRaycastSubsystem),
+#endif
                 supportsViewportBasedRaycast = true,
                 supportsWorldBasedRaycast = true,
                 supportedTrackableTypes =

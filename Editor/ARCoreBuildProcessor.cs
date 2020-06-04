@@ -9,10 +9,12 @@ using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEditor.Callbacks;
 using UnityEditor.XR.ARSubsystems;
+using UnityEditor.XR.Management;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.XR.ARCore;
 using UnityEngine.XR.ARSubsystems;
+using UnityEngine.XR.Management;
 using Diag = System.Diagnostics;
 
 namespace UnityEditor.XR.ARCore
@@ -23,17 +25,29 @@ namespace UnityEditor.XR.ARCore
 
         public void OnPreprocessBuild(BuildReport report)
         {
+            SetRuntimePluginCopyDelegate();
+
             if (report.summary.platform != BuildTarget.Android)
                 return;
 
-            EnsureARCoreSupportedIsNotChecked();
-            EnsureGoogleARCoreIsNotPresent();
-            EnsureMinSdkVersion();
-            EnsureOnlyOpenGLES3IsUsed();
-            EnsureGradleIsUsed();
-            BuildImageTrackingAssets();
+            XRGeneralSettings generalSettings = XRGeneralSettingsPerBuildTarget.XRGeneralSettingsForBuildTarget(BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget));
+            if (generalSettings == null)
+                return;
 
-            BuildHelper.AddBackgroundShaderToProject(ARCoreCameraSubsystem.backgroundShaderName);
+            foreach (var loader in generalSettings.Manager.loaders)
+            {
+                if (loader is ARCoreLoader)
+                {
+                    EnsureARCoreSupportedIsNotChecked();
+                    EnsureGoogleARCoreIsNotPresent();
+                    EnsureMinSdkVersion();
+                    EnsureOnlyOpenGLES3IsUsed();
+                    EnsureGradleIsUsed();
+                    BuildImageTrackingAssets();
+                    BuildHelper.AddBackgroundShaderToProject(ARCoreCameraSubsystem.backgroundShaderName);
+                    break;
+                }
+            }
         }
 
         public void OnPostprocessBuild(BuildReport report)
@@ -126,8 +140,8 @@ namespace UnityEditor.XR.ARCore
                 Directory.CreateDirectory(Application.streamingAssetsPath);
             }
 
-            if (!Directory.Exists(ARCoreImageTrackingProvider.k_StreamingAssetsPath))
-                Directory.CreateDirectory(ARCoreImageTrackingProvider.k_StreamingAssetsPath);
+            if (!Directory.Exists(ARCoreImageTrackingSubsystem.k_StreamingAssetsPath))
+                Directory.CreateDirectory(ARCoreImageTrackingSubsystem.k_StreamingAssetsPath);
 
             try
             {
@@ -260,7 +274,7 @@ namespace UnityEditor.XR.ARCore
                         startInfo.FileName = arcoreimgPath;
 
                         // This file must have the .imgdb extension (the tool adds it otherwise)
-                        var outputDbPath = ARCoreImageTrackingProvider.GetPathForLibrary(imageLib);
+                        var outputDbPath = ARCoreImageTrackingSubsystem.GetPathForLibrary(imageLib);
 
                         if (File.Exists(outputDbPath))
                             File.Delete(outputDbPath);
@@ -325,12 +339,53 @@ namespace UnityEditor.XR.ARCore
 
         static void RemoveGeneratedStreamingAssets()
         {
-            RemoveDirectoryWithMetafile(ARCoreImageTrackingProvider.k_StreamingAssetsPath);
+            RemoveDirectoryWithMetafile(ARCoreImageTrackingSubsystem.k_StreamingAssetsPath);
             if (s_ShouldDeleteStreamingAssetsFolder)
                 RemoveDirectoryWithMetafile(Application.streamingAssetsPath);
         }
 
         static bool s_ShouldDeleteStreamingAssetsFolder;
+
+        readonly string[] runtimePluginNames = new string[]
+        {
+            "UnityARCore.aar",
+            "ARPresto.aar",
+            "arcore_client.aar"
+        };
+
+        bool ShouldIncludeRuntimePluginsInBuild(string path)
+        {
+            XRGeneralSettings generalSettings = XRGeneralSettingsPerBuildTarget.XRGeneralSettingsForBuildTarget(BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget));
+            if (generalSettings == null)
+                return false;
+
+            foreach (var loader in generalSettings.Manager.loaders)
+            {
+                if (loader is ARCoreLoader)
+                    return true;
+            }
+
+            return false;
+        }
+
+        void SetRuntimePluginCopyDelegate()
+        {
+            var allPlugins = PluginImporter.GetAllImporters();
+            foreach (var plugin in allPlugins)
+            {
+                if (plugin.isNativePlugin)
+                {
+                    foreach (var pluginName in runtimePluginNames)
+                    {
+                        if (plugin.assetPath.Contains(pluginName))
+                        {
+                            plugin.SetIncludeInBuildDelegate(ShouldIncludeRuntimePluginsInBuild);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     internal class ARCoreManifest : IPostGenerateGradleAndroidProject

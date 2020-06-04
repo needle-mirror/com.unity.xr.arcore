@@ -124,7 +124,6 @@ namespace UnityEngine.XR.ARCore
         public override bool Deinitialize()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
-            DestroySubsystem<XRSessionSubsystem>();
             DestroySubsystem<XRCameraSubsystem>();
             DestroySubsystem<XRDepthSubsystem>();
             DestroySubsystem<XRPlaneSubsystem>();
@@ -134,6 +133,7 @@ namespace UnityEngine.XR.ARCore
             DestroySubsystem<XRInputSubsystem>();
             DestroySubsystem<XRFaceSubsystem>();
             DestroySubsystem<XREnvironmentProbeSubsystem>();
+            DestroySubsystem<XRSessionSubsystem>();
 #endif
             return true;
         }

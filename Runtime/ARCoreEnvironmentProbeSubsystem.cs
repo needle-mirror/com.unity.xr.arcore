@@ -8,10 +8,10 @@ using UnityEngine.XR.ARSubsystems;
 namespace UnityEngine.XR.ARCore
 {
     /// <summary>
-    /// An internal class with only static methods to register the environment probe subsystem before the scene is
-    /// loaded.
+    /// This subsystem provides implementing functionality for the <c>XREnvironmentProbeSubsystem</c> class.
     /// </summary>
-    static class ARCoreEnvironmentProbeRegistration
+    [Preserve]
+    class ARCoreEnvironmentProbeSubsystem : XREnvironmentProbeSubsystem
     {
         /// <summary>
         /// Create and register the environment probe subsystem descriptor to advertise a providing implementation for
@@ -27,7 +27,12 @@ namespace UnityEngine.XR.ARCore
             XREnvironmentProbeSubsystemCinfo environmentProbeSubsystemInfo = new XREnvironmentProbeSubsystemCinfo()
             {
                 id = subsystemId,
+#if UNITY_2020_2_OR_NEWER
+                providerType = typeof(ARCoreEnvironmentProbeSubsystem.ARCoreProvider),
+                subsystemTypeOverride = typeof(ARCoreEnvironmentProbeSubsystem),
+#else
                 implementationType = typeof(ARCoreEnvironmentProbeSubsystem),
+#endif
                 supportsManualPlacement = false,
                 supportsRemovalOfManual = false,
                 supportsAutomaticPlacement = true,
@@ -36,20 +41,12 @@ namespace UnityEngine.XR.ARCore
                 supportsEnvironmentTextureHDR = true,
             };
 
-            if (!XREnvironmentProbeSubsystem.Register(environmentProbeSubsystemInfo))
-            {
-                Debug.LogError($"Cannot register the {subsystemId} subsystem");
-            }
+            XREnvironmentProbeSubsystem.Register(environmentProbeSubsystemInfo);
         }
-    }
 
-    /// <summary>
-    /// This subsystem provides implementing functionality for the <c>XREnvironmentProbeSubsystem</c> class.
-    /// </summary>
-    [Preserve]
-    class ARCoreEnvironmentProbeSubsystem : XREnvironmentProbeSubsystem
-    {
+#if !UNITY_2020_2_OR_NEWER
         protected override Provider CreateProvider() => new ARCoreProvider();
+#endif
 
         class ARCoreProvider : Provider
         {

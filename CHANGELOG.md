@@ -4,6 +4,18 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [4.0.3] - 2020-06-04
+### Changes
+- AAR files includes in this package are now compatible with Android Gradle Plugin 3.6.3 and older.
+- Updating dependency on AR Subsystems to 4.0.0.
+- Update ARCore to version 1.17
+- Updated "camera image" APIs to use the new "CPU image" API. See the [ARFoundation migration guide](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@4.0/manual/migration-guide-3.html#xrcameraimage-is-now-xrcpuimage) for more details.
+- When the [ARCore Loader](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@4.0/manual/#provider-plugin-setup) in XR Management is diabled the ARCore binaries are not packaged into the build and ARCore build checks are not run.
+
+### Fixes
+- Fixed a bug where horizontal planes would still be reported when the plane detection mode was set to vertical only.
+- Fixed a bug which caused a new point cloud to be reported each time the `XRDepthSubsystem` was stopped and restarted without removing the old point cloud, causing multiple point clouds to appear over time. Now, the point cloud's trackable id is unique to the session. Creating a new session, or resetting an existing session, will create a new point cloud and remove the old one (if there was one previously), but starting and stopping the `XRDepthSubsystem` no longer changes the trackable id. There is only ever one point cloud.
+
 ## [4.0.0-preview.3] - 2020-05-04
 ### Fixes
 - Fixed all broken or missing scripting API documentation.

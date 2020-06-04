@@ -60,7 +60,7 @@ namespace UnityEngine.XR.ARCore
             }
             else
             {
-                using (var webRequest = new UnityWebRequest(ARCoreImageTrackingProvider.GetPathForLibrary(serializedLibrary)))
+                using (var webRequest = new UnityWebRequest(ARCoreImageTrackingSubsystem.GetPathForLibrary(serializedLibrary)))
                 {
                     webRequest.downloadHandler = new DownloadHandlerBuffer();
                     webRequest.disposeDownloadHandlerOnDispose = true;

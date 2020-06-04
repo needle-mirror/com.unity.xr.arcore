@@ -13,7 +13,7 @@ Use the ARCore XR Plugin package to enable ARCore support via Unity's multi-plat
 * [Image tracking](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.0/manual/image-tracking.html)
 * [Environment probes](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.0/manual/environment-probe-subsystem.html)
 
-This version of ARCore XR Plugin uses ARCore 1.14 and supports the following functionality:
+This version of ARCore XR Plugin uses ARCore 1.17 and supports the following functionality:
 
 * Device localization
 * Horizontal plane detection

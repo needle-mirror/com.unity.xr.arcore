@@ -11,11 +11,13 @@ namespace UnityEngine.XR.ARCore
     [Preserve]
     public sealed class ARCoreAnchorSubsystem : XRAnchorSubsystem
     {
+#if !UNITY_2020_2_OR_NEWER
         /// <summary>
         /// Creates an instance of the ARCore-specific anchor provider. This provides anchor services for ARCore.
         /// </summary>
         /// <returns>A new instance of <see cref="Provider"/> specific to ARCore.</returns>
         protected override Provider CreateProvider() => new ARCoreProvider();
+#endif
 
         class ARCoreProvider : Provider
         {
@@ -115,7 +117,12 @@ namespace UnityEngine.XR.ARCore
             var cinfo = new XRAnchorSubsystemDescriptor.Cinfo
             {
                 id = "ARCore-Anchor",
+#if UNITY_2020_2_OR_NEWER
+                providerType = typeof(ARCoreAnchorSubsystem.ARCoreProvider),
+                subsystemTypeOverride = typeof(ARCoreAnchorSubsystem),
+#else
                 subsystemImplementationType = typeof(ARCoreAnchorSubsystem),
+#endif
                 supportsTrackableAttachments = true
             };
 
