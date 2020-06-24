@@ -19,6 +19,7 @@ namespace UnityEngine.XR.ARCore
         static List<XRInputSubsystemDescriptor> s_InputSubsystemDescriptors = new List<XRInputSubsystemDescriptor>();
         static List<XRFaceSubsystemDescriptor> s_FaceSubsystemDescriptors = new List<XRFaceSubsystemDescriptor>();
         static List<XREnvironmentProbeSubsystemDescriptor> s_EnvironmentProbeSubsystemDescriptors = new List<XREnvironmentProbeSubsystemDescriptor>();
+        static List<XROcclusionSubsystemDescriptor> s_OcclusionSubsystemDescriptors = new List<XROcclusionSubsystemDescriptor>();
 
         /// <summary>
         /// The `XRSessionSubsystem` whose lifecycle is managed by this loader.
@@ -71,6 +72,11 @@ namespace UnityEngine.XR.ARCore
         public XREnvironmentProbeSubsystem environmentProbeSubsystem => GetLoadedSubsystem<XREnvironmentProbeSubsystem>();
 
         /// <summary>
+        /// The `XROcclusionSubsystem` whose lifecycle is managed by this loader.
+        /// </summary>
+        public XROcclusionSubsystem occlusionSubsystem => GetLoadedSubsystem<XROcclusionSubsystem>();
+
+        /// <summary>
         /// Initializes the loader.
         /// </summary>
         /// <returns>`True` if the session subsystem was successfully created, otherwise `false`.</returns>
@@ -87,6 +93,7 @@ namespace UnityEngine.XR.ARCore
             CreateSubsystem<XRInputSubsystemDescriptor, XRInputSubsystem>(s_InputSubsystemDescriptors, "ARCore-Input");
             CreateSubsystem<XRFaceSubsystemDescriptor, XRFaceSubsystem>(s_FaceSubsystemDescriptors, "ARCore-Face");
             CreateSubsystem<XREnvironmentProbeSubsystemDescriptor, XREnvironmentProbeSubsystem>(s_EnvironmentProbeSubsystemDescriptors, "ARCore-EnvironmentProbe");
+            CreateSubsystem<XROcclusionSubsystemDescriptor, XROcclusionSubsystem>(s_OcclusionSubsystemDescriptors, "ARCore-Occlusion");
 
             if (sessionSubsystem == null)
             {
@@ -133,6 +140,7 @@ namespace UnityEngine.XR.ARCore
             DestroySubsystem<XRInputSubsystem>();
             DestroySubsystem<XRFaceSubsystem>();
             DestroySubsystem<XREnvironmentProbeSubsystem>();
+            DestroySubsystem<XROcclusionSubsystem>();
             DestroySubsystem<XRSessionSubsystem>();
 #endif
             return true;

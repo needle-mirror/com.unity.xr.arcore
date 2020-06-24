@@ -3,6 +3,7 @@
     Properties
     {
         _MainTex("Texture", 2D) = "white" {}
+        _EnvironmentDepth("Texture", 2D) = "black" {}
     }
 
     SubShader
@@ -28,7 +29,11 @@
 
             GLSLPROGRAM
 
-#pragma only_renderers gles3
+            #pragma multi_compile_local __ ARCORE_ENVIRONMENT_DEPTH_ENABLED
+
+            #pragma only_renderers gles3
+
+            #include "UnityCG.glslinc"
 
 #ifdef SHADER_API_GLES3
 #extension GL_OES_EGL_image_external_essl3 : require
@@ -56,6 +61,10 @@
             varying vec2 textureCoord;
             uniform samplerExternalOES _MainTex;
 
+#ifdef ARCORE_ENVIRONMENT_DEPTH_ENABLED
+            uniform sampler2D _EnvironmentDepth;
+#endif // ARCORE_ENVIRONMENT_DEPTH_ENABLED
+
 #if defined(SHADER_API_GLES3) && !defined(UNITY_COLORSPACE_GAMMA)
             float GammaToLinearSpaceExact (float value)
             {
@@ -75,19 +84,37 @@
                 // Precise version, useful for debugging, but the pow() function is too slow.
                 // return vec3(GammaToLinearSpaceExact(sRGB.r), GammaToLinearSpaceExact(sRGB.g), GammaToLinearSpaceExact(sRGB.b));
             }
+
 #endif // SHADER_API_GLES3 && !UNITY_COLORSPACE_GAMMA
+
+            float ConvertDistanceToDepth(float d)
+            {
+                float zBufferParamsW = 1.0 / _ProjectionParams.y;
+                float zBufferParamsY = _ProjectionParams.z * zBufferParamsW;
+                float zBufferParamsX = 1.0 - zBufferParamsY;
+                float zBufferParamsZ = zBufferParamsX * _ProjectionParams.w;
+
+                // Clip any distances smaller than the near clip plane, and compute the depth value from the distance.
+                return (d < _ProjectionParams.y) ? 1.0f : ((1.0 / zBufferParamsZ) * ((1.0 / d) - zBufferParamsW));
+            }
 
             void main()
             {
 #ifdef SHADER_API_GLES3
                 vec3 result = texture(_MainTex, textureCoord).xyz;
+                float depth = 1.0;
+
+#ifdef ARCORE_ENVIRONMENT_DEPTH_ENABLED
+                float distance = texture(_EnvironmentDepth, textureCoord).x;
+                depth = ConvertDistanceToDepth(distance);
+#endif // ARCORE_ENVIRONMENT_DEPTH_ENABLED
 
 #ifndef UNITY_COLORSPACE_GAMMA
                 result = GammaToLinearSpace(result);
 #endif // !UNITY_COLORSPACE_GAMMA
 
-                gl_FragColor = vec4(result, 1);
-                gl_FragDepth = 1.0f;
+                gl_FragColor = vec4(result, 1.0);
+                gl_FragDepth = depth;
 #endif // SHADER_API_GLES3
             }
 

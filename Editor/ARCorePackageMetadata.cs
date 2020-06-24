@@ -27,21 +27,21 @@ namespace UnityEditor.XR.ARCore
             public string packageName { get; set; }
             public string packageId { get; set; }
             public string settingsType { get; set; }
-            public List<IXRLoaderMetadata> loaderMetadata { get; set; } 
+            public List<IXRLoaderMetadata> loaderMetadata { get; set; }
         }
 
         static IXRPackageMetadata s_Metadata = new ARCorePackageMetadata()
         {
             packageName = "ARCore XR Plugin",
             packageId = "com.unity.xr.arcore",
-            settingsType = typeof(ARCoreLoaderSettings).FullName,
-            loaderMetadata = new List<IXRLoaderMetadata>() 
+            settingsType = typeof(ARCoreSettings).FullName,
+            loaderMetadata = new List<IXRLoaderMetadata>()
             {
-                new ARCoreLoaderMetadata() 
+                new ARCoreLoaderMetadata()
                 {
                     loaderName = "ARCore",
                     loaderType = typeof(ARCoreLoader).FullName,
-                    supportedBuildTargets = new List<BuildTargetGroup>() 
+                    supportedBuildTargets = new List<BuildTargetGroup>()
                     {
                         BuildTargetGroup.Android
                     }
@@ -53,7 +53,14 @@ namespace UnityEditor.XR.ARCore
 
         public bool PopulateNewSettingsInstance(ScriptableObject obj)
         {
-            return true;
+            if(obj is ARCoreSettings settings)
+            {
+                settings.requirement = ARCoreSettings.Requirement.Required;
+                ARCoreSettings.currentSettings = settings;
+                return true;
+            }
+
+            return false;
         }
     }
 }

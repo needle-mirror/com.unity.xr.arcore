@@ -4,13 +4,23 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [4.0.3] - 2020-06-04
+## [4.1.0-preview.2] - 2020-06-24
+### New
+- Add support for ARCore environment depth through the AROcclusionManager/XROcclusionSubsystem.
+
 ### Changes
-- AAR files includes in this package are now compatible with Android Gradle Plugin 3.6.3 and older.
-- Updating dependency on AR Subsystems to 4.0.0.
+- Update ARCore to version 1.18.
+- The ARCore Settings has been moved from Project Settings > XR to Project Settings > XR Plug-in Management for consistency with other XR platforms. See [ARCoreSettings](https://docs.unity3d.com/Packages/com.unity.xr.arcore@4.0/api/UnityEditor.XR.ARCore.ARCoreSettings.html?q=ARCoreSettings) for more information. ARCore build settings will no longer have to be created manually, installing the package will automatically create ARCore settings.
+- Minimum Unity version for this package is now 2019.4.
+- Updating the documentation for the new package version, and adding information on the occlusion functionality.
+
+## [4.0.3] - 2020-05-21
+### Changes
 - Update ARCore to version 1.17
 - Updated "camera image" APIs to use the new "CPU image" API. See the [ARFoundation migration guide](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@4.0/manual/migration-guide-3.html#xrcameraimage-is-now-xrcpuimage) for more details.
 - When the [ARCore Loader](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@4.0/manual/#provider-plugin-setup) in XR Management is diabled the ARCore binaries are not packaged into the build and ARCore build checks are not run.
+- AAR files includes in this package are now compatible with Android Gradle Plugin 3.6.3 and older.
+- The ARCore Settings has been moved from Project Settings > XR to Project Settings > XR Plug-in Management for consistency with other XR platforms. See [ARCoreSettings](https://docs.unity3d.com/Packages/com.unity.xr.arcore@4.0/api/UnityEditor.XR.ARCore.ARCoreSettings.html?q=ARCoreSettings) for more information. ARCore build settings will no longer have to be created manually, installing the package will automatically create ARCore settings.
 
 ### Fixes
 - Fixed a bug where horizontal planes would still be reported when the plane detection mode was set to vertical only.

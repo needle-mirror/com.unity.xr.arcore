@@ -51,6 +51,7 @@ namespace UnityEngine.XR.ARCore
         class ARCoreProvider : Provider
         {
             GCHandle m_ProviderHandle;
+            Action<IntPtr, IntPtr, IntPtr> m_SetConfigurationCallback = SetConfigurationCallback;
 
 #if UNITY_2020_2_OR_NEWER
             public ARCoreProvider()
@@ -121,7 +122,6 @@ namespace UnityEngine.XR.ARCore
             /// Event that is triggered right before the configuration is set on the session. Allows changes to be made to the configuration before it is set.
             /// </summary>
             public event Action<ARCoreBeforeSetConfigurationEventArgs> beforeSetConfiguration;
-            Action<IntPtr, IntPtr, IntPtr> m_SetConfigurationCallback = SetConfigurationCallback;
 
             [MonoPInvokeCallback(typeof(Action<IntPtr, IntPtr, IntPtr>))]
             static void SetConfigurationCallback(IntPtr session, IntPtr config, IntPtr context)
