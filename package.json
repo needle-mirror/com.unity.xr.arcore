@@ -1,7 +1,7 @@
 {
   "name": "com.unity.xr.arcore",
   "displayName": "ARCore XR Plugin",
-  "version": "3.1.4",
+  "version": "3.1.5",
   "unity": "2019.2",
   "description": "Provides native Google ARCore integration for use with Unity's multi-platform XR API.\n=Supported Features=\n-Efficient Background Rendering\n-Horizontal Planes\n-Depth Data\n-Anchors\n-Hit Testing",
   "keywords": [
@@ -18,11 +18,11 @@
     "com.unity.modules.androidjni": "1.0.0"
   },
   "upmCi": {
-    "footprint": "19fe1f57d2a97773ae34fdd07fe1ef686024b9d4"
+    "footprint": "3229e4779e9360436d8a37b3fab8e467aac4e8eb"
   },
   "repository": {
     "url": "https://github.com/Unity-Technologies/upm-xr-arcore.git",
     "type": "git",
-    "revision": "d9af5a0def44cef50d6e1055c26946f15216135f"
+    "revision": "74777035507025764ad03aced9c4c87b81d09884"
   }
 }
