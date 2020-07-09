@@ -4,9 +4,17 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [4.1.0-preview.3] - 2020-07-09
+### Fixes
+- Android builds no longer fail when targeting an Android SDK version below 24, which is relevant when ARCore is "optional".
+- Fixed a crash on launch when camera permissions were not already granted to the app.
+
+### Changes
+- Update [XR Plug-in Management](https://docs.unity3d.com/Packages/com.unity.xr.management@3.2) to 3.2.13.
+
 ## [4.1.0-preview.2] - 2020-06-24
 ### New
-- Add support for ARCore environment depth through the AROcclusionManager/XROcclusionSubsystem.
+- Add support for ARCore environment depth through the [AROcclusionManager](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@4.1/api/UnityEngine.XR.ARFoundation.AROcclusionManager.html) and [XROcclusionSubsystem](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.1/api/UnityEngine.XR.ARSubsystems.XROcclusionSubsystem.html).
 
 ### Changes
 - Update ARCore to version 1.18.

@@ -87,7 +87,7 @@ namespace UnityEditor.XR.ARCore
             return true;
         }
 
-        public void Awake()
+        void Awake()
         {
             if (EditorBuildSettings.TryGetConfigObject(k_OldConfigObjectName, out ARCoreSettings result))
             {

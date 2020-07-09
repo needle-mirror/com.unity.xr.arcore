@@ -6,7 +6,7 @@ namespace UnityEngine.XR.ARCore
     /// <summary>
     /// Holds data associated with a face "region".
     /// </summary>
-    /// <seealso cref="ARCoreFaceSubsystem.GetRegionPoses(ARSubsystems.TrackableId, Unity.Collections.Allocator, ref Unity.Collections.NativeArray{ARCoreFaceRegionData})"/>
+    /// <seealso cref="ARCoreFaceSubsystem.GetRegionPoses"/>
     [StructLayout(LayoutKind.Sequential)]
     public struct ARCoreFaceRegionData : IEquatable<ARCoreFaceRegionData>
     {

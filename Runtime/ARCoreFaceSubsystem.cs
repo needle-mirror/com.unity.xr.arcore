@@ -9,7 +9,11 @@ using UnityEngine.XR.ARSubsystems;
 namespace UnityEngine.XR.ARCore
 {
     /// <summary>
-    /// Implementation of <c>XRFaceSubsystem</c> for ARCore. Do not create this directly. Use the <c>SubsystemManager</c> instead.
+    /// The ARCore implementation of the
+    /// [`XRFaceSubsystem`](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.1/api/UnityEngine.XR.ARSubsystems.XRFaceSubsystem.html).
+    /// Do not create this directly. Use the
+    /// [`SubsystemManager`](https://docs.unity3d.com/ScriptReference/SubsystemManager.html)
+    /// instead.
     /// </summary>
     [Preserve]
     public class ARCoreFaceSubsystem : XRFaceSubsystem

@@ -5,7 +5,7 @@ Use the ARCore XR Plugin package to enable ARCore support via Unity's multi-plat
 * [Session](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.1/manual/session-subsystem.html)
 * [Camera](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.1/manual/camera-subsystem.html)
 * [Depth](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.1/manual/depth-subsystem.html)
-* [Input](https://docs.unity3d.com/2018.1/Documentation/ScriptReference/Experimental.XR.XRInputSubsystem.html)
+* [Input](https://docs.unity3d.com/ScriptReference/XR.XRInputSubsystem.html)
 * [Planes](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.1/manual/plane-subsystem.html)
 * [Raycast](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.1/manual/raycast-subsystem.html)
 * [Anchors](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.1/manual/anchor-subsystem.html)

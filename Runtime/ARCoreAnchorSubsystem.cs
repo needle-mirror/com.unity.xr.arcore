@@ -6,7 +6,11 @@ using UnityEngine.XR.ARSubsystems;
 namespace UnityEngine.XR.ARCore
 {
     /// <summary>
-    /// The ARCore implementation of the <c>XRAnchorSubsystem</c>. Do not create this directly. Use the <c>SubsystemManager</c> instead.
+    /// The ARCore implementation of the
+    /// [`XRAnchorSubsystem`](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.1/api/UnityEngine.XR.ARSubsystems.XRAnchorSubsystem.html).
+    /// Do not create this directly. Use the
+    /// [`SubsystemManager`](https://docs.unity3d.com/ScriptReference/SubsystemManager.html)
+    /// instead.
     /// </summary>
     [Preserve]
     public sealed class ARCoreAnchorSubsystem : XRAnchorSubsystem
@@ -15,7 +19,9 @@ namespace UnityEngine.XR.ARCore
         /// <summary>
         /// Creates an instance of the ARCore-specific anchor provider. This provides anchor services for ARCore.
         /// </summary>
-        /// <returns>A new instance of <see cref="Provider"/> specific to ARCore.</returns>
+        /// <returns>Returns a new instance of
+        ///     [`UnityEngine.XR.ARSubsystems.XRAnchorSubsystem.Provider`](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.1/api/UnityEngine.XR.ARSubsystems.XRAnchorSubsystem.Provider.html)
+        ///     specific to ARCore.</returns>
         protected override Provider CreateProvider() => new ARCoreProvider();
 #endif
 

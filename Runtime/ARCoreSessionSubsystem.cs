@@ -10,7 +10,11 @@ using UnityEngine.XR.ARSubsystems;
 namespace UnityEngine.XR.ARCore
 {
     /// <summary>
-    /// ARCore implementation of the <c>XRSessionSubsystem</c>. Do not create this directly. Use the <c>SubsystemManager</c> instead.
+    /// The ARCore implementation of the
+    /// [`XRSessionSubsystem`](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.1/api/UnityEngine.XR.ARSubsystems.XRSessionSubsystem.html).
+    /// Do not create this directly. Use the
+    /// [`SubsystemManager`](https://docs.unity3d.com/ScriptReference/SubsystemManager.html)
+    /// instead.
     /// </summary>
     [Preserve]
     public sealed class ARCoreSessionSubsystem : XRSessionSubsystem
