@@ -171,7 +171,7 @@ namespace UnityEngine.XR.ARCore
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void RegisterDescriptor()
         {
-            if (!Api.Android)
+            if (!Api.platformAndroid || !Api.loaderPresent)
                 return;
 
             var cinfo = new XRPlaneSubsystemDescriptor.Cinfo

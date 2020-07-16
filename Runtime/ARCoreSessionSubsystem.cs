@@ -22,9 +22,11 @@ namespace UnityEngine.XR.ARCore
 #if UNITY_2020_2_OR_NEWER
         protected override void OnCreate()
         {
-            ((ARCoreProvider)provider).beforeSetConfiguration += beforeSetConfiguration;
+            ((ARCoreProvider)provider).beforeSetConfiguration += ConfigurationChangedFromProvider;
         }
 #endif
+
+        void ConfigurationChangedFromProvider(ARCoreBeforeSetConfigurationEventArgs eventArgs) => beforeSetConfiguration?.Invoke(eventArgs);
 
         /// <summary>
         /// Notifies that there has been a change in the ARCore configuration object which triggers <see cref="beforeSetConfiguration"/>.
@@ -47,7 +49,7 @@ namespace UnityEngine.XR.ARCore
         protected override Provider CreateProvider()
         {
             var provider = new ARCoreProvider(this);
-            provider.beforeSetConfiguration += beforeSetConfiguration;
+            provider.beforeSetConfiguration += ConfigurationChangedFromProvider;
             return provider;
         }
 #endif
@@ -346,7 +348,7 @@ namespace UnityEngine.XR.ARCore
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void RegisterDescriptor()
         {
-            if (!Api.Android)
+            if (!Api.platformAndroid || !Api.loaderPresent)
                 return;
 
             XRSessionSubsystemDescriptor.RegisterDescriptor(new XRSessionSubsystemDescriptor.Cinfo

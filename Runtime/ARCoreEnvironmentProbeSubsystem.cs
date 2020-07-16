@@ -24,7 +24,7 @@ namespace UnityEngine.XR.ARCore
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void Register()
         {
-            if (!Api.Android)
+            if (!Api.platformAndroid || !Api.loaderPresent)
                 return;
 
             const string subsystemId = "ARCore-EnvironmentProbe";

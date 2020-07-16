@@ -327,7 +327,9 @@ namespace UnityEngine.XR.ARCore
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void RegisterDescriptor()
         {
-#if UNITY_ANDROID && !UNITY_EDITOR
+            if (!Api.platformAndroid || !Api.loaderPresent)
+                return;
+
             var descriptorParams = new FaceSubsystemParams
             {
                 supportsFacePose = true,
@@ -344,7 +346,6 @@ namespace UnityEngine.XR.ARCore
             };
 
             XRFaceSubsystemDescriptor.Create(descriptorParams);
-#endif
         }
     }
 }

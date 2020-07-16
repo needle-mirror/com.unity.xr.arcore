@@ -4,6 +4,11 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [4.1.0-preview.5] - 2020-07-16
+### Fixes
+- Minor documentation fixes
+- Fixed regression that caused the [beforeSetConfiguration](https://docs.unity3d.com/Packages/com.unity.xr.arcore@4.1/api/UnityEngine.XR.ARCore.ARCoreSessionSubsystem.html#UnityEngine_XR_ARCore_ARCoreSessionSubsystem_beforeSetConfiguration) event on `ARCoreSessionSubsystem` to not be rasied.
+
 ## [4.1.0-preview.3] - 2020-07-09
 ### Fixes
 - Android builds no longer fail when targeting an Android SDK version below 24, which is relevant when ARCore is "optional".

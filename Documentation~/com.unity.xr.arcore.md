@@ -154,7 +154,7 @@ Additionally, the light estimation modes are either used or affected by other su
 
 [XRCameraConfiguration](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.1/api/UnityEngine.XR.ARSubsystems.XRCameraConfiguration.html) contains an `IntPtr` field `nativeConfigurationHandle`, which is a platform-specific handle. For ARCore, this handle is the pointer to the `ArCameraConfiguration`. The native object is managed by Unity and should not be manually destroyed.
 
-## Occlusion 
+## Occlusion
 
 The ARCore implementation of [XROcclusionSubsystem](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.1/manual/occlusion-subsystem.html) supports [Environment Depth Texture](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@4.1/api/UnityEngine.XR.ARFoundation.AROcclusionManager.html#UnityEngine_XR_ARFoundation_AROcclusionManager_environmentDepthTexture) but does not support the other textures related to human segmentation.
 
@@ -163,8 +163,9 @@ The ARCore implementation of [XROcclusionSubsystem](https://docs.unity3d.com/Pac
 
 This version of ARCore XR Plugin is compatible with the following versions of the Unity Editor:
 
-* 2019.2
-* 2019.3
+* 2019.4
+* 2020.1
+* 2020.2
 
 ## Known limitations
 

@@ -126,7 +126,9 @@ namespace UnityEngine.XR.ARCore
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void RegisterDescriptor()
         {
-#if UNITY_ANDROID && !UNITY_EDITOR
+            if (!Api.platformAndroid || !Api.loaderPresent)
+                return;
+
             XRImageTrackingSubsystemDescriptor.Create(new XRImageTrackingSubsystemDescriptor.Cinfo
             {
                 id = "ARCore-ImageTracking",
@@ -139,7 +141,6 @@ namespace UnityEngine.XR.ARCore
                 supportsMovingImages = true,
                 supportsMutableLibrary = true
             });
-#endif
         }
 
 #if !UNITY_2020_2_OR_NEWER

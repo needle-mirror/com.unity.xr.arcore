@@ -1,9 +1,10 @@
 using System.Runtime.InteropServices;
 using UnityEngine.XR.ARSubsystems;
+using UnityEngine.XR.Management;
 
 namespace UnityEngine.XR.ARCore
 {
-    internal static class Api
+    static class Api
     {
 #if UNITY_ANDROID && !UNITY_EDITOR
         [DllImport("UnityARCore", EntryPoint="UnityARCore_session_setFeatureRequested")]
@@ -12,11 +13,34 @@ namespace UnityEngine.XR.ARCore
         [DllImport("UnityARCore", EntryPoint="UnityARCore_session_getRequestedFeatures")]
         public static extern Feature GetRequestedFeatures();
 
-        public static bool Android => true;
+        public static bool platformAndroid => true;
 #else
         public static void SetFeatureRequested(Feature feature, bool requested) {}
         public static Feature GetRequestedFeatures() => Feature.None;
-        public static bool Android => false;
+        public static bool platformAndroid => false;
 #endif
+
+        static ARCoreLoader FindLoader()
+        {
+            var instance = XRGeneralSettings.Instance;
+            if (instance == null)
+                return null;
+
+            var manager = instance.Manager;
+            if (manager == null || manager.loaders == null)
+                return null;
+
+            foreach (var loader in manager.loaders)
+            {
+                if (loader is ARCoreLoader arcoreLoader)
+                {
+                    return arcoreLoader;
+                }
+            }
+
+            return null;
+        }
+
+        public static bool loaderPresent { get; } = FindLoader() != null;
     }
 }

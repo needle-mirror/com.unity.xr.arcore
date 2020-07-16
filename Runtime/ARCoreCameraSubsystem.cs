@@ -65,7 +65,7 @@ namespace UnityEngine.XR.ARCore
         /// render pipeline is incompatible with the set of shaders.
         /// </value>
         /// <remarks>
-        /// The value for the <c>GraphicsSettings.renderPipelineAsset</c> is not expected to change within the lifetime
+        /// The value for the <c>GraphicsSettings.currentRenderPipeline</c> is not expected to change within the lifetime
         /// of the application.
         /// </remarks>
         public static string backgroundShaderName => k_DefaultBackgroundShaderName;
@@ -77,7 +77,7 @@ namespace UnityEngine.XR.ARCore
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void Register()
         {
-            if (!Api.Android)
+            if (!Api.platformAndroid || !Api.loaderPresent)
                 return;
 
             var cameraSubsystemCinfo = new XRCameraSubsystemCinfo

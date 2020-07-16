@@ -119,7 +119,9 @@ namespace UnityEngine.XR.ARCore
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void RegisterDescriptor()
         {
-#if UNITY_ANDROID && !UNITY_EDITOR
+            if (!Api.platformAndroid || !Api.loaderPresent)
+                return;
+
             var cinfo = new XRAnchorSubsystemDescriptor.Cinfo
             {
                 id = "ARCore-Anchor",
@@ -133,7 +135,6 @@ namespace UnityEngine.XR.ARCore
             };
 
             XRAnchorSubsystemDescriptor.Create(cinfo);
-#endif
         }
     }
 }

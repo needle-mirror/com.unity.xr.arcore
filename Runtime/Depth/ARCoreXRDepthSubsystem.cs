@@ -189,7 +189,9 @@ namespace UnityEngine.XR.ARCore
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void RegisterDescriptor()
         {
-#if UNITY_ANDROID && !UNITY_EDITOR
+            if (!Api.platformAndroid || !Api.loaderPresent)
+                return;
+
             var descriptorParams = new XRDepthSubsystemDescriptor.Cinfo
             {
                 id = "ARCore-Depth",
@@ -205,7 +207,6 @@ namespace UnityEngine.XR.ARCore
             };
 
             XRDepthSubsystemDescriptor.RegisterDescriptor(descriptorParams);
-#endif
         }
     }
 }

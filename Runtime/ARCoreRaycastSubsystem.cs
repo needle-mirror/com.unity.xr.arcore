@@ -105,7 +105,9 @@ namespace UnityEngine.XR.ARCore
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void RegisterDescriptor()
         {
-#if UNITY_ANDROID && !UNITY_EDITOR
+            if (!Api.platformAndroid || !Api.loaderPresent)
+                return;
+
             XRRaycastSubsystemDescriptor.RegisterDescriptor(new XRRaycastSubsystemDescriptor.Cinfo
             {
                 id = "ARCore-Raycast",
@@ -121,7 +123,6 @@ namespace UnityEngine.XR.ARCore
                     (TrackableType.Planes & ~TrackableType.PlaneWithinInfinity) |
                     TrackableType.FeaturePoint
             });
-#endif
         }
     }
 }
