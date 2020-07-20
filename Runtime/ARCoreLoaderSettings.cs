@@ -1,4 +1,3 @@
-#if USE_XR_MANAGEMENT
 using UnityEngine.XR.Management;
 
 namespace UnityEngine.XR.ARCore
@@ -33,4 +32,3 @@ namespace UnityEngine.XR.ARCore
         }
     }
 }
-#endif

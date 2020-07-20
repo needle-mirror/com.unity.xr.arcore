@@ -1,4 +1,3 @@
-#if USE_XR_MANAGEMENT
 namespace UnityEngine.XR.ARCore
 {
     /// <summary>
@@ -12,4 +11,4 @@ namespace UnityEngine.XR.ARCore
         public const string k_SettingsKey = "com.unity.xr.management.arcore_loader";
     }
 }
-#endif
+

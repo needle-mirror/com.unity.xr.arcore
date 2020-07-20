@@ -4,6 +4,10 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.1.11] - 2020-07-20
+### Improvements
+- Exported projects are now compatible with Android Gradle Plugin 3.6.3 and older.
+
 ## [2.1.8] - 2020-04-08
 ### New
 - Added XR Management loader for ARCore

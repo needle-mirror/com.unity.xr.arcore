@@ -1,4 +1,3 @@
-#if USE_XR_MANAGEMENT
 using System.Collections.Generic;
 using UnityEngine.XR.ARSubsystems;
 using UnityEngine.XR.Management;
@@ -142,4 +141,3 @@ namespace UnityEngine.XR.ARCore
         }
     }
 }
-#endif
