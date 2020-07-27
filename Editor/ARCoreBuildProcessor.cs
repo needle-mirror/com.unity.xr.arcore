@@ -19,16 +19,23 @@ using Diag = System.Diagnostics;
 
 namespace UnityEditor.XR.ARCore
 {
-    internal class ARCorePreprocessBuild : IPreprocessBuildWithReport, IPostprocessBuildWithReport
+    class ARCorePreprocessBuild : IPreprocessBuildWithReport, IPostprocessBuildWithReport
     {
-        public int callbackOrder { get { return 0; } }
+        // NB: Needs to be > 0 to make sure we remove the shader since the
+        //     Input System overwrites the preloaded assets array
+        public int callbackOrder => 1;
 
         public void OnPreprocessBuild(BuildReport report)
         {
             SetRuntimePluginCopyDelegate();
 
             if (report.summary.platform != BuildTarget.Android)
+            {
+                // Sometimes (e.g., build failure), the shader can get "stuck" in the Preloaded Assets array.
+                // Make sure that if we are not building for Android, we remove that shader.
+                BuildHelper.RemoveShaderFromProject(ARCoreCameraSubsystem.backgroundShaderName);
                 return;
+            }
 
             XRGeneralSettings generalSettings = XRGeneralSettingsPerBuildTarget.XRGeneralSettingsForBuildTarget(BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget));
             if (generalSettings == null)
@@ -400,6 +407,8 @@ namespace UnityEditor.XR.ARCore
 
         static readonly string k_AndroidPermissionCamera = "android.permission.CAMERA";
 
+        static readonly string k_AndroidDepth = "com.google.ar.core.depth";
+
         XmlNode FindFirstChild(XmlNode node, string tag)
         {
             if (node.HasChildNodes)
@@ -518,6 +527,10 @@ namespace UnityEditor.XR.ARCore
                 FindOrCreateTagWithAttributes(manifestDoc, applicationNode, "meta-data", "name", k_AndroidNameValue, "value", "required");
             }
 
+            if(settings.depth == ARCoreSettings.Requirement.Required)
+            {
+                FindOrCreateTagWithAttributes(manifestDoc, manifestNode, "uses-feature", "name", k_AndroidDepth, "required", "true");
+            }
             manifestDoc.Save(manifestPath);
         }
 

@@ -39,6 +39,18 @@ namespace UnityEditor.XR.ARCore
             set { m_Requirement = value; }
         }
 
+        [SerializeField, Tooltip("Toggles whether depth is required for this app. Will make app only downloadable by devices with depth support if set to 'Required'.")]
+        Requirement m_Depth;
+
+        /// <summary>
+        /// Determines whether depth is required for this app: will make app only downloadable by devices with depth support if set to <see cref="Requirement.Required"/>.
+        /// </summary>
+        public Requirement depth
+        {
+            get { return m_Depth; }
+            set { m_Depth = value; }
+        }
+
         /// <summary>
         /// Gets the currently selected settings, or create a default one if no <see cref="ARCoreSettings"/> has been set in Player Settings.
         /// </summary>

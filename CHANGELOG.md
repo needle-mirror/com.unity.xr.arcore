@@ -4,6 +4,14 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [4.1.0-preview.6] - 2020-07-27
+### New
+- Added Depth option to `ARCoreSettings`. This indicates whether or not ARCore Depth API support is required for a specific application.  See the [ARCore Depth API Docs](https://developers.google.com/ar/develop/java/depth/overview) for more details.
+
+### Fixes
+- Fixed a compilation error when the [Input System package](https://docs.unity3d.com/Packages/com.unity.inputsystem@1.0/manual/index.html) was present.
+- Fixed an issue where ARCore shaders could incorrectly remain in the [Preloaded Assets](https://docs.unity3d.com/ScriptReference/PlayerSettings.GetPreloadedAssets.html) array, which could interfere with builds on other platforms.
+
 ## [4.1.0-preview.5] - 2020-07-16
 ### Fixes
 - Minor documentation fixes
