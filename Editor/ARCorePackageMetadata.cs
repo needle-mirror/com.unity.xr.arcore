@@ -53,7 +53,14 @@ namespace UnityEditor.XR.ARCore
 
         public bool PopulateNewSettingsInstance(ScriptableObject obj)
         {
-            return true;
+            if(obj is ARCoreSettings settings)
+            {
+                settings.requirement = ARCoreSettings.Requirement.Required;
+                ARCoreSettings.currentSettings = settings;
+                return true;
+            }
+
+            return false;
         }
     }
 }

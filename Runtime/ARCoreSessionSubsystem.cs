@@ -10,7 +10,11 @@ using UnityEngine.XR.ARSubsystems;
 namespace UnityEngine.XR.ARCore
 {
     /// <summary>
-    /// ARCore implementation of the <c>XRSessionSubsystem</c>. Do not create this directly. Use the <c>SubsystemManager</c> instead.
+    /// The ARCore implementation of the
+    /// [`XRSessionSubsystem`](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.0/api/UnityEngine.XR.ARSubsystems.XRSessionSubsystem.html).
+    /// Do not create this directly. Use the
+    /// [`SubsystemManager`](https://docs.unity3d.com/ScriptReference/SubsystemManager.html)
+    /// instead.
     /// </summary>
     [Preserve]
     public sealed class ARCoreSessionSubsystem : XRSessionSubsystem
@@ -18,9 +22,11 @@ namespace UnityEngine.XR.ARCore
 #if UNITY_2020_2_OR_NEWER
         protected override void OnCreate()
         {
-            ((ARCoreProvider)provider).beforeSetConfiguration += beforeSetConfiguration;
+            ((ARCoreProvider)provider).beforeSetConfiguration += ConfigurationChangedFromProvider;
         }
 #endif
+
+        void ConfigurationChangedFromProvider(ARCoreBeforeSetConfigurationEventArgs eventArgs) => beforeSetConfiguration?.Invoke(eventArgs);
 
         /// <summary>
         /// Notifies that there has been a change in the ARCore configuration object which triggers <see cref="beforeSetConfiguration"/>.
@@ -43,7 +49,7 @@ namespace UnityEngine.XR.ARCore
         protected override Provider CreateProvider()
         {
             var provider = new ARCoreProvider(this);
-            provider.beforeSetConfiguration += beforeSetConfiguration;
+            provider.beforeSetConfiguration += ConfigurationChangedFromProvider;
             return provider;
         }
 #endif

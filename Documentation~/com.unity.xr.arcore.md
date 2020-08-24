@@ -5,7 +5,7 @@ Use the ARCore XR Plugin package to enable ARCore support via Unity's multi-plat
 * [Session](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.0/manual/session-subsystem.html)
 * [Camera](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.0/manual/camera-subsystem.html)
 * [Depth](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.0/manual/depth-subsystem.html)
-* [Input](https://docs.unity3d.com/2018.1/Documentation/ScriptReference/Experimental.XR.XRInputSubsystem.html)
+* [Input](https://docs.unity3d.com/ScriptReference/XR.XRInputSubsystem.html)
 * [Planes](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.0/manual/plane-subsystem.html)
 * [Raycast](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.0/manual/raycast-subsystem.html)
 * [Anchors](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.0/manual/anchor-subsystem.html)
@@ -157,8 +157,9 @@ Additionally, the light estimation modes are either used or affected by other su
 
 This version of ARCore XR Plugin is compatible with the following versions of the Unity Editor:
 
-* 2019.2
-* 2019.3
+* 2019.4
+* 2020.1
+* 2020.2
 
 ## Known limitations
 

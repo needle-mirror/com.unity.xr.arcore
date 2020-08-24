@@ -8,7 +8,11 @@ using UnityEngine.XR.ARSubsystems;
 namespace UnityEngine.XR.ARCore
 {
     /// <summary>
-    /// The camera subsystem implementation for ARCore.
+    /// The ARCore implementation of the
+    /// [`XRCameraSubsystem`](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.0/api/UnityEngine.XR.ARSubsystems.XRCameraSubsystem.html).
+    /// Do not create this directly. Use the
+    /// [`SubsystemManager`](https://docs.unity3d.com/ScriptReference/SubsystemManager.html)
+    /// instead.
     /// </summary>
     [Preserve]
     public sealed class ARCoreCameraSubsystem : XRCameraSubsystem
@@ -61,7 +65,7 @@ namespace UnityEngine.XR.ARCore
         /// render pipeline is incompatible with the set of shaders.
         /// </value>
         /// <remarks>
-        /// The value for the <c>GraphicsSettings.renderPipelineAsset</c> is not expected to change within the lifetime
+        /// The value for the <c>GraphicsSettings.currentRenderPipeline</c> is not expected to change within the lifetime
         /// of the application.
         /// </remarks>
         public static string backgroundShaderName => k_DefaultBackgroundShaderName;
@@ -239,15 +243,15 @@ namespace UnityEngine.XR.ARCore
             public override bool autoFocusEnabled => NativeApi.GetAutoFocusEnabled();
 
             /// <summary>
-            /// Called on the render thread by background rendering code immediately before the background 
-            /// is rendered. 
+            /// Called on the render thread by background rendering code immediately before the background
+            /// is rendered.
             /// For ARCore this is required in order to submit the GL commands for waiting on the fence
             /// created on the main thread after calling ArPresto_Update().
             /// </summary>
             /// <param name="id">Platform-specific data.</param>
-            public override void OnBeforeBackgroundRender(int id) 
-            {  
-                NativeApi.UnityARCore_Camera_GetFenceWaitHandler(id); 
+            public override void OnBeforeBackgroundRender(int id)
+            {
+                NativeApi.UnityARCore_Camera_GetFenceWaitHandler(id);
             }
 
             /// <summary>

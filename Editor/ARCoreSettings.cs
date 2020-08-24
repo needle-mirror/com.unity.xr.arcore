@@ -1,10 +1,14 @@
 using UnityEngine;
+using UnityEngine.XR.Management;
+using System.IO;
 
 namespace UnityEditor.XR.ARCore
 {
     /// <summary>
     /// Holds settings that are used to configure the Unity ARCore Plugin.
     /// </summary>
+    [System.Serializable]
+    [XRConfigurationData("ARCore", "UnityEditor.XR.ARCore.ARCoreSettings")]
     public class ARCoreSettings : ScriptableObject
     {
         /// <summary>
@@ -53,22 +57,17 @@ namespace UnityEditor.XR.ARCore
         /// </summary>
         public static ARCoreSettings currentSettings
         {
-            get
-            {
-                ARCoreSettings settings = null;
-                EditorBuildSettings.TryGetConfigObject(k_ConfigObjectName, out settings);
-                return settings;
-            }
+            get => EditorBuildSettings.TryGetConfigObject(k_SettingsKey, out ARCoreSettings settings) ? settings : null;
 
             set
             {
                 if (value == null)
                 {
-                    EditorBuildSettings.RemoveConfigObject(k_ConfigObjectName);
+                    EditorBuildSettings.RemoveConfigObject(k_SettingsKey);
                 }
                 else
                 {
-                    EditorBuildSettings.AddConfigObject(k_ConfigObjectName, value, true);
+                    EditorBuildSettings.AddConfigObject(k_SettingsKey, value, true);
                 }
             }
         }
@@ -88,6 +87,15 @@ namespace UnityEditor.XR.ARCore
             return true;
         }
 
-        static readonly string k_ConfigObjectName = "com.unity.xr.arcore.PlayerSettings";
+        void Awake()
+        {
+            if (EditorBuildSettings.TryGetConfigObject(k_OldConfigObjectName, out ARCoreSettings result))
+            {
+                EditorBuildSettings.RemoveConfigObject(k_OldConfigObjectName);
+            }
+        }
+
+        const string k_SettingsKey = "UnityEditor.XR.ARCore.ARCoreSettings";
+        const string k_OldConfigObjectName = "com.unity.xr.arcore.PlayerSettings";
     }
 }

@@ -4,9 +4,22 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [4.0.8] - 2020-08-24
+### Fixes
+- Fixed an issue where ARCore shaders could incorrectly remain in the [Preloaded Assets](https://docs.unity3d.com/ScriptReference/PlayerSettings.GetPreloadedAssets.html) array, which could interfere with builds on other platforms.
+
+## [4.0.6] - 2020-07-27
+### Fixes
+- Minor documentation fixes
+- Fixed regression that caused the [beforeSetConfiguration](https://docs.unity3d.com/Packages/com.unity.xr.arcore@4.0/api/UnityEngine.XR.ARCore.ARCoreSessionSubsystem.html#UnityEngine_XR_ARCore_ARCoreSessionSubsystem_beforeSetConfiguration) event on `ARCoreSessionSubsystem` to not be rasied.
+
+### Changes
+- Update [XR Plug-in Management](https://docs.unity3d.com/Packages/com.unity.xr.management@3.2) to 3.2.13.
+- The ARCore Settings has been moved from Project Settings > XR to Project Settings > XR Plug-in Management for consistency with other XR platforms. See [ARCoreSettings](https://docs.unity3d.com/Packages/com.unity.xr.arcore@4.0/api/UnityEditor.XR.ARCore.ARCoreSettings.html) for more information. ARCore build settings will no longer have to be created manually, installing the package will automatically create ARCore settings.
+
 ## [4.0.4] - 2020-07-06
 ### Fixes
-- Android builds targeting ARCore no longer fail when targeting SDKs versions below 21. This bug made optional inclusion of ARCore impossible.
+- Android builds no longer fail when targeting an Android SDK version below 24, which is relevant when ARCore is "optional".
 
 ## [4.0.3] - 2020-06-04
 ### Changes
