@@ -4,6 +4,8 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [4.1.0-preview.7] - 2020-08-26
+
 ## [4.1.0-preview.6] - 2020-07-27
 ### New
 - Added Depth option to `ARCoreSettings`. This indicates whether or not ARCore Depth API support is required for a specific application.  See the [ARCore Depth API Docs](https://developers.google.com/ar/develop/java/depth/overview) for more details.
