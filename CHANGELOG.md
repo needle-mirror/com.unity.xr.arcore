@@ -4,7 +4,14 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [3.1.5] - 2020-07-02
+## [3.1.7] - 2020-09-08
+### Fixes
+- Fixed an issue where ARCore shaders could incorrectly remain in the [Preloaded Assets](https://docs.unity3d.com/ScriptReference/PlayerSettings.GetPreloadedAssets.html) array, which could interfere with builds on other platforms.
+
+## [3.1.5] - 2020-06-18
+### Changes
+- The ARCore Settings has been moved from Project Settings > XR to Project Settings > XR Plug-in Management for consistency with other XR platforms. See [ARCoreSettings](https://docs.unity3d.com/Packages/com.unity.xr.arcore@3.1/api/UnityEditor.XR.ARCore.ARCoreSettings.html) for more information. ARCore build settings will no longer have to be created manually, installing the package will automatically create ARCore settings.
+
 ### Fixes
 - Android builds targeting ARCore no longer fail when targeting SDKs versions below 21. This bug made optional inclusion of ARCore impossible.
 

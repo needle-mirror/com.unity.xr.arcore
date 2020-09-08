@@ -17,14 +17,21 @@ using Diag = System.Diagnostics;
 
 namespace UnityEditor.XR.ARCore
 {
-    internal class ARCorePreprocessBuild : IPreprocessBuildWithReport, IPostprocessBuildWithReport
+    class ARCorePreprocessBuild : IPreprocessBuildWithReport, IPostprocessBuildWithReport
     {
-        public int callbackOrder { get { return 0; } }
+        // NB: Needs to be > 0 to make sure we remove the shader since the
+        //     Input System overwrites the preloaded assets array
+        public int callbackOrder => 1;
 
         public void OnPreprocessBuild(BuildReport report)
         {
             if (report.summary.platform != BuildTarget.Android)
+            {
+                // Sometimes (e.g., build failure), the shader can get "stuck" in the Preloaded Assets array.
+                // Make sure that if we are not building for Android, we remove that shader.
+                BuildHelper.RemoveShaderFromProject(ARCoreCameraSubsystem.backgroundShaderName);
                 return;
+            }
 
             EnsureARCoreSupportedIsNotChecked();
             EnsureGoogleARCoreIsNotPresent();
