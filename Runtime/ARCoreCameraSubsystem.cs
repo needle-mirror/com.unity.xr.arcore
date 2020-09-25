@@ -9,9 +9,9 @@ namespace UnityEngine.XR.ARCore
 {
     /// <summary>
     /// The ARCore implementation of the
-    /// [`XRCameraSubsystem`](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.1/api/UnityEngine.XR.ARSubsystems.XRCameraSubsystem.html).
+    /// [`XRCameraSubsystem`](xref:UnityEngine.XR.ARSubsystems.XRCameraSubsystem).
     /// Do not create this directly. Use the
-    /// [`SubsystemManager`](https://docs.unity3d.com/ScriptReference/SubsystemManager.html)
+    /// [`SubsystemManager`](xref:UnityEngine.SubsystemManager)
     /// instead.
     /// </summary>
     [Preserve]
@@ -117,7 +117,7 @@ namespace UnityEngine.XR.ARCore
         /// Creates an instance of the ARCore-specific camera provider. This provides camera services for ARCore.
         /// </summary>
         /// <returns>Returns a new instance of
-        ///     [`UnityEngine.XR.ARSubsystems.XRCameraSubsystem.Provider`](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.1/api/UnityEngine.XR.ARSubsystems.XRCameraSubsystem.Provider.html)
+        ///     [XRCameraSubsystem.Provider](xref:UnityEngine.XR.ARSubsystems.XRCameraSubsystem.Provider)
         ///     specific to ARCore.</returns>
         protected override Provider CreateProvider() => new ARCoreProvider();
 #endif

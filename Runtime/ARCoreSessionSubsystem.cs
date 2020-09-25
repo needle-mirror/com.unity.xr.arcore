@@ -11,9 +11,9 @@ namespace UnityEngine.XR.ARCore
 {
     /// <summary>
     /// The ARCore implementation of the
-    /// [`XRSessionSubsystem`](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.1/api/UnityEngine.XR.ARSubsystems.XRSessionSubsystem.html).
+    /// [XRSessionSubsystem](xref:UnityEngine.XR.ARSubsystems.XRSessionSubsystem).
     /// Do not create this directly. Use the
-    /// [`SubsystemManager`](https://docs.unity3d.com/ScriptReference/SubsystemManager.html)
+    /// [SubsystemManager](xref:UnityEngine.SubsystemManager)
     /// instead.
     /// </summary>
     [Preserve]
@@ -86,6 +86,7 @@ namespace UnityEngine.XR.ARCore
             public override void Resume()
 #endif
             {
+                // Texture *must* be created before ARCore session resume is called
                 CreateTexture();
                 NativeApi.UnityARCore_session_resume(Guid.NewGuid());
             }

@@ -50,6 +50,13 @@ typedef struct UnityXRNativeEnvironmentProbe_1
     void* arImageCubemap[6];
 } UnityXRNativeEnvironmentProbe_1;
 
+typedef struct UnityXRNativeRaycast_1
+{
+    int version;
+    void* instantPoint;
+    void* anchor;
+} UnityXRNativeRaycast_1;
+
 static const int kUnityXRNativeSessionVersion = 1;
 static const int kUnityXRNativeFrameVersion = 1;
 static const int kUnityXRNativePlaneVersion = 1;
@@ -57,6 +64,8 @@ static const int kUnityXRNativeReferencePointVersion = 1;
 static const int kUnityXRNativePointCloudVersion = 1;
 static const int kUnityXRNativeImageVersion = 1;
 static const int kUnityXRNativeEnvironmentProbeVersion = 1;
+static const int kUnityXRNativeRaycastVersion = 1;
+
 
 typedef UnityXRNativeSession_1 UnityXRNativeSession;
 typedef UnityXRNativeFrame_1 UnityXRNativeFrame;
@@ -65,3 +74,4 @@ typedef UnityXRNativeReferencePoint_1 UnityXRNativeReferencePoint;
 typedef UnityXRNativePointCloud_1 UnityXRNativePointCloud;
 typedef UnityXRNativeImage_1 UnityXRNativeImage;
 typedef UnityXRNativeEnvironmentProbe_1 UnityXRNativeEnvironmentProbe;
+typedef UnityXRNativeRaycast_1 UnityXRNativeRaycast;

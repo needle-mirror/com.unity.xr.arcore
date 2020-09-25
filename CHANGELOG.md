@@ -4,20 +4,34 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [4.1.0-preview.9] - 2020-09-25
+### New
+- Added support for [`ARRaycast`](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@4.1/api/UnityEngine.XR.ARFoundation.ARRaycast.html) trackables. To learn more about the underlying ARCore API see [Google's ARCore Docs](https://developers.google.com/ar/reference/unity/class/GoogleARCore/InstantPlacementPoint).
+
+### Changes
+- Eliminated unnecessary copying of background texture when running with single-threaded rendering.
+- Update ARCore to version 1.19.
+- Updating dependency on com.unity.xr.management to 3.2.15.
+
+### Fixes
+- Fix links in documentation.
+- Handle non-unit scale in the background shader when calculating depth for environmental occlusion.
+- Fix unhandled exception when processing [reference image libraries](xref:arsubsystems-image-tracking-subsystem). This did not prevent the generation of the image libraries, but may have adversely affected error reporting.
+
 ## [4.1.0-preview.7] - 2020-08-26
 
 ## [4.1.0-preview.6] - 2020-07-27
 ### New
-- Added Depth option to `ARCoreSettings`. This indicates whether or not ARCore Depth API support is required for a specific application.  See the [ARCore Depth API Docs](https://developers.google.com/ar/develop/java/depth/overview) for more details.
+- Added Depth option to [ARCoreSettings](xref:UnityEditor.XR.ARCore.ARCoreSettings). This indicates whether or not ARCore Depth API support is required for a specific application.  See the [ARCore Depth API Docs](https://developers.google.com/ar/develop/java/depth/overview) for more details.
 
 ### Fixes
-- Fixed a compilation error when the [Input System package](https://docs.unity3d.com/Packages/com.unity.inputsystem@1.0/manual/index.html) was present.
-- Fixed an issue where ARCore shaders could incorrectly remain in the [Preloaded Assets](https://docs.unity3d.com/ScriptReference/PlayerSettings.GetPreloadedAssets.html) array, which could interfere with builds on other platforms.
+- Fixed a compilation error when the [Input System package](https://docs.unity3d.com/Packages/com.unity.inputsystem@1.0/manual/index.html) is present.
+- Fixed an issue where ARCore shaders could incorrectly remain in the [Preloaded Assets](xref:UnityEditor.PlayerSettings.GetPreloadedAssets) array, which could interfere with builds on other platforms.
 
 ## [4.1.0-preview.5] - 2020-07-16
 ### Fixes
 - Minor documentation fixes
-- Fixed regression that caused the [beforeSetConfiguration](https://docs.unity3d.com/Packages/com.unity.xr.arcore@4.1/api/UnityEngine.XR.ARCore.ARCoreSessionSubsystem.html#UnityEngine_XR_ARCore_ARCoreSessionSubsystem_beforeSetConfiguration) event on `ARCoreSessionSubsystem` to not be rasied.
+- Fixed a regression that caused the [beforeSetConfiguration](xref:UnityEngine.XR.ARCore.ARCoreSessionSubsystem.beforeSetConfiguration) event on the [ARCoreSessionSubsystem](xref:UnityEngine.XR.ARCore.ARCoreSessionSubsystem) to not be rasied.
 
 ## [4.1.0-preview.3] - 2020-07-09
 ### Fixes

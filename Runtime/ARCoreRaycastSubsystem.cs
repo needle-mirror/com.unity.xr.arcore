@@ -21,6 +21,47 @@ namespace UnityEngine.XR.ARCore
 
         class ARCoreProvider : Provider
         {
+            public override void Start() => UnityARCore_raycast_startTracking();
+            public override void Stop() => UnityARCore_raycast_stopTracking();
+            public override void Destroy() => UnityARCore_raycast_destroy();
+
+            public override unsafe TrackableChanges<XRRaycast> GetChanges(
+                XRRaycast defaultRaycast, 
+                Allocator allocator)
+            {
+                int addedLength, updatedLength, removedLength, elementSize;
+                void* addedPtr, updatedPtr, removedPtr;
+                var context = UnityARCore_raycast_acquireChanges(
+                    out addedPtr, out addedLength,
+                    out updatedPtr, out updatedLength,
+                    out removedPtr, out removedLength,
+                    out elementSize);
+
+                try
+                {
+                    return new TrackableChanges<XRRaycast>(
+                        addedPtr, addedLength,
+                        updatedPtr, updatedLength,
+                        removedPtr, removedLength,
+                        defaultRaycast, elementSize,
+                        allocator);
+                }
+                finally
+                {
+                    UnityARCore_raycast_releaseChanges(context);
+                }
+            }
+
+            public override bool TryAddRaycast(Vector2 screenPoint, float estimatedDistance, out XRRaycast sessionRelativeData)
+            {   
+                return UnityARCore_raycast_tryAddRaycast(screenPoint, estimatedDistance, out sessionRelativeData);
+            }
+
+            public override void RemoveRaycast(TrackableId trackableId)
+            {
+                UnityARCore_raycast_removeRaycast(trackableId);
+            }
+
             public override unsafe NativeArray<XRRaycastHit> Raycast(
                 XRRaycastHit defaultRaycastHit,
                 Ray ray,
@@ -100,6 +141,37 @@ namespace UnityEngine.XR.ARCore
             [DllImport("UnityARCore")]
             static unsafe extern void UnityARCore_raycast_releaseHitResults(
                 void* buffer);
+
+            [DllImport("UnityARCore")]
+            static unsafe extern bool UnityARCore_raycast_tryAddRaycast(
+                Vector2 screenPoint,
+                float estimatedDistance,
+                out XRRaycast raycastOut);
+            
+            [DllImport("UnityARCore")]
+            static unsafe extern void UnityARCore_raycast_removeRaycast(
+               TrackableId trackableId);  
+
+            [DllImport("UnityARCore")]
+            static extern void UnityARCore_raycast_startTracking();
+
+            [DllImport("UnityARCore")]
+            static extern void UnityARCore_raycast_stopTracking();   
+
+            [DllImport("UnityARCore")]
+            static extern unsafe void* UnityARCore_raycast_acquireChanges(
+                out void* addedPtr, out int addedLength,
+                out void* updatedPtr, out int updatedLength,
+                out void* removedPtr, out int removedLength,
+                out int elementSize);  
+            
+            [DllImport("UnityARCore")]
+            static extern unsafe void UnityARCore_raycast_releaseChanges(
+                void* changes); 
+
+            [DllImport("UnityARCore")]
+            static extern void UnityARCore_raycast_destroy();
+
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -121,7 +193,8 @@ namespace UnityEngine.XR.ARCore
                 supportsWorldBasedRaycast = true,
                 supportedTrackableTypes =
                     (TrackableType.Planes & ~TrackableType.PlaneWithinInfinity) |
-                    TrackableType.FeaturePoint
+                    TrackableType.FeaturePoint,
+                supportsTrackedRaycasts = true,
             });
         }
     }

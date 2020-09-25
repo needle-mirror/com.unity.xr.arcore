@@ -60,6 +60,7 @@
 #ifdef FRAGMENT
             varying vec2 textureCoord;
             uniform samplerExternalOES _MainTex;
+            uniform float _UnityCameraForwardScale;
 
 #ifdef ARCORE_ENVIRONMENT_DEPTH_ENABLED
             uniform sampler2D _EnvironmentDepth;
@@ -89,6 +90,8 @@
 
             float ConvertDistanceToDepth(float d)
             {
+                d = _UnityCameraForwardScale > 0.0 ? _UnityCameraForwardScale * d : d;
+
                 float zBufferParamsW = 1.0 / _ProjectionParams.y;
                 float zBufferParamsY = _ProjectionParams.z * zBufferParamsW;
                 float zBufferParamsX = 1.0 - zBufferParamsY;
