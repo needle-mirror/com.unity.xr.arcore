@@ -4,6 +4,14 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [4.0.9] - 2020-10-06
+### Changes
+- Update ARCore to version 1.19
+
+### Fixes
+- Fix links in documentation.
+- Fix unhandled exception when processing [reference image libraries](xref:arsubsystems-image-tracking-subsystem). This did not prevent the generation of the image libraries, but may have adversely affected error reporting.
+
 ## [4.0.8] - 2020-08-24
 ### Fixes
 - Fixed an issue where ARCore shaders could incorrectly remain in the [Preloaded Assets](https://docs.unity3d.com/ScriptReference/PlayerSettings.GetPreloadedAssets.html) array, which could interfere with builds on other platforms.

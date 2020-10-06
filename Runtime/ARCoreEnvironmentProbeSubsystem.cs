@@ -9,9 +9,9 @@ namespace UnityEngine.XR.ARCore
 {
     /// <summary>
     /// The ARCore implementation of the
-    /// [`XREnvironmentProbeSubsystem`](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@4.0/api/UnityEngine.XR.ARSubsystems.XREnvironmentProbeSubsystem.html).
+    /// [XREnvironmentProbeSubsystem](xref:UnityEngine.XR.ARSubsystems.XREnvironmentProbeSubsystem).
     /// Do not create this directly. Use the
-    /// [`SubsystemManager`](https://docs.unity3d.com/ScriptReference/SubsystemManager.html)
+    /// [SubsystemManager](xref:UnityEngine.SubsystemManager)
     /// instead.
     /// </summary>
     [Preserve]
