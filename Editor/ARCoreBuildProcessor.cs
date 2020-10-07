@@ -285,8 +285,20 @@ namespace UnityEditor.XR.ARCore
                         process.EnableRaisingEvents = true;
                         var stdout = new StringBuilder();
                         var stderr = new StringBuilder();
-                        process.OutputDataReceived += (sender, args) => stdout.Append(args.Data.ToString());
-                        process.ErrorDataReceived += (sender, args) => stderr.Append(args.Data.ToString());
+                        process.OutputDataReceived += (sender, args) =>
+                        {
+                            if (args?.Data != null)
+                            {
+                                stdout.Append(args.Data.ToString());
+                            }
+                        };
+                        process.ErrorDataReceived += (sender, args) =>
+                        {
+                            if (args?.Data != null)
+                            {
+                                stderr.Append(args.Data.ToString());
+                            }
+                        };
                         process.Start();
                         process.BeginOutputReadLine();
                         process.BeginErrorReadLine();
@@ -295,10 +307,12 @@ namespace UnityEditor.XR.ARCore
                         process.CancelErrorRead();
 
                         if (!File.Exists(outputDbPath))
+                        {
                             throw new BuildFailedException(string.Format(
                                 "Failed to generate image database. Output from arcoreimg:\n\nstdout:\n{0}\n====\n\nstderr:\n{1}\n====",
                                 stdout.ToString(),
                                 stderr.ToString()));
+                        }
                     }
                     catch
                     {
