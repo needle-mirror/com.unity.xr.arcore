@@ -41,10 +41,37 @@
             varying vec2 textureCoord;
             uniform samplerExternalOES _MainTex;
 
+#if defined(SHADER_API_GLES3) && !defined(UNITY_COLORSPACE_GAMMA)
+            float GammaToLinearSpaceExact (float value)
+            {
+                if (value <= 0.04045F)
+                    return value / 12.92F;
+                else if (value < 1.0F)
+                    return pow((value + 0.055F)/1.055F, 2.4F);
+                else
+                    return pow(value, 2.2F);
+            }
+
+            vec3 GammaToLinearSpace (vec3 sRGB)
+            {
+                // Approximate version from http://chilliant.blogspot.com.au/2012/08/srgb-approximations-for-hlsl.html?m=1
+                return sRGB * (sRGB * (sRGB * 0.305306011F + 0.682171111F) + 0.012522878F);
+
+                // Precise version, useful for debugging, but the pow() function is too slow.
+                // return vec3(GammaToLinearSpaceExact(sRGB.r), GammaToLinearSpaceExact(sRGB.g), GammaToLinearSpaceExact(sRGB.b));
+            }
+#endif // SHADER_API_GLES3 && !UNITY_COLORSPACE_GAMMA
+
             void main()
             {
 #ifdef SHADER_API_GLES3
-                gl_FragColor = vec4(texture(_MainTex, textureCoord).xyz, 1);
+                vec3 result = texture(_MainTex, textureCoord).xyz;
+
+#ifndef UNITY_COLORSPACE_GAMMA
+                result = GammaToLinearSpace(result);
+#endif // !UNITY_COLORSPACE_GAMMA
+
+                gl_FragColor = vec4(result, 1);
 #endif
             }
 

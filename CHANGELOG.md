@@ -4,6 +4,14 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.1.12] - 2020-10-07
+### Changes
+- Update to ARCore 1.19
+
+### Fixes
+- Fix unhandled exception when processing [reference image libraries](https://docs.unity3d.com/Packages/com.unity.xr.arsubsystems@2.1/manual/image-tracking.html). This did not prevent the generation of the image libraries, but may have adversely affected error reporting.
+- Fixed background rendering when in the Linear colorspace.
+
 ## [2.1.11] - 2020-07-20
 ### Improvements
 - Exported projects are now compatible with Android Gradle Plugin 3.6.3 and older.
