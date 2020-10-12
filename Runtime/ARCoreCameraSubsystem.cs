@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using AOT;
 using Unity.Collections;
 using UnityEngine.Scripting;
 using UnityEngine.XR.ARSubsystems;
@@ -112,6 +113,28 @@ namespace UnityEngine.XR.ARCore
             }
         }
 
+        /// <summary>
+        /// Invoked from native code just before this subsystem calls
+        /// [ArSession_getSupportedCameraConfigsWithFilter](https://developers.google.com/ar/reference/c/group/ar-session#arsession_getsupportedcameraconfigswithfilter).
+        /// </summary>
+        /// <remarks>
+        /// This allows you to customize the
+        /// [ArCameraConfigFilter](https://developers.google.com/ar/reference/c/group/ar-camera-config-filter)
+        /// passed to
+        /// [ArSession_getSupportedCameraConfigsWithFilter](https://developers.google.com/ar/reference/c/group/ar-session#arsession_getsupportedcameraconfigswithfilter).
+        ///
+        /// Do not destroy the <see cref="ARCoreBeforeGetCameraConfigurationEventArgs.filter"/> object in this
+        /// callback. Doing so is undefined behavior and may crash.
+        ///
+        /// The filter pointer to by <see cref="ARCoreBeforeGetCameraConfigurationEventArgs.filter"/> is only guaranteed
+        /// to exist for the duration of this callback. Accessing it from outside this callback is undefined behavior.
+        /// </remarks>
+        public event Action<ARCoreBeforeGetCameraConfigurationEventArgs> beforeGetCameraConfiguration
+        {
+            add => ((ARCoreProvider)provider).beforeGetCameraConfiguration += value;
+            remove => ((ARCoreProvider)provider).beforeGetCameraConfiguration -= value;
+        }
+
 #if !UNITY_2020_2_OR_NEWER
         /// <summary>
         /// Creates an instance of the ARCore-specific camera provider. This provides camera services for ARCore.
@@ -172,6 +195,10 @@ namespace UnityEngine.XR.ARCore
 
             public override XRCpuImage.Api cpuImageApi => ARCoreCpuImageApi.instance;
 
+            static Action<IntPtr, ArSession, ArCameraConfigFilter> s_OnBeforeGetCameraConfigurationDelegate = OnBeforeGetCameraConfiguration;
+
+            GCHandle m_GCHandle;
+
             /// <summary>
             /// Construct the camera functionality provider for ARCore.
             /// </summary>
@@ -179,6 +206,7 @@ namespace UnityEngine.XR.ARCore
             {
                 NativeApi.UnityARCore_Camera_Construct(k_MainTexPropertyNameId);
                 m_CameraMaterial = CreateCameraMaterial(ARCoreCameraSubsystem.backgroundShaderName);
+                m_GCHandle = GCHandle.Alloc(this);
             }
 
             /// <summary>
@@ -212,7 +240,15 @@ namespace UnityEngine.XR.ARCore
             /// <summary>
             /// Destroy any resources required for the camera functionality.
             /// </summary>
-            public override void Destroy() => NativeApi.UnityARCore_Camera_Destruct();
+            public override void Destroy()
+            {
+                NativeApi.UnityARCore_Camera_Destruct();
+                if (m_GCHandle.IsAllocated)
+                {
+                    m_GCHandle.Free();
+                }
+                m_GCHandle = default;
+            }
 
             /// <summary>
             /// Get the camera frame for the subsystem.
@@ -272,7 +308,7 @@ namespace UnityEngine.XR.ARCore
             public override Feature currentLightEstimation => NativeApi.GetCurrentLightEstimation();
 
             /// <summary>
-            /// Get the camera intrinisics information.
+            /// Get the camera intrinsics information.
             /// </summary>
             /// <param name="cameraIntrinsics">The camera intrinsics information returned from the method.</param>
             /// <returns>
@@ -314,7 +350,7 @@ namespace UnityEngine.XR.ARCore
             /// The current camera configuration.
             /// </summary>
             /// <value>
-            /// The current camera configuration if it exists. Otherise, <c>null</c>.
+            /// The current camera configuration if it exists. Otherwise, <c>null</c>.
             /// </value>
             /// <exception cref="System.ArgumentException">Thrown when setting the current configuration if the given
             /// configuration is not a valid, supported camera configuration.</exception>
@@ -369,7 +405,7 @@ namespace UnityEngine.XR.ARCore
             /// <returns>The texture descriptors.</returns>
             /// <param name="defaultDescriptor">Default descriptor.</param>
             /// <param name="allocator">Allocator.</param>
-            public unsafe override NativeArray<XRTextureDescriptor> GetTextureDescriptors(
+            public override unsafe NativeArray<XRTextureDescriptor> GetTextureDescriptors(
                 XRTextureDescriptor defaultDescriptor,
                 Allocator allocator)
             {
@@ -398,6 +434,38 @@ namespace UnityEngine.XR.ARCore
             /// </returns>
             public override bool TryAcquireLatestCpuImage(out XRCpuImage.Cinfo cameraImageCinfo)
                 => ARCoreCpuImageApi.TryAcquireLatestImage(ARCoreCpuImageApi.ImageType.Camera, out cameraImageCinfo);
+
+            event Action<ARCoreBeforeGetCameraConfigurationEventArgs> m_BeforeGetCameraConfiguration;
+
+            internal event Action<ARCoreBeforeGetCameraConfigurationEventArgs> beforeGetCameraConfiguration
+            {
+                add
+                {
+                    m_BeforeGetCameraConfiguration += value;
+                    NativeApi.SetOnBeforeGetCameraConfigurationCallback(s_OnBeforeGetCameraConfigurationDelegate, (IntPtr)m_GCHandle);
+                }
+                remove
+                {
+                    m_BeforeGetCameraConfiguration -= value;
+                    if (m_BeforeGetCameraConfiguration == null)
+                    {
+                        NativeApi.SetOnBeforeGetCameraConfigurationCallback(null, IntPtr.Zero);
+                    }
+                }
+            }
+
+            [MonoPInvokeCallback(typeof(Action<IntPtr, ArSession, ArCameraConfigFilter>))]
+            static void OnBeforeGetCameraConfiguration(IntPtr providerHandle, ArSession session, ArCameraConfigFilter filter)
+            {
+                if (GCHandle.FromIntPtr(providerHandle).Target is ARCoreProvider provider)
+                {
+                    provider.m_BeforeGetCameraConfiguration?.Invoke(new ARCoreBeforeGetCameraConfigurationEventArgs
+                    {
+                        session = session,
+                        filter = filter
+                    });
+                }
+            }
         }
 
         internal static bool TryGetCurrentConfiguration(out XRCameraConfiguration configuration) => NativeApi.UnityARCore_Camera_TryGetCurrentConfiguration(out configuration);
@@ -407,6 +475,10 @@ namespace UnityEngine.XR.ARCore
         /// </summary>
         static class NativeApi
         {
+            [DllImport("UnityARCore", EntryPoint = "UnityARCore_Camera_SetOnBeforeGetCameraConfigurationCallback")]
+            public static extern void SetOnBeforeGetCameraConfigurationCallback(
+                Action<IntPtr, ArSession, ArCameraConfigFilter> OnBeforeGetCameraConfigFilterDelegate, IntPtr providerHandle);
+
             [DllImport("UnityARCore")]
             public static extern void UnityARCore_Camera_Construct(int mainTexPropertyNameId);
 

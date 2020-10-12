@@ -172,6 +172,7 @@ This version of ARCore XR Plugin is compatible with the following versions of th
 * 2019.4
 * 2020.1
 * 2020.2
+* 2021.1
 
 ## Known limitations
 

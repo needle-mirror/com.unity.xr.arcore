@@ -4,6 +4,17 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [4.1.0-preview.10] - 2020-10-12
+### New
+- Add a new [beforeGetCameraConfiguration event](xref:UnityEngine.XR.ARCore.ARCoreCameraSubsystem.beforeGetCameraConfiguration) to the [ARCoreCameraSubsystem](xref:UnityEngine.XR.ARCore.ARCoreCameraSubsystem) which allows you to manipulate the [ArCameraConfigFilter](https://developers.google.com/ar/reference/c/group/ar-camera-config-filter) before calls to [ArSession_getSupportedCameraConfigsWithFilter](https://developers.google.com/ar/reference/c/group/ar-session#arsession_getsupportedcameraconfigswithfilter).
+
+### Changes
+- Move pause to a background thread. Previously, pausing the session was an expensive operation (up to 700ms). Now, pausing the session does not block the main thread.
+- Update [XR Plug-in Management](https://docs.unity3d.com/Packages/com.unity.xr.management@3.2) to 3.2.16.
+
+### Fixes
+- Fixed a bug which failed to supply an [XRReferenceImage's](xref:UnityEngine.XR.ARSubsystems.XRReferenceImage) physical dimensions to ARCore when the reference image was added at runtime, e.g., with [ScheduleAddImageJob](xref:UnityEngine.XR.ARSubsystems.MutableRuntimeReferenceImageLibrary.ScheduleAddImageJob(Unity.Collections.NativeSlice{System.Byte},UnityEngine.Vector2Int,UnityEngine.TextureFormat,UnityEngine.XR.ARSubsystems.XRReferenceImage,Unity.Jobs.JobHandle)).
+
 ## [4.1.0-preview.9] - 2020-09-25
 ### New
 - Added support for [`ARRaycast`](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@4.1/api/UnityEngine.XR.ARFoundation.ARRaycast.html) trackables. To learn more about the underlying ARCore API see [Google's ARCore Docs](https://developers.google.com/ar/reference/unity/class/GoogleARCore/InstantPlacementPoint).

@@ -57,7 +57,7 @@ namespace UnityEngine.XR.ARCore
         class ARCoreProvider : Provider
         {
             GCHandle m_ProviderHandle;
-            Action<IntPtr, IntPtr, IntPtr> m_SetConfigurationCallback = SetConfigurationCallback;
+            Action<ArSession, ArConfig, IntPtr> m_SetConfigurationCallback = SetConfigurationCallback;
 
 #if UNITY_2020_2_OR_NEWER
             public ARCoreProvider()
@@ -130,14 +130,14 @@ namespace UnityEngine.XR.ARCore
             /// </summary>
             public event Action<ARCoreBeforeSetConfigurationEventArgs> beforeSetConfiguration;
 
-            [MonoPInvokeCallback(typeof(Action<IntPtr, IntPtr, IntPtr>))]
-            static void SetConfigurationCallback(IntPtr session, IntPtr config, IntPtr context)
+            [MonoPInvokeCallback(typeof(Action<ArSession, ArConfig, IntPtr>))]
+            static void SetConfigurationCallback(ArSession session, ArConfig config, IntPtr context)
             {
                 var providerHandle = (GCHandle)context;
 
-                if (providerHandle.Target is ARCoreSessionSubsystem.ARCoreProvider provider && provider.beforeSetConfiguration != null)
+                if (providerHandle.Target is ARCoreProvider provider)
                 {
-                    provider.beforeSetConfiguration(new ARCoreBeforeSetConfigurationEventArgs(session, config));
+                    provider.beforeSetConfiguration?.Invoke(new ARCoreBeforeSetConfigurationEventArgs(session, config));
                 }
             }
 
@@ -484,7 +484,7 @@ namespace UnityEngine.XR.ARCore
             public static extern void UnityARCore_session_setConfigurationDirty();
 
             [DllImport("UnityARCore")]
-            public static extern void UnityARCore_session_setConfigCallback(Action<IntPtr, IntPtr, IntPtr> callback, IntPtr context);
+            public static extern void UnityARCore_session_setConfigCallback(Action<ArSession, ArConfig, IntPtr> callback, IntPtr context);
         }
     }
 }
