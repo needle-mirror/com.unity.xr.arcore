@@ -10,9 +10,9 @@ using UnityEngine.XR.ARSubsystems;
 
 namespace UnityEngine.XR.ARCore
 {
-    internal sealed class ARCoreImageDatabase : MutableRuntimeReferenceImageLibrary
+    sealed class ARCoreImageDatabase : MutableRuntimeReferenceImageLibrary
     {
-        IntPtr m_NativePtr;
+        IntPtr m_Self;
 
         struct AddImageJob : IJob
         {
@@ -24,6 +24,8 @@ namespace UnityEngine.XR.ARCore
 
             public IntPtr database;
 
+            public IntPtr validator;
+
             public int width;
 
             public int height;
@@ -32,22 +34,20 @@ namespace UnityEngine.XR.ARCore
 
             public unsafe void Execute()
             {
-                bool success = UnityARCore_ImageDatabase_addImage(
-                    database,
-                    ref managedReferenceImage,
-                    grayscaleImage.GetUnsafePtr(),
-                    width, height,
-                    name.GetUnsafePtr());
+                AddImage(database, validator, ref managedReferenceImage,
+                         grayscaleImage.GetUnsafePtr(), width, height, name.GetUnsafePtr());
 
-                if (!success)
+                if (!GetStatus(validator).IsSuccess())
+                {
                     managedReferenceImage.Dispose();
+                }
 
                 RcoApi.Release(database);
             }
 
-            [DllImport("UnityARCore")]
-            static extern unsafe bool UnityARCore_ImageDatabase_addImage(
-                IntPtr database,
+            [DllImport("UnityARCore", EntryPoint = "UnityARCore_ImageDatabase_AddImage")]
+            static extern unsafe void AddImage(
+                IntPtr database, IntPtr validator,
                 ref ManagedReferenceImage managedReferenceImage,
                 void* image, int width, int height, void* name);
         }
@@ -56,7 +56,7 @@ namespace UnityEngine.XR.ARCore
         {
             if (serializedLibrary == null)
             {
-                m_NativePtr = UnityARCore_ImageDatabase_deserialize(default(NativeView), default(NativeView));
+                m_Self = Deserialize(default(NativeView), default(NativeView));
             }
             else
             {
@@ -84,7 +84,7 @@ namespace UnityEngine.XR.ARCore
 
                         fixed (byte* blob = libraryBlob)
                         {
-                            m_NativePtr = UnityARCore_ImageDatabase_deserialize(new NativeView(blob, libraryBlob.Length), NativeView.Create(managedReferenceImages));
+                            m_Self = Deserialize(new NativeView(blob, libraryBlob.Length), NativeView.Create(managedReferenceImages));
                         }
                     }
                     finally
@@ -95,19 +95,19 @@ namespace UnityEngine.XR.ARCore
             }
         }
 
-        public IntPtr nativePtr => m_NativePtr;
+        public static explicit operator IntPtr(ARCoreImageDatabase database) => database.m_Self;
 
         ~ARCoreImageDatabase()
         {
-            Assert.AreNotEqual(m_NativePtr, IntPtr.Zero);
+            Assert.AreNotEqual(m_Self, IntPtr.Zero);
 
             // Release references
             int n = count;
             for (int i = 0; i < n; ++i)
             {
-                UnityARCore_ImageDatabase_getReferenceImage(m_NativePtr, i).Dispose();
+                GetReferenceImage(m_Self, i).Dispose();
             }
-            RcoApi.Release(m_NativePtr);
+            RcoApi.Release(m_Self);
         }
 
         static readonly TextureFormat[] k_SupportedFormats =
@@ -121,55 +121,90 @@ namespace UnityEngine.XR.ARCore
             TextureFormat.BGRA32,
         };
 
+        public override bool supportsValidation => true;
+
         public override int supportedTextureFormatCount => k_SupportedFormats.Length;
 
         protected override TextureFormat GetSupportedTextureFormatAtImpl(int index) => k_SupportedFormats[index];
 
-        protected override JobHandle ScheduleAddImageJobImpl(
-            NativeSlice<byte> imageBytes,
-            Vector2Int sizeInPixels,
-            TextureFormat format,
-            XRReferenceImage referenceImage,
-            JobHandle inputDeps)
+        protected override AddReferenceImageJobStatus GetAddReferenceImageJobStatus(AddReferenceImageJobState state) =>
+            GetStatus(state.AsIntPtr());
+
+        unsafe NativeArray<byte> GetUTF8Bytes(string s)
+        {
+            var byteCount = Encoding.UTF8.GetByteCount(s);
+            var utf8Bytes = new NativeArray<byte>(byteCount + 1, Allocator.Persistent);
+            fixed (char* chars = s)
+            {
+                try
+                {
+                    Encoding.UTF8.GetBytes(chars, s.Length, (byte*)utf8Bytes.GetUnsafePtr(), byteCount);
+                }
+                catch
+                {
+                    utf8Bytes.Dispose();
+                    throw;
+                }
+            }
+
+            return utf8Bytes;
+        }
+
+        protected override AddReferenceImageJobState ScheduleAddImageWithValidationJobImpl(NativeSlice<byte> imageBytes,
+            Vector2Int sizeInPixels, TextureFormat format, XRReferenceImage referenceImage, JobHandle inputDeps)
         {
             var grayscaleImage = new NativeArray<byte>(
                 sizeInPixels.x * sizeInPixels.y,
                 Allocator.Persistent,
                 NativeArrayOptions.UninitializedMemory);
 
-            var conversionHandle = ConversionJob.Schedule(imageBytes, sizeInPixels, format, grayscaleImage, inputDeps);
+            inputDeps = ConversionJob.Schedule(imageBytes, sizeInPixels, format, grayscaleImage, inputDeps);
 
             // Add a reference in case we are destroyed while the job is running
-            RcoApi.Retain(m_NativePtr);
-            return new AddImageJob
+            RcoApi.Retain(m_Self);
+
+            var validator = CreateValidator(m_Self);
+
+            inputDeps = new AddImageJob
             {
-                database = m_NativePtr,
+                database = m_Self,
+                validator = validator,
                 managedReferenceImage = new ManagedReferenceImage(referenceImage),
                 grayscaleImage = grayscaleImage,
                 width = sizeInPixels.x,
                 height = sizeInPixels.y,
-                name = new NativeArray<byte>(Encoding.UTF8.GetBytes(referenceImage.name + "\0"), Allocator.Persistent),
-            }.Schedule(conversionHandle);
+                name = GetUTF8Bytes(referenceImage.name),
+            }.Schedule(inputDeps);
+
+            return CreateAddJobState(validator, inputDeps);
         }
+
+        protected override JobHandle ScheduleAddImageJobImpl(
+            NativeSlice<byte> imageBytes,
+            Vector2Int sizeInPixels,
+            TextureFormat format,
+            XRReferenceImage referenceImage,
+            JobHandle inputDeps) =>
+            ScheduleAddImageWithValidationJobImpl(imageBytes, sizeInPixels, format, referenceImage, inputDeps).jobHandle;
 
         protected override XRReferenceImage GetReferenceImageAt(int index)
         {
-            Assert.AreNotEqual(m_NativePtr, IntPtr.Zero);
-            return UnityARCore_ImageDatabase_getReferenceImage(m_NativePtr, index).ToReferenceImage();
+            Assert.AreNotEqual(m_Self, IntPtr.Zero);
+            return GetReferenceImage(m_Self, index).ToReferenceImage();
         }
 
         public override int count
         {
             get
             {
-                Assert.AreNotEqual(m_NativePtr, IntPtr.Zero);
-                return UnityARCore_ImageDatabase_getReferenceImageCount(m_NativePtr);
+                Assert.AreNotEqual(m_Self, IntPtr.Zero);
+                return GetReferenceImageCount(m_Self);
             }
         }
 
-        public override int GetHashCode() => m_NativePtr.GetHashCode();
+        public override int GetHashCode() => m_Self.GetHashCode();
         public override bool Equals(object obj) => (obj is ARCoreImageDatabase) && Equals((ARCoreImageDatabase)obj);
-        public bool Equals(ARCoreImageDatabase other) => !ReferenceEquals(other, null) && (m_NativePtr == other.m_NativePtr);
+        public bool Equals(ARCoreImageDatabase other) => !ReferenceEquals(other, null) && (m_Self == other.m_Self);
         public static bool operator ==(ARCoreImageDatabase lhs, ARCoreImageDatabase rhs)
         {
             if (ReferenceEquals(lhs, rhs))
@@ -182,13 +217,19 @@ namespace UnityEngine.XR.ARCore
         }
         public static bool operator !=(ARCoreImageDatabase lhs, ARCoreImageDatabase rhs) => !(lhs == rhs);
 
-        [DllImport("UnityARCore")]
-        static extern ManagedReferenceImage UnityARCore_ImageDatabase_getReferenceImage(IntPtr imageDatabase, int index);
+        [DllImport("UnityARCore", EntryPoint = "UnityARCore_ImageDatabase_GetReferenceImage")]
+        static extern ManagedReferenceImage GetReferenceImage(IntPtr self, int index);
 
-        [DllImport("UnityARCore")]
-        static extern int UnityARCore_ImageDatabase_getReferenceImageCount(IntPtr imageDatabase);
+        [DllImport("UnityARCore", EntryPoint = "UnityARCore_ImageDatabase_GetReferenceImageCount")]
+        static extern int GetReferenceImageCount(IntPtr self);
 
-        [DllImport("UnityARCore")]
-        static extern IntPtr UnityARCore_ImageDatabase_deserialize(NativeView serializedDatabase, NativeView referenceImages);
+        [DllImport("UnityARCore", EntryPoint = "UnityARCore_ImageDatabase_Deserialize")]
+        static extern IntPtr Deserialize(NativeView serializedDatabase, NativeView referenceImages);
+
+        [DllImport("UnityARCore", EntryPoint = "UnityARCore_ImageDatabase_CreateValidator")]
+        static extern IntPtr CreateValidator(IntPtr self);
+
+        [DllImport("UnityARCore", EntryPoint = "UnityARCore_ReferenceImageValidator_GetStatus")]
+        static extern AddReferenceImageJobStatus GetStatus(IntPtr validator);
     }
 }

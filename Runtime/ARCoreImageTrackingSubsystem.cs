@@ -45,7 +45,7 @@ namespace UnityEngine.XR.ARCore
                     }
                     else if (value is ARCoreImageDatabase database)
                     {
-                        UnityARCore_imageTracking_setDatabase(database.nativePtr);
+                        UnityARCore_imageTracking_setDatabase((IntPtr)database);
                     }
                     else
                     {
@@ -139,7 +139,8 @@ namespace UnityEngine.XR.ARCore
                 subsystemImplementationType = typeof(ARCoreImageTrackingSubsystem),
 #endif
                 supportsMovingImages = true,
-                supportsMutableLibrary = true
+                supportsMutableLibrary = true,
+                supportsImageValidation = true,
             });
         }
 

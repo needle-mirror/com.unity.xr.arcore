@@ -10,7 +10,7 @@ namespace UnityEngine.XR.ARCore
     /// into a contiguous array of memory. Used to interop with C.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    internal unsafe struct NativeView
+    unsafe struct NativeView
     {
         void* m_Ptr;
         int m_Length;
