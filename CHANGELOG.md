@@ -4,6 +4,13 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [4.1.0-preview.13] - 2020-11-09
+### Changes
+- Switch to using all 16-bits from the pixels in the ARCore environment depth image, rather just the lower 13 bits.
+
+### Fixes
+- Fix crash when performing a synchronous [XRCpuImage conversion](xref:UnityEngine.XR.ARSubsystems.XRCpuImage.Convert(UnityEngine.XR.ARSubsystems.XRCpuImage.ConversionParams,System.IntPtr,System.Int32)) while an [asynchronous conversion](xref:UnityEngine.XR.ARSubsystems.XRCpuImage.ConvertAsync(UnityEngine.XR.ARSubsystems.XRCpuImage.ConversionParams)) is already running.
+
 ## [4.1.0-preview.12] - 2020-11-02
 ### New
 - Support the [NotTrackingReason](xref:UnityEngine.XR.ARSubsystems.NotTrackingReason): [CameraUnavailable](xref:UnityEngine.XR.ARSubsystems.NotTrackingReason.CameraUnavailable). This maps to ARCore's [AR_TRACKING_FAILURE_REASON_CAMERA_UNAVAILABLE](https://developers.google.com/ar/reference/c/group/shared-types#group__shared__types_1gga9e2ef6b4a95c498672e80760a254edbeaeb94796b7b4b0c226744759d570f0934).
