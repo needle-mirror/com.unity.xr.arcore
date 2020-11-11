@@ -178,7 +178,7 @@ This version of ARCore XR Plugin is compatible with the following versions of th
 
 * The **AR Core Supported** setting in the XR Settings section of the Android Player settings must remain disabled in order for apps built with the ARCore XR Plugin to work properly.
 * Color Temperature in degrees Kelvin is not presently supported.
-* Due to changes made in Google's ARCore clent libraries which are redistribute in ARCore XR Plugin, projects built with Unity 2019.4 must be updated to use Gradle 5.6.4 or later. Please [refer to these instructions](https://developers.google.com/ar/develop/unity/android-11-build#unity_20193_20194_and_20201) for updating your project's Gradle version.
+* Due to changes made in Google's ARCore client libraries which are redistributed in ARCore XR Plugin, projects built with Unity 2019.4 must be updated to use Gradle 5.6.4 or later. Please [refer to these instructions](https://developers.google.com/ar/develop/unity/android-11-build#unity_20193_20194_and_20201) for updating your project's Gradle version.
 
 ## Package contents
 
