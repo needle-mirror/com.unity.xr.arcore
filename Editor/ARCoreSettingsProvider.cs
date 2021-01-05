@@ -42,6 +42,10 @@ namespace UnityEditor.XR.ARCore
                         "Requirement",
                         "Toggles whether ARCore is required for this app. This will make the app only downloadable by devices with ARCore support if set to 'Required'."));
 
+                    EditorGUILayout.PropertyField(serializedSettings.FindProperty("m_IgnoreGradleVersion"), new GUIContent(
+                        "Ignore Gradle Version",
+                        "Toggles whether the Gradle version is validated during Player build."));
+
                     serializedSettings.ApplyModifiedProperties();
                 },
 
@@ -52,7 +56,7 @@ namespace UnityEditor.XR.ARCore
             return provider;
         }
 
-        static void Create()
+        internal static void Create()
         {
             var path = EditorUtility.SaveFilePanelInProject("Save ARCore Settings", "ARCoreSettings", "asset", "Please enter a filename to save the ARCore settings.");
             if (string.IsNullOrEmpty(path))

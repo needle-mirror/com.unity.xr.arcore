@@ -4,6 +4,16 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.1.14] - 2021-01-05
+
+### New
+
+- ARCore requires Gradle version 5.6.4. When building the Android Player, this package now detects the version of Gradle in use and, if an incompatible version is detected, presents a dialog indicating that the Gradle version is insufficient. This dialog can be suppressed, and the option to do so is saved in the [ARCoreSettings asset](xref:UnityEditor.XR.ARCore.ARCoreSettings) (Edit > Project Settings > XR > ARCore).
+
+### Fixes
+
+- Fixed a potential issue with multithreaded rendering where the pass through video texture could be displayed before ARCore had completely finished updating it, leading to rendering artifacts. See, for example, [issue 652](https://github.com/Unity-Technologies/arfoundation-samples/issues/652).
+
 ## [2.1.12] - 2020-10-07
 ### Changes
 - Update to ARCore 1.19
