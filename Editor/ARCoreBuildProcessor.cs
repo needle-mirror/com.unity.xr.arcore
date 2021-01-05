@@ -3,11 +3,9 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml;
-using Unity.Collections;
 using UnityEditor.Android;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
-using UnityEditor.Callbacks;
 using UnityEditor.XR.ARSubsystems;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -22,6 +20,10 @@ namespace UnityEditor.XR.ARCore
         // NB: Needs to be > 0 to make sure we remove the shader since the
         //     Input System overwrites the preloaded assets array
         public int callbackOrder => 1;
+
+        static readonly Version k_MinimumGradleVersion = new Version(5, 6, 4);
+
+        internal const string gradleLauncherPrefix = "gradle-launcher-";
 
         public void OnPreprocessBuild(BuildReport report)
         {
@@ -38,6 +40,7 @@ namespace UnityEditor.XR.ARCore
             EnsureMinSdkVersion();
             EnsureOnlyOpenGLES3IsUsed();
             EnsureGradleIsUsed();
+            EnsureGradleVersionIsSupported();
             BuildImageTrackingAssets();
 
             BuildHelper.AddBackgroundShaderToProject(ARCoreCameraSubsystem.backgroundShaderName);
@@ -56,6 +59,43 @@ namespace UnityEditor.XR.ARCore
         {
             if (EditorUserBuildSettings.androidBuildSystem != AndroidBuildSystem.Gradle)
                 throw new BuildFailedException("ARCore XR Plugin requires the Gradle build system. See File > Build Settings... > Android");
+        }
+
+        static void EnsureGradleVersionIsSupported()
+        {
+            var settings = ARCoreSettings.GetOrCreateSettings();
+            if (settings.ignoreGradleVersion)
+                return;
+
+            if (Gradle.TryGetVersion(out var gradleVersion, out var diagnosticMessage))
+            {
+                if (gradleVersion < k_MinimumGradleVersion)
+                {
+                    var errorMessage = $"ARCore requires at least Gradle version {k_MinimumGradleVersion} ({gradleVersion} detected). Visit https://developers.google.com/ar/develop/unity/android-11-build for further details.";
+                    var selection = EditorUtility.DisplayDialogComplex(
+                        "Gradle update required",
+                        errorMessage,
+                        "Cancel build", "Continue anyway", "Continue and don't warn me again");
+
+                    switch (selection)
+                    {
+                        // Cancel the build
+                        case 0: throw new BuildFailedException(errorMessage);
+
+                        // Continue as normal
+                        case 1: break;
+
+                        // Continue, and never ask again
+                        case 2:
+                            settings.ignoreGradleVersion = true;
+                            break;
+                    }
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"ARCore requires Gradle {k_MinimumGradleVersion} or later. The Gradle version could not be determined because \"{diagnosticMessage}\"");
+            }
         }
 
         void EnsureMinSdkVersion()
@@ -257,66 +297,32 @@ namespace UnityEditor.XR.ARCore
                         var arcoreimgPath = Path.Combine(packagePath, "Tools~", platformName, "arcoreimg" + extension);
 
     #if UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
-                        SetExecutablePermission(arcoreimgPath);
+                        Cli.Execute("/bin/chmod", $"+x \"{arcoreimgPath}\"");
     #endif
-
-                        var startInfo = new Diag.ProcessStartInfo();
-                        startInfo.WindowStyle = Diag.ProcessWindowStyle.Hidden;
-                        startInfo.FileName = arcoreimgPath;
 
                         // This file must have the .imgdb extension (the tool adds it otherwise)
                         var outputDbPath = ARCoreImageTrackingProvider.GetPathForLibrary(imageLib);
-
                         if (File.Exists(outputDbPath))
+                        {
                             File.Delete(outputDbPath);
+                        }
 
-                        startInfo.Arguments = string.Format(
-                            "build-db --input_image_list_path={0} --output_db_path={1}",
-                            $"\"{inputImageListPath}\"",
-                            $"\"{outputDbPath}\"");
-
-                        startInfo.UseShellExecute = false;
-                        startInfo.RedirectStandardOutput = true;
-                        startInfo.RedirectStandardError = true;
-                        startInfo.CreateNoWindow = true;
-
-                        var process = new Diag.Process();
-                        process.StartInfo = startInfo;
-                        process.EnableRaisingEvents = true;
-                        var stdout = new StringBuilder();
-                        var stderr = new StringBuilder();
-                        process.OutputDataReceived += (sender, args) =>
+                        var (stdOut, stdErr, _) = Cli.Execute(arcoreimgPath, new[]
                         {
-                            if (args?.Data != null)
-                            {
-                                stdout.Append(args.Data.ToString());
-                            }
-                        };
-                        process.ErrorDataReceived += (sender, args) =>
-                        {
-                            if (args?.Data != null)
-                            {
-                                stderr.Append(args.Data.ToString());
-                            }
-                        };
-                        process.Start();
-                        process.BeginOutputReadLine();
-                        process.BeginErrorReadLine();
-                        process.WaitForExit();
-                        process.CancelOutputRead();
-                        process.CancelErrorRead();
+                            "build-db",
+                            $"--input_image_list_path={inputImageListPath}",
+                            $"--output_db_path={outputDbPath}",
+                        });
 
                         if (!File.Exists(outputDbPath))
                         {
-                            throw new BuildFailedException(string.Format(
-                                "Failed to generate image database. Output from arcoreimg:\n\nstdout:\n{0}\n====\n\nstderr:\n{1}\n====",
-                                stdout.ToString(),
-                                stderr.ToString()));
+                            throw new BuildFailedException(
+                                $"Failed to generate image database. Output from arcoreimg:\n\nstdout:\n{stdOut}\n====\n\nstderr:\n{stdErr}\n====");
                         }
                     }
                     catch
                     {
-                        Debug.LogErrorFormat("Failed to generated ARCore reference image library '{0}'", imageLib.name);
+                        Debug.LogError($"Failed to generated ARCore reference image library '{imageLib.name}'");
                         throw;
                     }
                     finally

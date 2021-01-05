@@ -1,5 +1,22 @@
-**Third Party Notices**
+# This package contains third-party software components governed by the license(s) indicated below:
 
-Component Name: _Google ARCore SDK 1.5_
+Component Name: [Google ARCore Client Library](https://github.com/google-ar/arcore-unity-sdk/blob/master/Assets/GoogleARCore/SDK/Plugins/arcore_client.aar)
 
-All rights reserved. Use of the Google ARCore SDK for Unity requires agreeing to and complying with the Google APIs Terms of Service accessed via: https://developers.google.com/terms/ (Please be aware that you may need to register with Google to access certain APIs). If you cannot comply with Google APIs Terms of Service, do not use this SDK.
+License Type: Covered by the **Google APIs Terms of Service** at
+[https://developers.google.com/terms/](https://developers.google.com/terms/)
+
+---
+
+Component Name: [Google ARCore Augmented Image CLI](https://github.com/google-ar/arcore-unity-sdk/tree/master/Assets/GoogleARCore/CLI)
+
+License Type: [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+
+Copyright 2017 Google LLC
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
