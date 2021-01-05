@@ -1,13 +1,12 @@
 using System;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml;
-using Unity.Collections;
 using UnityEditor.Android;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
-using UnityEditor.Callbacks;
 using UnityEditor.XR.ARSubsystems;
 using UnityEditor.XR.Management;
 using UnityEngine;
@@ -25,6 +24,10 @@ namespace UnityEditor.XR.ARCore
         //     Input System overwrites the preloaded assets array
         public int callbackOrder => 1;
 
+        static readonly Version k_MinimumGradleVersion = new Version(5, 6, 4);
+
+        internal const string gradleLauncherPrefix = "gradle-launcher-";
+
         public void OnPreprocessBuild(BuildReport report)
         {
             SetRuntimePluginCopyDelegate();
@@ -37,7 +40,7 @@ namespace UnityEditor.XR.ARCore
                 return;
             }
 
-            XRGeneralSettings generalSettings = XRGeneralSettingsPerBuildTarget.XRGeneralSettingsForBuildTarget(BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget));
+            var generalSettings = XRGeneralSettingsPerBuildTarget.XRGeneralSettingsForBuildTarget(BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget));
             if (generalSettings == null)
                 return;
 
@@ -50,6 +53,7 @@ namespace UnityEditor.XR.ARCore
                     EnsureMinSdkVersion();
                     EnsureOnlyOpenGLES3IsUsed();
                     EnsureGradleIsUsed();
+                    EnsureGradleVersionIsSupported();
                     BuildImageTrackingAssets();
                     BuildHelper.AddBackgroundShaderToProject(ARCoreCameraSubsystem.backgroundShaderName);
                     break;
@@ -66,27 +70,59 @@ namespace UnityEditor.XR.ARCore
             RemoveGeneratedStreamingAssets();
         }
 
-        void EnsureGradleIsUsed()
+        static void EnsureGradleIsUsed()
         {
             if (EditorUserBuildSettings.androidBuildSystem != AndroidBuildSystem.Gradle)
                 throw new BuildFailedException("ARCore XR Plugin requires the Gradle build system. See File > Build Settings... > Android");
         }
 
-        void EnsureMinSdkVersion()
+        static void EnsureGradleVersionIsSupported()
         {
-            var arcoreSettings = ARCoreSettings.GetOrCreateSettings();
-            int minSdkVersion;
-            if (arcoreSettings.requirement == ARCoreSettings.Requirement.Optional)
-                minSdkVersion = 14;
-            else
-                minSdkVersion = 24;
+            var settings = ARCoreSettings.GetOrCreateSettings();
+            if (settings.ignoreGradleVersion)
+                return;
 
-            if ((int)PlayerSettings.Android.minSdkVersion < minSdkVersion)
-                throw new BuildFailedException(string.Format("ARCore {0} apps require a minimum SDK version of {1}. Currently set to {2}",
-                    arcoreSettings.requirement, minSdkVersion, PlayerSettings.Android.minSdkVersion));
+            if (Gradle.TryGetVersion(out var gradleVersion, out var diagnosticMessage))
+            {
+                if (gradleVersion < k_MinimumGradleVersion)
+                {
+                    var errorMessage = $"ARCore requires at least Gradle version {k_MinimumGradleVersion} ({gradleVersion} detected). Visit https://developers.google.com/ar/develop/unity/android-11-build for further details.";
+                    var selection = EditorUtility.DisplayDialogComplex(
+                        "Gradle update required",
+                        errorMessage,
+                        "Cancel build", "Continue anyway", "Continue and don't warn me again");
+
+                    switch (selection)
+                    {
+                        // Cancel the build
+                        case 0: throw new BuildFailedException(errorMessage);
+
+                        // Continue as normal
+                        case 1: break;
+
+                        // Continue, and never ask again
+                        case 2:
+                            settings.ignoreGradleVersion = true;
+                            break;
+                    }
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"ARCore requires Gradle {k_MinimumGradleVersion} or later. The Gradle version could not be determined because \"{diagnosticMessage}\"");
+            }
         }
 
-        void EnsureARCoreSupportedIsNotChecked()
+        static void EnsureMinSdkVersion()
+        {
+            var arcoreSettings = ARCoreSettings.GetOrCreateSettings();
+            var minSdkVersion = arcoreSettings.requirement == ARCoreSettings.Requirement.Optional ? 14 : 24;
+
+            if ((int)PlayerSettings.Android.minSdkVersion < minSdkVersion)
+                throw new BuildFailedException($"ARCore {arcoreSettings.requirement} apps require a minimum SDK version of {minSdkVersion}. Currently set to {PlayerSettings.Android.minSdkVersion}");
+        }
+
+        static void EnsureARCoreSupportedIsNotChecked()
         {
 #if !UNITY_2020_1_OR_NEWER
             if (PlayerSettings.Android.ARCoreEnabled)
@@ -94,7 +130,7 @@ namespace UnityEditor.XR.ARCore
 #endif
         }
 
-        void EnsureGoogleARCoreIsNotPresent()
+        static void EnsureGoogleARCoreIsNotPresent()
         {
             var googleARAssetPath = AssetDatabase.GUIDToAssetPath("afb3e05691ff94d2cbad20643e5c5879");
             if (!string.IsNullOrEmpty(googleARAssetPath))
@@ -103,7 +139,7 @@ namespace UnityEditor.XR.ARCore
             }
         }
 
-        void EnsureOnlyOpenGLES3IsUsed()
+        static void EnsureOnlyOpenGLES3IsUsed()
         {
             var graphicsApis = PlayerSettings.GetGraphicsAPIs(BuildTarget.Android);
             if (graphicsApis.Length > 0)
@@ -115,25 +151,7 @@ namespace UnityEditor.XR.ARCore
             }
         }
 
-        void SetExecutablePermission(string pathToARCoreImg)
-        {
-            var startInfo = new Diag.ProcessStartInfo();
-            startInfo.WindowStyle = Diag.ProcessWindowStyle.Hidden;
-            startInfo.FileName = "/bin/chmod";
-            startInfo.Arguments = $"+x \"{pathToARCoreImg}\"";
-            startInfo.UseShellExecute = false;
-            startInfo.RedirectStandardOutput = true;
-            startInfo.RedirectStandardError = true;
-            startInfo.CreateNoWindow = true;
-
-            var process = new Diag.Process();
-            process.StartInfo = startInfo;
-            process.EnableRaisingEvents = true;
-            process.Start();
-            process.WaitForExit();
-        }
-
-        void BuildImageTrackingAssets()
+        static void BuildImageTrackingAssets()
         {
             if (Directory.Exists(Application.streamingAssetsPath))
             {
@@ -148,11 +166,13 @@ namespace UnityEditor.XR.ARCore
             }
 
             if (!Directory.Exists(ARCoreImageTrackingSubsystem.k_StreamingAssetsPath))
+            {
                 Directory.CreateDirectory(ARCoreImageTrackingSubsystem.k_StreamingAssetsPath);
+            }
 
             try
             {
-                string[] libGuids = AssetDatabase.FindAssets("t:xrReferenceImageLibrary");
+                var libGuids = AssetDatabase.FindAssets("t:xrReferenceImageLibrary");
                 if (libGuids == null || libGuids.Length == 0)
                     return;
 
@@ -273,66 +293,32 @@ namespace UnityEditor.XR.ARCore
                         var arcoreimgPath = Path.Combine(packagePath, "Tools~", platformName, "arcoreimg" + extension);
 
     #if UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
-                        SetExecutablePermission(arcoreimgPath);
+                        Cli.Execute("/bin/chmod", $"+x \"{arcoreimgPath}\"");
     #endif
-
-                        var startInfo = new Diag.ProcessStartInfo();
-                        startInfo.WindowStyle = Diag.ProcessWindowStyle.Hidden;
-                        startInfo.FileName = arcoreimgPath;
 
                         // This file must have the .imgdb extension (the tool adds it otherwise)
                         var outputDbPath = ARCoreImageTrackingSubsystem.GetPathForLibrary(imageLib);
-
                         if (File.Exists(outputDbPath))
+                        {
                             File.Delete(outputDbPath);
+                        }
 
-                        startInfo.Arguments = string.Format(
-                            "build-db --input_image_list_path={0} --output_db_path={1}",
-                            $"\"{inputImageListPath}\"",
-                            $"\"{outputDbPath}\"");
-
-                        startInfo.UseShellExecute = false;
-                        startInfo.RedirectStandardOutput = true;
-                        startInfo.RedirectStandardError = true;
-                        startInfo.CreateNoWindow = true;
-
-                        var process = new Diag.Process();
-                        process.StartInfo = startInfo;
-                        process.EnableRaisingEvents = true;
-                        var stdout = new StringBuilder();
-                        var stderr = new StringBuilder();
-                        process.OutputDataReceived += (sender, args) =>
+                        var (stdOut, stdErr, _) = Cli.Execute(arcoreimgPath, new[]
                         {
-                            if (args?.Data != null)
-                            {
-                                stdout.Append(args.Data.ToString());
-                            }
-                        };
-                        process.ErrorDataReceived += (sender, args) =>
-                        {
-                            if (args?.Data != null)
-                            {
-                                stderr.Append(args.Data.ToString());
-                            }
-                        };
-                        process.Start();
-                        process.BeginOutputReadLine();
-                        process.BeginErrorReadLine();
-                        process.WaitForExit();
-                        process.CancelOutputRead();
-                        process.CancelErrorRead();
+                            "build-db",
+                            $"--input_image_list_path={inputImageListPath}",
+                            $"--output_db_path={outputDbPath}",
+                        });
 
                         if (!File.Exists(outputDbPath))
                         {
-                            throw new BuildFailedException(string.Format(
-                                "Failed to generate image database. Output from arcoreimg:\n\nstdout:\n{0}\n====\n\nstderr:\n{1}\n====",
-                                stdout.ToString(),
-                                stderr.ToString()));
+                            throw new BuildFailedException(
+                                $"Failed to generate image database. Output from arcoreimg:\n\nstdout:\n{stdOut}\n====\n\nstderr:\n{stdErr}\n====");
                         }
                     }
                     catch
                     {
-                        Debug.LogErrorFormat("Failed to generated ARCore reference image library '{0}'", imageLib.name);
+                        Debug.LogError($"Failed to generated ARCore reference image library '{imageLib.name}'");
                         throw;
                     }
                     finally
@@ -351,77 +337,70 @@ namespace UnityEditor.XR.ARCore
         static void RemoveDirectoryWithMetafile(string directory)
         {
             if (Directory.Exists(directory))
+            {
                 Directory.Delete(directory, true);
+            }
 
-            var meta = directory + ".meta";
+            var meta = $"{directory}.meta";
             if (File.Exists(meta))
+            {
                 File.Delete(meta);
+            }
         }
 
         static void RemoveGeneratedStreamingAssets()
         {
             RemoveDirectoryWithMetafile(ARCoreImageTrackingSubsystem.k_StreamingAssetsPath);
             if (s_ShouldDeleteStreamingAssetsFolder)
+            {
                 RemoveDirectoryWithMetafile(Application.streamingAssetsPath);
+            }
         }
 
         static bool s_ShouldDeleteStreamingAssetsFolder;
 
-        readonly string[] runtimePluginNames = new string[]
+        static readonly string[] k_RuntimePluginNames =
         {
             "UnityARCore.aar",
             "ARPresto.aar",
             "arcore_client.aar"
         };
 
-        bool ShouldIncludeRuntimePluginsInBuild(string path)
+        internal static bool isARCoreLoaderEnabled
         {
-            XRGeneralSettings generalSettings = XRGeneralSettingsPerBuildTarget.XRGeneralSettingsForBuildTarget(BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget));
-            if (generalSettings == null)
-                return false;
-
-            foreach (var loader in generalSettings.Manager.loaders)
+            get
             {
-                if (loader is ARCoreLoader)
-                    return true;
+                var generalSettings = XRGeneralSettingsPerBuildTarget.XRGeneralSettingsForBuildTarget(BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget));
+                return generalSettings != null && generalSettings.Manager.loaders.OfType<ARCoreLoader>().Any();
             }
-
-            return false;
         }
 
         void SetRuntimePluginCopyDelegate()
         {
-            var allPlugins = PluginImporter.GetAllImporters();
-            foreach (var plugin in allPlugins)
+            foreach (var plugin in PluginImporter.GetAllImporters())
             {
-                if (plugin.isNativePlugin)
+                if (plugin.isNativePlugin &&
+                    k_RuntimePluginNames.Any(pluginName => plugin.assetPath.Contains(pluginName)))
                 {
-                    foreach (var pluginName in runtimePluginNames)
-                    {
-                        if (plugin.assetPath.Contains(pluginName))
-                        {
-                            plugin.SetIncludeInBuildDelegate(ShouldIncludeRuntimePluginsInBuild);
-                            break;
-                        }
-                    }
+                    plugin.SetIncludeInBuildDelegate(path => isARCoreLoaderEnabled);
                 }
             }
         }
     }
 
-    internal class ARCoreManifest : IPostGenerateGradleAndroidProject
+    class ARCoreManifest : IPostGenerateGradleAndroidProject
     {
-        static readonly string k_AndroidURI = "http://schemas.android.com/apk/res/android";
+        const string k_AndroidUri = "http://schemas.android.com/apk/res/android";
 
-        static readonly string k_AndroidNameValue = "com.google.ar.core";
+        const string k_AndroidNameValue = "com.google.ar.core";
 
-        static readonly string k_AndroidManifestPath = "/src/main/AndroidManifest.xml";
+        const string k_AndroidManifestPath = "/src/main/AndroidManifest.xml";
 
-        static readonly string k_AndroidHardwareCameraAr = "android.hardware.camera.ar";
+        const string k_AndroidHardwareCameraAr = "android.hardware.camera.ar";
 
-        static readonly string k_AndroidPermissionCamera = "android.permission.CAMERA";
+        const string k_AndroidPermissionCamera = "android.permission.CAMERA";
 
-        static readonly string k_AndroidDepth = "com.google.ar.core.depth";
+        const string k_AndroidDepth = "com.google.ar.core.depth";
 
         XmlNode FindFirstChild(XmlNode node, string tag)
         {
@@ -440,7 +419,7 @@ namespace UnityEditor.XR.ARCore
 
         void AppendNewAttribute(XmlDocument doc, XmlElement element, string attributeName, string attributeValue)
         {
-            var attribute = doc.CreateAttribute(attributeName, k_AndroidURI);
+            var attribute = doc.CreateAttribute(attributeName, k_AndroidUri);
             attribute.Value = attributeValue;
             element.Attributes.Append(attribute);
         }
@@ -458,7 +437,7 @@ namespace UnityEditor.XR.ARCore
                         var childElement = child as XmlElement;
                         if (childElement != null && childElement.HasAttributes)
                         {
-                            var attribute = childElement.GetAttributeNode(attributeName, k_AndroidURI);
+                            var attribute = childElement.GetAttributeNode(attributeName, k_AndroidUri);
                             if (attribute != null && attribute.Value == attributeValue)
                                 return;
                         }
@@ -485,11 +464,11 @@ namespace UnityEditor.XR.ARCore
                         var childElement = childNode as XmlElement;
                         if (childElement != null && childElement.HasAttributes)
                         {
-                            var firstAttribute = childElement.GetAttributeNode(firstAttributeName, k_AndroidURI);
+                            var firstAttribute = childElement.GetAttributeNode(firstAttributeName, k_AndroidUri);
                             if (firstAttribute == null || firstAttribute.Value != firstAttributeValue)
                                 continue;
 
-                            var secondAttribute = childElement.GetAttributeNode(secondAttributeName, k_AndroidURI);
+                            var secondAttribute = childElement.GetAttributeNode(secondAttributeName, k_AndroidUri);
                             if (secondAttribute != null)
                             {
                                 secondAttribute.Value = secondAttributeValue;
@@ -515,6 +494,9 @@ namespace UnityEditor.XR.ARCore
         // https://developers.google.com/ar/develop/java/enable-arcore
         public void OnPostGenerateGradleAndroidProject(string path)
         {
+            if (!ARCorePreprocessBuild.isARCoreLoaderEnabled)
+                return;
+
             string manifestPath = path + k_AndroidManifestPath;
             var manifestDoc = new XmlDocument();
             manifestDoc.Load(manifestPath);
@@ -556,6 +538,6 @@ namespace UnityEditor.XR.ARCore
             Debug.Log(sw);
         }
 
-        public int callbackOrder { get { return 2; } }
+        public int callbackOrder => 2;
     }
 }

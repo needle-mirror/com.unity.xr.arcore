@@ -17,7 +17,7 @@ Use the ARCore XR Plugin package to enable ARCore support via Unity's multi-plat
 * [Environment probes](xref:arsubsystems-environment-probe-subsystem)
 * [Occlusion](xref:arsubsystems-occlusion-subsystem)
 
-This version of ARCore XR Plugin uses ARCore 1.19 and supports the following functionality:
+This version of ARCore XR Plugin uses ARCore 1.22 and supports the following functionality:
 
 * Device localization
 * Horizontal plane detection
@@ -62,7 +62,11 @@ If ARCore is optional, the Play Store lets users install your app on devices tha
 
 AR is required by default.
 
-To create an `ARCoreSettings` Asset and assign it to your build settings, open the Project Settings window (from Unity's main menu, go to **Edit &gt; Project Settings**), then navigate to **XR &gt; ARCore**, as shown in the screenshot below:
+To create an `ARCoreSettings` Asset and assign it to your build settings, open the Project Settings window (from Unity's main menu, go to **Edit &gt; Project Settings**), then navigate to the **XR Plug-in Management** menu and check the **ARCore** provider, as shown in the screenshot below:
+
+![XR Plug-in Management](images/arcore-xrmanagement.png "ARCore in XR Management")
+
+This will create an `ARCoreSettings` Asset that can be accessed under **XR Plug-in Management &gt; ARCore**, as shown in the screenshot below:
 
 ![ARCore Settings](images/arcore-project-settings.png "ARCore Settings")
 

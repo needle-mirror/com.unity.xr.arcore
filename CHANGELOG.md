@@ -1,8 +1,24 @@
 # Changelog
+
 All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+
+## [4.1.3] - 2021-01-05
+
+### New
+
+- ARCore requires Gradle version 5.6.4. When building the Android Player, this package now detects the version of Gradle in use and, if an incompatible version is detected, presents a dialog indicating that the Gradle version is insufficient. This dialog can be suppressed, and the option to do so is saved in the [ARCore Settings asset](xref:UnityEditor.XR.ARCore.ARCoreSettings) (Edit > Project Settings > XR Plug-in Management > ARCore).
+
+### Changes
+
+- Update ARCore to version 1.22.
+
+### Fixes
+
+- When building for Android, this package would always update the Android manifest with entries necessary for ARCore to function, even when ARCore was not enabled via [XR Plug-in Management](https://docs.unity3d.com/Packages/com.unity.xr.management@3.2). This has been fixed so that the Android manifest is not changed unless ARCore is enabled.
+- When any property of an [ARCoreSettings](xref:UnityEditor.XR.ARCore.ARCoreSettings) is changed, the asset is correctly marked dirty.
 
 ## [4.1.1] - 2020-11-11
 ### Changes

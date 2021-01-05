@@ -35,8 +35,15 @@ namespace UnityEditor.XR.ARCore
         /// </summary>
         public Requirement requirement
         {
-            get { return m_Requirement; }
-            set { m_Requirement = value; }
+            get => m_Requirement;
+            set
+            {
+                if (value != m_Requirement)
+                {
+                    m_Requirement = value;
+                    EditorUtility.SetDirty(this);
+                }
+            }
         }
 
         [SerializeField, Tooltip("Toggles whether depth is required for this app. Will make app only downloadable by devices with depth support if set to 'Required'.")]
@@ -47,8 +54,34 @@ namespace UnityEditor.XR.ARCore
         /// </summary>
         public Requirement depth
         {
-            get { return m_Depth; }
-            set { m_Depth = value; }
+            get => m_Depth;
+            set
+            {
+                if (value != m_Depth)
+                {
+                    m_Depth = value;
+                    EditorUtility.SetDirty(this);
+                }
+            }
+        }
+
+        [SerializeField, Tooltip("Toggles whether the Gradle version is validated during Player build.")]
+        bool m_IgnoreGradleVersion;
+
+        /// <summary>
+        /// Whether the Gradle version is validated during Player build.
+        /// </summary>
+        internal bool ignoreGradleVersion
+        {
+            get => m_IgnoreGradleVersion;
+            set
+            {
+                if (value != m_IgnoreGradleVersion)
+                {
+                    m_IgnoreGradleVersion = value;
+                    EditorUtility.SetDirty(this);
+                }
+            }
         }
 
         /// <summary>
