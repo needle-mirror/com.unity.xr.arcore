@@ -44,7 +44,7 @@ namespace UnityEditor.XR.ARCore
             if (generalSettings == null)
                 return;
 
-            foreach (var loader in generalSettings.Manager.loaders)
+            foreach (var loader in generalSettings.Manager.activeLoaders)
             {
                 if (loader is ARCoreLoader)
                 {
@@ -371,7 +371,7 @@ namespace UnityEditor.XR.ARCore
             get
             {
                 var generalSettings = XRGeneralSettingsPerBuildTarget.XRGeneralSettingsForBuildTarget(BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget));
-                return generalSettings != null && generalSettings.Manager.loaders.OfType<ARCoreLoader>().Any();
+                return generalSettings != null && generalSettings.Manager.activeLoaders.OfType<ARCoreLoader>().Any();
             }
         }
 

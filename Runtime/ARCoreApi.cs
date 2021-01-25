@@ -27,10 +27,10 @@ namespace UnityEngine.XR.ARCore
                 return null;
 
             var manager = instance.Manager;
-            if (manager == null || manager.loaders == null)
+            if (manager == null || manager.activeLoaders == null)
                 return null;
 
-            foreach (var loader in manager.loaders)
+            foreach (var loader in manager.activeLoaders)
             {
                 if (loader is ARCoreLoader arcoreLoader)
                 {
