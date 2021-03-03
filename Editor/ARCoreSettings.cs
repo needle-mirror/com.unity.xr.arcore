@@ -71,7 +71,11 @@ namespace UnityEditor.XR.ARCore
         /// <summary>
         /// Whether the Gradle version is validated during Player build.
         /// </summary>
-        internal bool ignoreGradleVersion
+        /// <remarks>
+        /// When building an Android Player with ARCore enabled, this package will check the Gradle version and warn if it determines
+        /// the Gradle version is too low. This check (and resulting warning notification) can be suppressed by setting this value to `true`.
+        /// </remarks>
+        public bool ignoreGradleVersion
         {
             get => m_IgnoreGradleVersion;
             set

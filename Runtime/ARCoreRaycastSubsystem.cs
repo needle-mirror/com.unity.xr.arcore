@@ -11,14 +11,6 @@ namespace UnityEngine.XR.ARCore
     [Preserve]
     public sealed class ARCoreRaycastSubsystem : XRRaycastSubsystem
     {
-#if !UNITY_2020_2_OR_NEWER
-        /// <summary>
-        /// Creates the ARCore-specific implementation which will service the `XRRaycastSubsystem`.
-        /// </summary>
-        /// <returns>A new instance of the `Provider` specific to ARCore.</returns>
-        protected override Provider CreateProvider() => new ARCoreProvider();
-#endif
-
         class ARCoreProvider : Provider
         {
             public override void Start() => UnityARCore_raycast_startTracking();
@@ -26,7 +18,7 @@ namespace UnityEngine.XR.ARCore
             public override void Destroy() => UnityARCore_raycast_destroy();
 
             public override unsafe TrackableChanges<XRRaycast> GetChanges(
-                XRRaycast defaultRaycast, 
+                XRRaycast defaultRaycast,
                 Allocator allocator)
             {
                 int addedLength, updatedLength, removedLength, elementSize;
@@ -53,7 +45,7 @@ namespace UnityEngine.XR.ARCore
             }
 
             public override bool TryAddRaycast(Vector2 screenPoint, float estimatedDistance, out XRRaycast sessionRelativeData)
-            {   
+            {
                 return UnityARCore_raycast_tryAddRaycast(screenPoint, estimatedDistance, out sessionRelativeData);
             }
 
@@ -147,27 +139,27 @@ namespace UnityEngine.XR.ARCore
                 Vector2 screenPoint,
                 float estimatedDistance,
                 out XRRaycast raycastOut);
-            
+
             [DllImport("UnityARCore")]
             static unsafe extern void UnityARCore_raycast_removeRaycast(
-               TrackableId trackableId);  
+               TrackableId trackableId);
 
             [DllImport("UnityARCore")]
             static extern void UnityARCore_raycast_startTracking();
 
             [DllImport("UnityARCore")]
-            static extern void UnityARCore_raycast_stopTracking();   
+            static extern void UnityARCore_raycast_stopTracking();
 
             [DllImport("UnityARCore")]
             static extern unsafe void* UnityARCore_raycast_acquireChanges(
                 out void* addedPtr, out int addedLength,
                 out void* updatedPtr, out int updatedLength,
                 out void* removedPtr, out int removedLength,
-                out int elementSize);  
-            
+                out int elementSize);
+
             [DllImport("UnityARCore")]
             static extern unsafe void UnityARCore_raycast_releaseChanges(
-                void* changes); 
+                void* changes);
 
             [DllImport("UnityARCore")]
             static extern void UnityARCore_raycast_destroy();
@@ -183,12 +175,8 @@ namespace UnityEngine.XR.ARCore
             XRRaycastSubsystemDescriptor.RegisterDescriptor(new XRRaycastSubsystemDescriptor.Cinfo
             {
                 id = "ARCore-Raycast",
-#if UNITY_2020_2_OR_NEWER
                 providerType = typeof(ARCoreRaycastSubsystem.ARCoreProvider),
                 subsystemTypeOverride = typeof(ARCoreRaycastSubsystem),
-#else
-                subsystemImplementationType = typeof(ARCoreRaycastSubsystem),
-#endif
                 supportsViewportBasedRaycast = true,
                 supportsWorldBasedRaycast = true,
                 supportedTrackableTypes =

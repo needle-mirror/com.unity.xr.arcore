@@ -44,12 +44,16 @@ namespace UnityEngine.XR.ARCore
 
         /// <summary>
         /// Represents a null <see cref="ArConfig"/>, i.e., one whose underlying native pointer is `null`.
+        /// This property is deprecated. Use <see langword="default"/> instead.
         /// </summary>
+        [Obsolete("Use default instead.")]
         public static ArConfig Null => default;
 
         /// <summary>
-        /// (Read Only) Indicates whether this <see cref="ArConfig"/> is <see cref="Null"/>.
+        /// (Read Only) Indicates whether this <see cref="ArConfig"/> is `null`.
+        /// This property is deprecated. Use the equality operator (`==`) to compare with `null` instead.
         /// </summary>
+        [Obsolete("Compare to null instead.")]
         public bool IsNull => m_Self == IntPtr.Zero;
 
         /// <summary>
@@ -124,6 +128,66 @@ namespace UnityEngine.XR.ARCore
 
             m_Self = IntPtr.Zero;;
         }
+
+        /// <summary>
+        /// Tests for equality.
+        /// </summary>
+        /// <remarks>
+        /// This equality operator lets you to compare an <see cref="ArConfig"/> with `null` to determine whether its
+        /// underlying pointer is null. This allows for a more natural comparison with the native ARCore object:
+        /// <example>
+        /// <code>
+        /// bool TestForNull(ArConfig obj)
+        /// {
+        ///     if (obj == null)
+        ///     {
+        ///         // obj.AsIntPtr() is IntPtr.Zero
+        ///     }
+        /// }
+        /// </code>
+        /// </example>
+        /// </remarks>
+        /// <param name="lhs">The nullable <see cref="ArConfig"/> to compare with <paramref name="rhs"/>.</param>
+        /// <param name="rhs">The nullable <see cref="ArConfig"/> to compare with <paramref name="lhs"/>.</param>
+        /// <returns>Returns true if any of these conditions are met:
+        /// - <paramref name="lhs"/> and <paramref name="rhs"/> are both not null and their underlying pointers are equal.
+        /// - <paramref name="lhs"/> is null and <paramref name="rhs"/>'s underlying pointer is null.
+        /// - <paramref name="rhs"/> is null and <paramref name="lhs"/>'s underlying pointer is null.
+        /// - Both <paramref name="lhs"/> and <paramref name="rhs"/> are null.
+        ///
+        /// Returns false otherwise.
+        /// </returns>
+        public static bool operator ==(ArConfig? lhs, ArConfig? rhs) => NativeObject.ArePointersEqual(lhs?.m_Self, rhs?.m_Self);
+
+        /// <summary>
+        /// Tests for inequality.
+        /// </summary>
+        /// <remarks>
+        /// This inequality operator lets you to compare an <see cref="ArConfig"/> with `null` to determine whether its
+        /// underlying pointer is null. This allows for a more natural comparison with the native ARCore object:
+        /// <example>
+        /// <code>
+        /// bool TestForNull(ArConfig obj)
+        /// {
+        ///     if (obj != null)
+        ///     {
+        ///         // obj.AsIntPtr() is not IntPtr.Zero
+        ///     }
+        /// }
+        /// </code>
+        /// </example>
+        /// </remarks>
+        /// <param name="lhs">The native object to compare with <paramref name="rhs"/>.</param>
+        /// <param name="rhs">The native object to compare with <paramref name="lhs"/>.</param>
+        /// <returns>Returns false if any of these conditions are met:
+        /// - <paramref name="lhs"/> and <paramref name="rhs"/> are both not null and their underlying pointers are equal.
+        /// - <paramref name="lhs"/> is null and <paramref name="rhs"/>'s underlying pointer is null.
+        /// - <paramref name="rhs"/> is null and <paramref name="lhs"/>'s underlying pointer is null.
+        /// - Both <paramref name="lhs"/> and <paramref name="rhs"/> are null.
+        ///
+        /// Returns true otherwise.
+        /// </returns>
+        public static bool operator !=(ArConfig? lhs, ArConfig? rhs) => !(lhs == rhs);
 
 #if UNITY_EDITOR
         static void Create(ArSession session, out ArConfig configOut) => configOut = default;

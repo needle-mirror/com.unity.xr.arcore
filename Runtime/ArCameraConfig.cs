@@ -28,12 +28,16 @@ namespace UnityEngine.XR.ARCore
 
         /// <summary>
         /// Represents a null <see cref="ArCameraConfig"/>, i.e., one whose underlying native pointer is `null`.
+        /// This property is deprecated. Use <see langword="default"/> instead.
         /// </summary>
+        [Obsolete("Use default instead.")]
         public static ArCameraConfig Null => default;
 
         /// <summary>
-        /// (Read Only) Indicates whether this <see cref="ArCameraConfig"/> is <see cref="Null"/>.
+        /// (Read Only) Indicates whether this <see cref="ArCameraConfig"/> is `null`.
+        /// This property is deprecated. Use the equality operator (`==`) to compare with `null` instead.
         /// </summary>
+        [Obsolete("Compare to null instead.")]
         public bool IsNull => m_Self == IntPtr.Zero;
 
         /// <summary>
@@ -190,6 +194,66 @@ namespace UnityEngine.XR.ARCore
         ///     <see cref="Equals(UnityEngine.XR.ARCore.ArCameraConfig)"/>. Returns `true` otherwise.</returns>
         public static bool operator !=(ArCameraConfig lhs, ArCameraConfig rhs) => !lhs.Equals(rhs);
 
+        /// <summary>
+        /// Tests for equality.
+        /// </summary>
+        /// <remarks>
+        /// This equality operator lets you to compare an <see cref="ArCameraConfig"/> with `null` to determine whether its
+        /// underlying pointer is null. This allows for a more natural comparison with the native ARCore object:
+        /// <example>
+        /// <code>
+        /// bool TestForNull(ArCameraConfig obj)
+        /// {
+        ///     if (obj == null)
+        ///     {
+        ///         // obj.AsIntPtr() is IntPtr.Zero
+        ///     }
+        /// }
+        /// </code>
+        /// </example>
+        /// </remarks>
+        /// <param name="lhs">The nullable <see cref="ArCameraConfig"/> to compare with <paramref name="rhs"/>.</param>
+        /// <param name="rhs">The nullable <see cref="ArCameraConfig"/> to compare with <paramref name="lhs"/>.</param>
+        /// <returns>Returns true if any of these conditions are met:
+        /// - <paramref name="lhs"/> and <paramref name="rhs"/> are both not null and their underlying pointers are equal.
+        /// - <paramref name="lhs"/> is null and <paramref name="rhs"/>'s underlying pointer is null.
+        /// - <paramref name="rhs"/> is null and <paramref name="lhs"/>'s underlying pointer is null.
+        /// - Both <paramref name="lhs"/> and <paramref name="rhs"/> are null.
+        ///
+        /// Returns false otherwise.
+        /// </returns>
+        public static bool operator ==(ArCameraConfig? lhs, ArCameraConfig? rhs) => NativeObject.ArePointersEqual(lhs?.m_Self, rhs?.m_Self);
+
+        /// <summary>
+        /// Tests for inequality.
+        /// </summary>
+        /// <remarks>
+        /// This inequality operator lets you to compare an <see cref="ArCameraConfig"/> with `null` to determine whether its
+        /// underlying pointer is null. This allows for a more natural comparison with the native ARCore object:
+        /// <example>
+        /// <code>
+        /// bool TestForNull(ArCameraConfig obj)
+        /// {
+        ///     if (obj != null)
+        ///     {
+        ///         // obj.AsIntPtr() is not IntPtr.Zero
+        ///     }
+        /// }
+        /// </code>
+        /// </example>
+        /// </remarks>
+        /// <param name="lhs">The native object to compare with <paramref name="rhs"/>.</param>
+        /// <param name="rhs">The native object to compare with <paramref name="lhs"/>.</param>
+        /// <returns>Returns false if any of these conditions are met:
+        /// - <paramref name="lhs"/> and <paramref name="rhs"/> are both not null and their underlying pointers are equal.
+        /// - <paramref name="lhs"/> is null and <paramref name="rhs"/>'s underlying pointer is null.
+        /// - <paramref name="rhs"/> is null and <paramref name="lhs"/>'s underlying pointer is null.
+        /// - Both <paramref name="lhs"/> and <paramref name="rhs"/> are null.
+        ///
+        /// Returns true otherwise.
+        /// </returns>
+        public static bool operator !=(ArCameraConfig? lhs, ArCameraConfig? rhs) => !(lhs == rhs);
+
 #if UNITY_ANDROID && !UNITY_EDITOR
         [DllImport("arcore_sdk_c", EntryPoint = "ArCameraConfig_create")]
         static extern void Create(ArSession session, out ArCameraConfig value);
@@ -256,7 +320,8 @@ namespace UnityEngine.XR.ARCore
         /// Gets <paramref name="cameraConfiguration"/> as an ARCore <see cref="ArCameraConfig"/>.
         /// </summary>
         /// <remarks>
-        /// **Note:** Do not <see cref="ArCameraConfig.Dispose"/> the returned <see cref="ArCameraConfig"/>.
+        /// > [!IMPORTANT]
+        /// > Do not <see cref="ArCameraConfig.Dispose"/> the returned <see cref="ArCameraConfig"/>.
         /// </remarks>
         /// <param name="cameraConfiguration">The
         ///     [XRCameraConfiguration](xref:UnityEngine.XR.ARSubsystems.XRCameraConfiguration) being extended.</param>

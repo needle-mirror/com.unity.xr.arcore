@@ -46,7 +46,7 @@ It doesn't support the following subsystems:
 
 To install this package, follow the instructions in the [Package Manager documentation](https://docs.unity3d.com/Packages/com.unity.package-manager-ui@latest/index.html).
 
-In addition, install the AR Foundation package, which uses ARCore XR Plugin and provides many useful scripts and prefabs. For more information about this package, see the [AR Foundation documentation](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@4.1).
+In addition, install the AR Foundation package, which uses ARCore XR Plugin and provides many useful scripts and prefabs. For more information about this package, see the [AR Foundation documentation](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@4.2).
 
 # Using ARCore XR Plugin
 
@@ -70,7 +70,8 @@ This will create an `ARCoreSettings` Asset that can be accessed under **XR Plug-
 
 ![ARCore Settings](images/arcore-project-settings.png "ARCore Settings")
 
-**Note:** If ARCore is required, the availability check will always report that ARCore is supported, even on unsupported devices. This is because the Play Store prevents the installation of apps that require ARCore on unsupported devices, so these apps always assume they're running on a supported device. However, if you install an Android APK onto an unsupported device via USB (called "side loading") or via Unity, the unsupported device will report that ARCore is supported.
+> [!NOTE]
+> If ARCore is required, the availability check will always report that ARCore is supported, even on unsupported devices. This is because the Play Store prevents the installation of apps that require ARCore on unsupported devices, so these apps always assume they're running on a supported device. However, if you install an Android APK onto an unsupported device via USB (called "side loading") or via Unity, the unsupported device will report that ARCore is supported.
 
 ## Session
 
@@ -166,23 +167,40 @@ Additionally, the light estimation modes are either used or affected by other su
 
 ## Occlusion
 
-The ARCore implementation of [XROcclusionSubsystem](xref:arsubsystems-occlusion-subsystem) supports [Environment Depth Texture](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@4.1/api/UnityEngine.XR.ARFoundation.AROcclusionManager.html#UnityEngine_XR_ARFoundation_AROcclusionManager_environmentDepthTexture) but does not support the other textures related to human segmentation.
+The ARCore implementation of [XROcclusionSubsystem](xref:arsubsystems-occlusion-subsystem) supports [Environment Depth Texture](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@4.2/api/UnityEngine.XR.ARFoundation.AROcclusionManager.html#UnityEngine_XR_ARFoundation_AROcclusionManager_environmentDepthTexture) but does not support the other textures related to human segmentation.
+
+## Recording and Playback
+
+ARCore allows you to record an ArSession to an `.mp4` and play it back at a later time. To support this feature, the [ARCoreSessionSubsystem](xref:UnityEngine.XR.ARCore.ARCoreSessionSubsystem) exposes these methods:
+
+* [StartRecording](xref:UnityEngine.XR.ARCore.ARCoreSessionSubsystem.StartRecording(UnityEngine.XR.ARCore.ArRecordingConfig))
+* [StopRecording](xref:UnityEngine.XR.ARCore.ARCoreSessionSubsystem.StopRecording)
+* [StartPlayback](xref:UnityEngine.XR.ARCore.ARCoreSessionSubsystem.StartPlayback(System.String))
+* [StopPlayback](xref:UnityEngine.XR.ARCore.ARCoreSessionSubsystem.StopPlayback)
+
+To start a recording, you must supply an [ArRecordingConfig](xref:UnityEngine.XR.ARCore.ArRecordingConfig). This specifies the filename to which the recording will be saved, as well as other options. Call `StopRecording` to stop recording. The `.mp4` file specified in the `ArRecordingConfig` should now exist. This contains the camera feed, as well as sensor data required by ARCore.
+
+To play back a video at a later time, use the `StartPlayback` method, specifying the `.mp4` file created during an earlier recording.
+
+> [!NOTE]
+> The recording only contains sensor data, not the computed results. Since ARCore is not deterministic, trackables will not be consistent between subsequent playbacks of the same recording. For example, multiple playbacks of the same recoring may yield different plane detection results.
+
+ARCore requires that the session be paused when starting or stopping a recorded playback. While the [ARCoreSessionSubsystem](xref:UnityEngine.XR.ARCore.ARCoreSessionSubsystem) handles this for you, note that pausing and resuming a session can take between 0.5 and 1.0 seconds.
 
 # Technical details
+
 ## Requirements
 
 This version of ARCore XR Plugin is compatible with the following versions of the Unity Editor:
 
-* 2019.4
-* 2020.1
-* 2020.2
-* 2021.1
+* 2021.2
 
 ## Known limitations
 
 * The **AR Core Supported** setting in the XR Settings section of the Android Player settings must remain disabled in order for apps built with the ARCore XR Plugin to work properly.
 * Color Temperature in degrees Kelvin is not presently supported.
 * Due to changes made in Google's ARCore client libraries which are redistributed in ARCore XR Plugin, projects built with Unity 2019.4 must be updated to use Gradle 5.6.4 or later. Please [refer to these instructions](https://developers.google.com/ar/develop/unity/android-11-build#unity_20193_20194_and_20201) for updating your project's Gradle version.
+* The [XROcclusionSubsystemDescriptor](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystemDescriptor) properties [supportsEnvironmentDepthImage](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystemDescriptor.supportsEnvironmentDepthImage) and [supportsEnvironmentDepthConfidenceImage](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystemDescriptor.supportsEnvironmentDepthConfidenceImage) require a session before support can be determined. If there is no session, then these properties will return `false`. They may later return `true` when a session has been established.
 
 ## Package contents
 

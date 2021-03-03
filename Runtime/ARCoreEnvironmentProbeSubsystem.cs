@@ -31,12 +31,8 @@ namespace UnityEngine.XR.ARCore
             XREnvironmentProbeSubsystemCinfo environmentProbeSubsystemInfo = new XREnvironmentProbeSubsystemCinfo()
             {
                 id = subsystemId,
-#if UNITY_2020_2_OR_NEWER
                 providerType = typeof(ARCoreEnvironmentProbeSubsystem.ARCoreProvider),
                 subsystemTypeOverride = typeof(ARCoreEnvironmentProbeSubsystem),
-#else
-                implementationType = typeof(ARCoreEnvironmentProbeSubsystem),
-#endif
                 supportsManualPlacement = false,
                 supportsRemovalOfManual = false,
                 supportsAutomaticPlacement = true,
@@ -47,10 +43,6 @@ namespace UnityEngine.XR.ARCore
 
             XREnvironmentProbeSubsystem.Register(environmentProbeSubsystemInfo);
         }
-
-#if !UNITY_2020_2_OR_NEWER
-        protected override Provider CreateProvider() => new ARCoreProvider();
-#endif
 
         class ARCoreProvider : Provider
         {

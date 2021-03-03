@@ -28,18 +28,12 @@ namespace UnityEngine.XR.ARCore
 
             const string k_SubsystemId = "ARCore-Occlusion";
 
-            XROcclusionSubsystemCinfo occlusionSubsystemCinfo = new XROcclusionSubsystemCinfo()
+            var occlusionSubsystemCinfo = new XROcclusionSubsystemCinfo()
             {
                 id = k_SubsystemId,
-#if UNITY_2020_2_OR_NEWER
                 providerType = typeof(ARCoreOcclusionSubsystem.ARCoreProvider),
                 subsystemTypeOverride = typeof(ARCoreOcclusionSubsystem),
-#else // UNITY_2020_2_OR_NEWER
-                implementationType = typeof(ARCoreOcclusionSubsystem),
-#endif // UNITY_2020_2_OR_NEWER
-                supportsHumanSegmentationStencilImage = false,
-                supportsHumanSegmentationDepthImage = false,
-                queryForSupportsEnvironmentDepthImage = NativeApi.UnityARCore_OcclusionProvider_DoesSupportEnvironmentDepth,
+                environmentDepthImageSupportedDelegate = NativeApi.UnityARCore_OcclusionProvider_DoesSupportEnvironmentDepth,
             };
 
             if (!XROcclusionSubsystem.Register(occlusionSubsystemCinfo))
@@ -47,16 +41,6 @@ namespace UnityEngine.XR.ARCore
                 Debug.Log($"Cannot register the {k_SubsystemId} subsystem");
             }
         }
-
-#if !UNITY_2020_2_OR_NEWER
-        /// <summary>
-        /// Create the implementation provider.
-        /// </summary>
-        /// <returns>
-        /// The implementation provider.
-        /// </returns>
-        protected override Provider CreateProvider() => new ARCoreProvider();
-#endif // !UNITY_2020_2_OR_NEWER
 
         /// <summary>
         /// The implementation provider class.
@@ -223,7 +207,7 @@ namespace UnityEngine.XR.ARCore
         static class NativeApi
         {
             [DllImport("UnityARCore")]
-            public static extern bool UnityARCore_OcclusionProvider_DoesSupportEnvironmentDepth();
+            public static extern Supported UnityARCore_OcclusionProvider_DoesSupportEnvironmentDepth();
 
             [DllImport("UnityARCore")]
             public static extern void UnityARCore_OcclusionProvider_Construct(int textureEnvDepthPropertyId, bool useAdvancedRendering);

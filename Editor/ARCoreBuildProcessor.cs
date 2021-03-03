@@ -48,13 +48,11 @@ namespace UnityEditor.XR.ARCore
             {
                 if (loader is ARCoreLoader)
                 {
-                    EnsureARCoreSupportedIsNotChecked();
                     EnsureGoogleARCoreIsNotPresent();
                     EnsureMinSdkVersion();
                     EnsureOnlyOpenGLES3IsUsed();
                     EnsureGradleIsUsed();
                     EnsureGradleVersionIsSupported();
-                    BuildImageTrackingAssets();
                     BuildHelper.AddBackgroundShaderToProject(ARCoreCameraSubsystem.backgroundShaderName);
                     break;
                 }
@@ -122,14 +120,6 @@ namespace UnityEditor.XR.ARCore
                 throw new BuildFailedException($"ARCore {arcoreSettings.requirement} apps require a minimum SDK version of {minSdkVersion}. Currently set to {PlayerSettings.Android.minSdkVersion}");
         }
 
-        static void EnsureARCoreSupportedIsNotChecked()
-        {
-#if !UNITY_2020_1_OR_NEWER
-            if (PlayerSettings.Android.ARCoreEnabled)
-                throw new BuildFailedException("\"ARCore Supported\" (Player Settings > XR Settings) refers to the built-in ARCore support in Unity and conflicts with the \"ARCore XR Plugin\" package.");
-#endif
-        }
-
         static void EnsureGoogleARCoreIsNotPresent()
         {
             var googleARAssetPath = AssetDatabase.GUIDToAssetPath("afb3e05691ff94d2cbad20643e5c5879");
@@ -148,189 +138,6 @@ namespace UnityEditor.XR.ARCore
                 if (graphicsApi != GraphicsDeviceType.OpenGLES3)
                     throw new BuildFailedException(
                         string.Format("You have enabled the {0} graphics API, which is not supported by ARCore.", graphicsApi));
-            }
-        }
-
-        static void BuildImageTrackingAssets()
-        {
-            if (Directory.Exists(Application.streamingAssetsPath))
-            {
-                s_ShouldDeleteStreamingAssetsFolder = false;
-            }
-            else
-            {
-                // Delete the streaming assets folder at the end of the build pipeline
-                // since it did not exist before we created it here.
-                s_ShouldDeleteStreamingAssetsFolder = true;
-                Directory.CreateDirectory(Application.streamingAssetsPath);
-            }
-
-            if (!Directory.Exists(ARCoreImageTrackingSubsystem.k_StreamingAssetsPath))
-            {
-                Directory.CreateDirectory(ARCoreImageTrackingSubsystem.k_StreamingAssetsPath);
-            }
-
-            try
-            {
-                var libGuids = AssetDatabase.FindAssets("t:xrReferenceImageLibrary");
-                if (libGuids == null || libGuids.Length == 0)
-                    return;
-
-                // This is how much each library will contribute to the overall progress
-                var progressPerLibrary = 1f / libGuids.Length;
-                const string progressBarText = "Building ARCore Image Library";
-
-                for (int libraryIndex = 0; libraryIndex < libGuids.Length; ++libraryIndex)
-                {
-                    var libGuid = libGuids[libraryIndex];
-                    var overallProgress = progressPerLibrary * libraryIndex;
-                    var numSteps = libGuids.Length + 1; // 1 per image plus arcoreimg
-                    var libraryPath = AssetDatabase.GUIDToAssetPath(libGuid);
-                    var imageLib = AssetDatabase.LoadAssetAtPath<XRReferenceImageLibrary>(libraryPath);
-
-                    EditorUtility.DisplayProgressBar(progressBarText, imageLib.name, overallProgress);
-
-                    var tempDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
-                    var inputImageListPath = Path.Combine(tempDirectory, Guid.NewGuid().ToString("N") + ".txt");
-
-                    // prepare text file for arcoreimg to read from
-                    try
-                    {
-                        Directory.CreateDirectory(tempDirectory);
-                        using (var writer = new StreamWriter(inputImageListPath, false))
-                        {
-                            for (int i = 0; i < imageLib.count; i++)
-                            {
-                                var referenceImage = imageLib[i];
-                                var textureGuid = referenceImage.textureGuid.ToString("N");
-                                var assetPath = AssetDatabase.GUIDToAssetPath(textureGuid);
-                                var referenceImageName = referenceImage.guid.ToString("N");
-
-                                EditorUtility.DisplayProgressBar(
-                                    progressBarText,
-                                    imageLib.name + ": " + assetPath,
-                                    overallProgress + progressPerLibrary * i / numSteps);
-
-                                var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(assetPath);
-                                if (texture == null)
-                                {
-                                    throw new BuildFailedException(string.Format(
-                                        "ARCore Image Library Generation: Reference library at '{0}' is missing a texture at index {1}.",
-                                        libraryPath, i));
-                                }
-
-                                var extension = Path.GetExtension(assetPath);
-                                var entry = new StringBuilder();
-
-                                if (string.Equals(extension, ".jpg" , StringComparison.Ordinal) ||
-                                    string.Equals(extension, ".jpeg", StringComparison.Ordinal) ||
-                                    string.Equals(extension, ".png" , StringComparison.Ordinal))
-                                {
-                                    // If lowercase jpg or png, use image as is
-                                    entry.Append($"{referenceImageName}|{assetPath}");
-                                }
-                                else if (string.Equals(extension, ".jpg" , StringComparison.OrdinalIgnoreCase) ||
-                                         string.Equals(extension, ".jpeg", StringComparison.OrdinalIgnoreCase) ||
-                                         string.Equals(extension, ".png" , StringComparison.OrdinalIgnoreCase))
-                                {
-                                    // If jpg or png but NOT lowercase, then copy it to a temporary file that uses lowercase
-                                    var pathWithLowercaseExtension = Path.Combine(tempDirectory, textureGuid + extension.ToLower());
-                                    File.Copy(assetPath, pathWithLowercaseExtension);
-                                    entry.Append($"{referenceImageName}|{pathWithLowercaseExtension}");
-                                }
-                                else
-                                {
-                                    var pngFilename = Path.Combine(tempDirectory, textureGuid + ".png");
-                                    var bytes = ImageConversion.EncodeToPNG(texture);
-                                    if (bytes == null)
-                                    {
-                                        throw new BuildFailedException(string.Format(
-                                            "ARCore Image Library Generation: Texture format for image '{0}' not supported. Inspect other error messages emitted during this build for more details.",
-                                            texture.name));
-                                    }
-
-                                    File.WriteAllBytes(pngFilename, bytes);
-                                    entry.Append($"{referenceImageName}|{pngFilename}");
-                                }
-
-                                if (referenceImage.specifySize)
-                                {
-                                    entry.Append($"|{referenceImage.width.ToString("G", CultureInfo.InvariantCulture)}");
-                                }
-
-                                writer.WriteLine(entry.ToString());
-                            }
-                        }
-                    }
-                    catch
-                    {
-                        Directory.Delete(tempDirectory, true);
-                        throw;
-                    }
-
-                    // launch arcoreimg and wait for it to return so we can process the asset
-                    try
-                    {
-                        EditorUtility.DisplayProgressBar(
-                            progressBarText,
-                            imageLib.name + ": Invoking arcoreimg",
-                            overallProgress + progressPerLibrary * (numSteps - 1) / numSteps);
-
-                        var packagePath = Path.GetFullPath("Packages/com.unity.xr.arcore");
-
-                        string extension = "";
-                        string platformName = "Undefined";
-    #if UNITY_EDITOR_WIN
-                        platformName = "Windows";
-                        extension = ".exe";
-    #elif UNITY_EDITOR_OSX
-                        platformName = "MacOS";
-                        extension = "";
-    #elif UNITY_EDITOR_LINUX
-                        platformName = "Linux";
-                        extension = "";
-    #endif
-                        var arcoreimgPath = Path.Combine(packagePath, "Tools~", platformName, "arcoreimg" + extension);
-
-    #if UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
-                        Cli.Execute("/bin/chmod", $"+x \"{arcoreimgPath}\"");
-    #endif
-
-                        // This file must have the .imgdb extension (the tool adds it otherwise)
-                        var outputDbPath = ARCoreImageTrackingSubsystem.GetPathForLibrary(imageLib);
-                        if (File.Exists(outputDbPath))
-                        {
-                            File.Delete(outputDbPath);
-                        }
-
-                        var (stdOut, stdErr, _) = Cli.Execute(arcoreimgPath, new[]
-                        {
-                            "build-db",
-                            $"--input_image_list_path={inputImageListPath}",
-                            $"--output_db_path={outputDbPath}",
-                        });
-
-                        if (!File.Exists(outputDbPath))
-                        {
-                            throw new BuildFailedException(
-                                $"Failed to generate image database. Output from arcoreimg:\n\nstdout:\n{stdOut}\n====\n\nstderr:\n{stdErr}\n====");
-                        }
-                    }
-                    catch
-                    {
-                        Debug.LogError($"Failed to generated ARCore reference image library '{imageLib.name}'");
-                        throw;
-                    }
-                    finally
-                    {
-                        Directory.Delete(tempDirectory, true);
-                    }
-                }
-            }
-            catch
-            {
-                RemoveGeneratedStreamingAssets();
-                throw;
             }
         }
 

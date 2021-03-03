@@ -14,6 +14,8 @@ namespace UnityEngine.XR.ARCore
     {
         IntPtr m_Self;
 
+        internal const string dataStoreKey = "com.unity.xr.arcore";
+
         struct AddImageJob : IJob
         {
             [DeallocateOnJobCompletion]
@@ -52,45 +54,49 @@ namespace UnityEngine.XR.ARCore
                 void* image, int width, int height, void* name);
         }
 
+        static byte[] GetLibraryData(XRReferenceImageLibrary library)
+        {
+            // 4.2+
+            if (library.dataStore.TryGetValue(dataStoreKey, out var bytes))
+            {
+                return bytes;
+            }
+
+            // Pre 4.2 fallback
+            using var webRequest = new UnityWebRequest(ARCoreImageTrackingSubsystem.GetPathForLibrary(library))
+            {
+                downloadHandler = new DownloadHandlerBuffer(),
+                disposeDownloadHandlerOnDispose = true
+            };
+
+            webRequest.SendWebRequest();
+            while (!webRequest.isDone) { }
+
+            return webRequest.downloadHandler.data;
+        }
+
         public unsafe ARCoreImageDatabase(XRReferenceImageLibrary serializedLibrary)
         {
             if (serializedLibrary == null)
             {
-                m_Self = Deserialize(default(NativeView), default(NativeView));
+                m_Self = Deserialize(default, default);
             }
             else
             {
-                using (var webRequest = new UnityWebRequest(ARCoreImageTrackingSubsystem.GetPathForLibrary(serializedLibrary)))
+                var libraryBlob = GetLibraryData(serializedLibrary);
+                if (libraryBlob == null || libraryBlob.Length == 0)
                 {
-                    webRequest.downloadHandler = new DownloadHandlerBuffer();
-                    webRequest.disposeDownloadHandlerOnDispose = true;
-                    webRequest.SendWebRequest();
-                    while (!webRequest.isDone) {}
+                    throw new InvalidOperationException($"Failed to load {nameof(XRReferenceImageLibrary)} '{serializedLibrary.name}': library does not contain any ARCore data.");
+                }
 
-                    byte[] libraryBlob = webRequest.downloadHandler.data;
-                    if (libraryBlob == null || libraryBlob.Length == 0)
+                using var managedReferenceImages = serializedLibrary.ToNativeArray(Allocator.Temp);
+                fixed (byte* ptr = libraryBlob)
+                {
+                    m_Self = Deserialize(new NativeView
                     {
-                        throw new InvalidOperationException(string.Format(
-                            "Failed to load image library '{0}' - file was empty!", serializedLibrary.name));
-                    }
-
-                    var managedReferenceImages = new NativeArray<ManagedReferenceImage>(serializedLibrary.count, Allocator.Temp);
-                    try
-                    {
-                        for (int i = 0; i < serializedLibrary.count; ++i)
-                        {
-                            managedReferenceImages[i] = new ManagedReferenceImage(serializedLibrary[i]);
-                        }
-
-                        fixed (byte* blob = libraryBlob)
-                        {
-                            m_Self = Deserialize(new NativeView(blob, libraryBlob.Length), NativeView.Create(managedReferenceImages));
-                        }
-                    }
-                    finally
-                    {
-                        managedReferenceImages.Dispose();
-                    }
+                        ptr = ptr,
+                        count = libraryBlob.Length
+                    }, managedReferenceImages.AsNativeView());
                 }
             }
         }

@@ -1,6 +1,7 @@
 using AOT;
 using System;
 using System.Runtime.InteropServices;
+using System.Threading;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine.Assertions;
@@ -19,12 +20,13 @@ namespace UnityEngine.XR.ARCore
     [Preserve]
     public sealed class ARCoreSessionSubsystem : XRSessionSubsystem
     {
-#if UNITY_2020_2_OR_NEWER
+        /// <summary>
+        /// Invoked when the subsystem is created.
+        /// </summary>
         protected override void OnCreate()
         {
             ((ARCoreProvider)provider).beforeSetConfiguration += ConfigurationChangedFromProvider;
         }
-#endif
 
         void ConfigurationChangedFromProvider(ARCoreBeforeSetConfigurationEventArgs eventArgs) => beforeSetConfiguration?.Invoke(eventArgs);
 
@@ -36,40 +38,123 @@ namespace UnityEngine.XR.ARCore
             NativeApi.UnityARCore_session_setConfigurationDirty();
         }
 
+        // Must match UnityXRNativeSession
+        struct NativePtr
+        {
+            public int verison;
+            public IntPtr sessionPtr;
+        }
+
+        /// <summary>
+        /// (Read Only) The <see cref="ArSession"/> associated with the subsystem. May be <see cref="ArSession.Null"/>.
+        /// </summary>
+        public ArSession session => ((ARCoreProvider)provider).session;
+
+        /// <summary>
+        /// Start recording a session.
+        /// </summary>
+        /// <param name="recordingConfig">The configuration for the recording.</param>
+        /// <returns>Returns <see cref="ArStatus.Success"/> if recording successfully begins. Returns one of the
+        /// following otherwise:
+        /// - <see cref="ArStatus.ErrorIllegalState"/>
+        /// - <see cref="ArStatus.ErrorInvalidArgument"/>
+        /// - <see cref="ArStatus.ErrorRecordingFailed"/>
+        /// </returns>
+        /// <seealso cref="StopRecording"/>
+        /// <seealso cref="StartPlayback"/>
+        /// <seealso cref="StopPlayback"/>
+        public ArStatus StartRecording(ArRecordingConfig recordingConfig) =>
+            ((ARCoreProvider)provider).StartRecording(recordingConfig);
+
+        /// <summary>
+        /// Stops recording a session.
+        /// </summary>
+        /// <returns>Returns <see cref="ArStatus.Success"/> if successful. Returns
+        ///     <see cref="ArStatus.ErrorRecordingFailed"/> otherwise.</returns>
+        /// <seealso cref="StartRecording"/>
+        /// <seealso cref="StartPlayback"/>
+        /// <seealso cref="StopPlayback"/>
+        public ArStatus StopRecording() => ((ARCoreProvider)provider).StopRecording();
+
+        /// <summary>
+        /// Starts playing back a previously recorded session. (see <see cref="StartRecording"/>)
+        /// </summary>
+        /// <remarks>
+        /// The begin playback, the session must first be paused, the playback dataset set, then resumed.
+        /// This method does all of those things for you, but can take significant time (.5 - 1 seconds) to do so.
+        /// </remarks>
+        /// <param name="playbackDataset">The path to an mp4 file previously recorded using
+        ///     <see cref="StartRecording"/>.</param>
+        /// <returns>Returns <see cref="ArStatus.Success"/> if successful. Returns one of the following otherwise:
+        /// - Returns <see cref="ArStatus.ErrorSessionUnsupported"/> if playback is incompatible with selected features.
+        /// - Returns <see cref="ArStatus.ErrorPlaybackFailed"/> if an error occurred with the MP4 dataset file such as not being able to open the file or the file is unable to be decoded.
+        /// </returns>
+        /// <seealso cref="StartRecording"/>
+        /// <seealso cref="StopRecording"/>
+        /// <seealso cref="StopPlayback"/>
+        public ArStatus StartPlayback(string playbackDataset) => ((ARCoreProvider)provider).SetPlaybackDataset(playbackDataset);
+
+        /// <summary>
+        /// Stops playing back a session recording.
+        /// </summary>
+        /// <returns>Returns <see cref="ArStatus.Success"/> if successful. Returns one of the following otherwise:
+        /// - <see cref="ArStatus.ErrorSessionUnsupported"/> if playback is incompatible with selected features.
+        /// - <see cref="ArStatus.ErrorPlaybackFailed"/> if an error occurred with the MP4 dataset file such as not being able to open the file or the file is unable to be decoded.
+        /// </returns>
+        /// <seealso cref="StartPlayback"/>
+        /// <seealso cref="StartRecording"/>
+        /// <seealso cref="StopRecording"/>
+        public ArStatus StopPlayback() => ((ARCoreProvider)provider).SetPlaybackDataset(null);
+
+        /// <summary>
+        /// (Read Only) The current recording status.
+        /// </summary>
+        public ArRecordingStatus recordingStatus => ((ARCoreProvider)provider).recordingStatus;
+
+        /// <summary>
+        /// (Read Only) The current playback status.
+        /// </summary>
+        public ArPlaybackStatus playbackStatus => ((ARCoreProvider)provider).playbackStatus;
+
         /// <summary>
         /// Event that is triggered right before the configuration is set on the session. Allows changes to be made to the configuration before it is set.
         /// </summary>
         public event Action<ARCoreBeforeSetConfigurationEventArgs> beforeSetConfiguration;
-
-#if !UNITY_2020_2_OR_NEWER
-        /// <summary>
-        /// Creates the provider interface.
-        /// </summary>
-        /// <returns>The provider interface for ARCore</returns>
-        protected override Provider CreateProvider()
-        {
-            var provider = new ARCoreProvider(this);
-            provider.beforeSetConfiguration += ConfigurationChangedFromProvider;
-            return provider;
-        }
-#endif
 
         class ARCoreProvider : Provider
         {
             GCHandle m_ProviderHandle;
             Action<ArSession, ArConfig, IntPtr> m_SetConfigurationCallback = SetConfigurationCallback;
 
-#if UNITY_2020_2_OR_NEWER
-            public ARCoreProvider()
-#else
-            ARCoreSessionSubsystem m_Subsystem;
-            public ARCoreProvider(ARCoreSessionSubsystem subsystem)
-#endif
+            public ArStatus SetPlaybackDataset(string playbackDataset)
             {
-#if !UNITY_2020_2_OR_NEWER
-                m_Subsystem = subsystem;
-#endif
+                var session = this.session;
 
+                if (session == null)
+                    throw new InvalidOperationException($"{nameof(SetPlaybackDataset)} requires a valid {nameof(ArSession)}");
+
+                var shouldResume = !NativeApi.IsPauseDesired();
+
+                Stop();
+
+                // Spin-wait for the session to pause
+                var status = session.SetPlaybackDataset(playbackDataset);
+                while (status == ArStatus.ErrorSessionNotPaused)
+                {
+                    Thread.Yield();
+                    status = session.SetPlaybackDataset(playbackDataset);
+                }
+
+                if (shouldResume)
+                {
+                    Start();
+                }
+
+                return status;
+            }
+
+            public ARCoreProvider()
+            {
                 NativeApi.UnityARCore_session_construct(CameraPermissionRequestProvider);
                 if (SystemInfo.graphicsMultiThreaded)
                 {
@@ -80,22 +165,14 @@ namespace UnityEngine.XR.ARCore
                 NativeApi.UnityARCore_session_setConfigCallback(m_SetConfigurationCallback, GCHandle.ToIntPtr(m_ProviderHandle));
             }
 
-#if UNITY_2020_2_OR_NEWER
             public override void Start()
-#else
-            public override void Resume()
-#endif
             {
                 // Texture *must* be created before ARCore session resume is called
                 CreateTexture();
                 NativeApi.UnityARCore_session_resume(Guid.NewGuid());
             }
 
-#if UNITY_2020_2_OR_NEWER
             public override void Stop()
-#else
-            public override void Pause()
-#endif
                 => NativeApi.UnityARCore_session_pause();
 
             public override void Update(XRSessionUpdateParams updateParams, Configuration configuration)
@@ -105,6 +182,41 @@ namespace UnityEngine.XR.ARCore
                     updateParams.screenDimensions,
                     configuration.descriptor.identifier,
                     configuration.features);
+            }
+
+            public ArStatus StartRecording(ArRecordingConfig recordingConfig)
+            {
+                if (session == null)
+                    throw new InvalidOperationException($"{nameof(StartRecording)} may not be called without a valid {nameof(session)}");
+
+                return session.StartRecording(recordingConfig);
+            }
+
+            public ArStatus StopRecording()
+            {
+                if (session == null)
+                    throw new InvalidOperationException($"{nameof(StopRecording)} may not be called without a valid {nameof(session)}");
+
+                return session.StopRecording();
+            }
+
+            public ArRecordingStatus recordingStatus => session == null
+                ? ArRecordingStatus.None
+                : session.recordingStatus;
+
+            public ArPlaybackStatus playbackStatus => session == null
+                ? ArPlaybackStatus.None
+                : session.playbackStatus;
+
+            public ArSession session
+            {
+                get
+                {
+                    var ptr = nativePtr;
+                    return ptr == IntPtr.Zero
+                        ? default
+                        : ArSession.FromIntPtr(Marshal.PtrToStructure<NativePtr>(ptr).sessionPtr);
+                }
             }
 
             public override unsafe NativeArray<ConfigurationDescriptor> GetConfigurationDescriptors(Allocator allocator)
@@ -151,13 +263,8 @@ namespace UnityEngine.XR.ARCore
             public override void Reset()
             {
                 NativeApi.UnityARCore_session_reset();
-#if UNITY_2020_2_OR_NEWER
                 if (running)
                     Start();
-#else
-                if (m_Subsystem.running)
-                    Resume();
-#endif
             }
 
             public override void OnApplicationPause() => NativeApi.UnityARCore_session_onApplicationPause();
@@ -355,12 +462,8 @@ namespace UnityEngine.XR.ARCore
             XRSessionSubsystemDescriptor.RegisterDescriptor(new XRSessionSubsystemDescriptor.Cinfo
             {
                 id = "ARCore-Session",
-#if UNITY_2020_2_OR_NEWER
                 providerType = typeof(ARCoreProvider),
                 subsystemTypeOverride = typeof(ARCoreSessionSubsystem),
-#else
-                subsystemImplementationType = typeof(ARCoreSessionSubsystem),
-#endif
                 supportsInstall = true,
                 supportsMatchFrameRate = true
             });
@@ -437,6 +540,9 @@ namespace UnityEngine.XR.ARCore
 
             [DllImport("UnityARCore")]
             public static extern void UnityARCore_session_pause();
+
+            [DllImport("UnityARCore", EntryPoint = "UnityARCore_session_isPauseDesired")]
+            public static extern bool IsPauseDesired();
 
             [DllImport("UnityARCore")]
             public static extern void UnityARCore_session_onApplicationResume();

@@ -5,11 +5,32 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [4.1.5] - 2021-01-25
+## [4.2.0-pre.2] - 2021-03-03
+
+### New
+
+- When building an Android Player with ARCore enabled, this package will check the Gradle version and warn if it determines the Gradle version is too low. The option to suppress this check and resulting warning notification can now be affected programmatically with a new public API [ARCoreSettings.ignoreGradleVersion](xref:UnityEditor.XR.ARCore.ARCoreSettings.ignoreGradleVersion).
+- Added support for [session recording and playback](xref:arcore-manual#recording-and-playback).
 
 ### Changes
 
+- The following properties have been deprecated:
+  - `ArSession.IsNull` => Compare to `null` instead.
+  - `ArSession.Null` => Use [`default`](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/default) instead.
+  - `ArConfig.IsNull` => Compare to `null` instead.
+  - `ArConfig.Null` => Use [`default`](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/default) instead.
+  - `ArCameraConfig.IsNull` => Compare to `null` instead.
+  - `ArCameraConfig.Null` => Use [`default`](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/default) instead.
+  - `ArCameraConfigFilter.IsNull` => Compare to `null` instead.
+  - `ArCameraConfigFilter.Null` => Use [`default`](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/default) instead.
 - Update [XR Plug-in Management](https://docs.unity3d.com/Packages/com.unity.xr.management@4.0) dependency to 4.0.
+- Update [known limitations](xref:arcore-manual#known-limitations) to clarify depth image support behavior.
+
+### Fixes
+
+- Improve handling for spaces in pathnames when building the reference image library which may cause the build to fail.
+- Allow reference images to be located outside the `Assets` folder, e.g., in packages.
+- Fix incorrect reporting of the [plane detection mode](xref:UnityEngine.XR.ARSubsystems.XRPlaneSubsystem.PlaneDetectionMode). Both the [requestedPlaneDetectionMode](xref:UnityEngine.XR.ARSubsystems.XRPlaneSubsystem.requestedPlaneDetectionMode) and [currentPlaneDetectionMode](xref:UnityEngine.XR.ARSubsystems.XRPlaneSubsystem.currentPlaneDetectionMode) would incorrectly report that vertical plane detection was enabled/requested when only horizontal plane detection enabled/requested.
 
 ## [4.1.3] - 2021-01-05
 

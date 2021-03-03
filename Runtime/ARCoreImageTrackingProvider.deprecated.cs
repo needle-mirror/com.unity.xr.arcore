@@ -9,12 +9,5 @@ namespace UnityEngine.XR.ARCore
     [Obsolete("ARCoreImageTrackingProvider has been deprecated. Use ARCoreImageTrackingSubsystem instead (UnityUpgradable) -> UnityEngine.XR.ARCore.ARCoreImageTrackingSubsystem", true)]
     public sealed class ARCoreImageTrackingProvider : XRImageTrackingSubsystem
     {
-#if !UNITY_2020_2_OR_NEWER
-        /// <summary>
-        /// Creates the ARCore-specific implementation which will service the `XRImageTrackingSubsystem`.
-        /// </summary>
-        /// <returns>A new instance of the `Provider` specific to ARCore.</returns>
-        protected override Provider CreateProvider() => null;
-#endif
     }
 }

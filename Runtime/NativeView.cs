@@ -9,19 +9,24 @@ namespace UnityEngine.XR.ARCore
     /// Similar to NativeSlice but blittable. Provides a "view"
     /// into a contiguous array of memory. Used to interop with C.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
     unsafe struct NativeView
     {
-        void* m_Ptr;
-        int m_Length;
+        public void* ptr;
+        public int count;
+    }
 
-        public NativeView(void* ptr, int length)
+    static class NativeViewExtensions
+    {
+        public static unsafe NativeView AsNativeView<T>(this NativeArray<T> array) where T : struct => new NativeView
         {
-            m_Ptr = ptr;
-            m_Length = length;
-        }
+            ptr = array.GetUnsafePtr(),
+            count = array.Length
+        };
 
-        public static NativeView Create<T>(NativeArray<T> array) where T : struct => new NativeView(array.GetUnsafePtr(), array.Length);
-        public static NativeView Create<T>(NativeSlice<T> slice) where T : struct => new NativeView(slice.GetUnsafePtr(), slice.Length);
+        public static unsafe NativeView AsNativeView<T>(this NativeSlice<T> slice) where T : struct => new NativeView
+        {
+            ptr = slice.GetUnsafePtr(),
+            count = slice.Length
+        };
     }
 }

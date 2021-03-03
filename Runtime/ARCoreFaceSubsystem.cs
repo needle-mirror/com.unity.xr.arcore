@@ -128,14 +128,6 @@ namespace UnityEngine.XR.ARCore
             }
         }
 
-#if !UNITY_2020_2_OR_NEWER
-        /// <summary>
-        /// Creates the ARCore-specific implementation which will service the `XRFaceSubsystem`.
-        /// </summary>
-        /// <returns>A new instance of the `Provider` specific to ARCore.</returns>
-        protected override Provider CreateProvider() => new ARCoreProvider();
-#endif
-
         class ARCoreProvider : Provider
         {
             public override void Start() => UnityARCore_faceTracking_Start();
@@ -337,12 +329,8 @@ namespace UnityEngine.XR.ARCore
                 supportsFaceMeshUVs = true,
                 supportsFaceMeshNormals = true,
                 id = "ARCore-Face",
-#if UNITY_2020_2_OR_NEWER
                 providerType = typeof(ARCoreFaceSubsystem.ARCoreProvider),
                 subsystemTypeOverride = typeof(ARCoreFaceSubsystem)
-#else
-                subsystemImplementationType = typeof(ARCoreFaceSubsystem)
-#endif
             };
 
             XRFaceSubsystemDescriptor.Create(descriptorParams);

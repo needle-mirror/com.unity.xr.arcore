@@ -12,20 +12,16 @@ From a terminal window:
 
 1. Clone this repo:
 ```
-git clone git@github.com:Unity-Technologies/upm-xr-arcore.git
+git clone git@github.cds.internal.unity3d.com:unity/arfoundation.git
 ```
-2. Change directory to `upm-xr-arcore`:
-```
-cd upm-xr-arcore
-```
-3. Get the submodules:
+2. Get the submodules:
 ```
 git submodule update --init --recursive
 ```
-4. Change directory to `Source~`:
+3. Change directory to `com.unity.xr.arcore/Source~`:
 ```
-cd Source~
+cd com.unity.xr.arcore/Source~
 ```
-5. Build the source using `bee`.
+4. Build the source using `bee`.
   - On Windows: ```bee.exe```
   - On Mac: ```mono bee.exe```

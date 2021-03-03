@@ -8,6 +8,8 @@ Copyright 2017 Google LLC
 
 [https://developers.google.com/terms/](https://developers.google.com/terms/)
 
+Use of the Google ARCore SDK for Unity requires agreeing to and complying with the Google APIs Terms of Service accessed via: [https://developers.google.com/terms/](https://developers.google.com/terms/) (Please be aware that you may need to register with Google to access certain APIs).
+
 ---
 
 Component Name: [Google ARCore Augmented Image CLI](https://github.com/google-ar/arcore-unity-sdk/tree/master/Assets/GoogleARCore/CLI)

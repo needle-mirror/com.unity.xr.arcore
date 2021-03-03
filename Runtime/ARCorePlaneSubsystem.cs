@@ -17,14 +17,6 @@ namespace UnityEngine.XR.ARCore
     [Preserve]
     public sealed class ARCorePlaneSubsystem : XRPlaneSubsystem
     {
-#if !UNITY_2020_2_OR_NEWER
-        /// <summary>
-        /// Creates the ARCore-specific implementation which will service the `XRPlaneSubsystem`.
-        /// </summary>
-        /// <returns>A new instance of the `Provider` specific to ARCore.</returns>
-        protected override Provider CreateProvider() => new ARCoreProvider();
-#endif
-
         class ARCoreProvider : Provider
         {
             public override void Start() => UnityARCore_planeTracking_startTracking();
@@ -177,12 +169,8 @@ namespace UnityEngine.XR.ARCore
             var cinfo = new XRPlaneSubsystemDescriptor.Cinfo
             {
                 id = "ARCore-Plane",
-#if UNITY_2020_2_OR_NEWER
                 providerType = typeof(ARCorePlaneSubsystem.ARCoreProvider),
                 subsystemTypeOverride = typeof(ARCorePlaneSubsystem),
-#else
-                subsystemImplementationType = typeof(ARCorePlaneSubsystem),
-#endif
                 supportsHorizontalPlaneDetection = true,
                 supportsVerticalPlaneDetection = true,
                 supportsArbitraryPlaneDetection = false,

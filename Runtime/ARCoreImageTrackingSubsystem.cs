@@ -30,10 +30,8 @@ namespace UnityEngine.XR.ARCore
 
         class ARCoreProvider : Provider
         {
-#if UNITY_2020_2_OR_NEWER
             public override void Start() { }
             public override void Stop() { }
-#endif
 
             public override RuntimeReferenceImageLibrary imageLibrary
             {
@@ -132,24 +130,12 @@ namespace UnityEngine.XR.ARCore
             XRImageTrackingSubsystemDescriptor.Create(new XRImageTrackingSubsystemDescriptor.Cinfo
             {
                 id = "ARCore-ImageTracking",
-#if UNITY_2020_2_OR_NEWER
                 providerType = typeof(ARCoreImageTrackingSubsystem.ARCoreProvider),
                 subsystemTypeOverride = typeof(ARCoreImageTrackingSubsystem),
-#else
-                subsystemImplementationType = typeof(ARCoreImageTrackingSubsystem),
-#endif
                 supportsMovingImages = true,
                 supportsMutableLibrary = true,
                 supportsImageValidation = true,
             });
         }
-
-#if !UNITY_2020_2_OR_NEWER
-        /// <summary>
-        /// Creates the ARCore-specific implementation which will service the `XRImageTrackingSubsystem`.
-        /// </summary>
-        /// <returns>A new instance of the `Provider` specific to ARCore.</returns>
-        protected override Provider CreateProvider() => new ARCoreProvider();
-#endif
     }
 }

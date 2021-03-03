@@ -9,12 +9,5 @@ namespace UnityEngine.XR.ARCore
     [Obsolete("ARCorePlaneProvider has been deprecated. Use ARCorePlaneSubsystem instead (UnityUpgradable) -> UnityEngine.XR.ARCore.ARCorePlaneSubsystem", true)]
     public sealed class ARCorePlaneProvider : XRPlaneSubsystem
     {
-#if !UNITY_2020_2_OR_NEWER
-        /// <summary>
-        /// Creates the ARCore-specific implementation which will service the `XRPlaneSubsystem`.
-        /// </summary>
-        /// <returns>A new instance of the `Provider` specific to ARCore.</returns>
-        protected override Provider CreateProvider() => null;
-#endif
     }
 }

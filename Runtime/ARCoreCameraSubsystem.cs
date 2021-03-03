@@ -84,12 +84,8 @@ namespace UnityEngine.XR.ARCore
             var cameraSubsystemCinfo = new XRCameraSubsystemCinfo
             {
                 id = k_SubsystemId,
-#if UNITY_2020_2_OR_NEWER
                 providerType = typeof(ARCoreCameraSubsystem.ARCoreProvider),
                 subsystemTypeOverride = typeof(ARCoreCameraSubsystem),
-#else
-                implementationType = typeof(ARCoreCameraSubsystem),
-#endif
                 supportsAverageBrightness = true,
                 supportsAverageColorTemperature = false,
                 supportsColorCorrection = true,
@@ -134,16 +130,6 @@ namespace UnityEngine.XR.ARCore
             add => ((ARCoreProvider)provider).beforeGetCameraConfiguration += value;
             remove => ((ARCoreProvider)provider).beforeGetCameraConfiguration -= value;
         }
-
-#if !UNITY_2020_2_OR_NEWER
-        /// <summary>
-        /// Creates an instance of the ARCore-specific camera provider. This provides camera services for ARCore.
-        /// </summary>
-        /// <returns>Returns a new instance of
-        ///     [XRCameraSubsystem.Provider](xref:UnityEngine.XR.ARSubsystems.XRCameraSubsystem.Provider)
-        ///     specific to ARCore.</returns>
-        protected override Provider CreateProvider() => new ARCoreProvider();
-#endif
 
         /// <summary>
         /// Provides the camera functionality for the ARCore implementation.

@@ -177,14 +177,6 @@ namespace UnityEngine.XR.ARCore
             public override void Stop() => UnityARCore_depth_Stop();
         }
 
-#if !UNITY_2020_2_OR_NEWER
-        /// <summary>
-        /// Creates the ARCore-specific implementation which will service the `XRDepthSubsystem`.
-        /// </summary>
-        /// <returns>A new instance of the `Provider` specific to ARCore.</returns>
-        protected override Provider CreateProvider() => new ARCoreProvider();
-#endif
-
         // this method is run on startup of the app to register this provider with XR Subsystem Manager
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void RegisterDescriptor()
@@ -195,12 +187,8 @@ namespace UnityEngine.XR.ARCore
             var descriptorParams = new XRDepthSubsystemDescriptor.Cinfo
             {
                 id = "ARCore-Depth",
-#if UNITY_2020_2_OR_NEWER
                 providerType = typeof(ARCoreXRDepthSubsystem.ARCoreProvider),
                 subsystemTypeOverride = typeof(ARCoreXRDepthSubsystem),
-#else
-                implementationType = typeof(ARCoreXRDepthSubsystem),
-#endif
                 supportsFeaturePoints = true,
                 supportsUniqueIds = true,
                 supportsConfidence = true
