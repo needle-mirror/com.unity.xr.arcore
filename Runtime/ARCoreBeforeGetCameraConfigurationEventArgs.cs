@@ -10,6 +10,7 @@ namespace UnityEngine.XR.ARCore
         /// <summary>
         /// Represents a native pointer to an [ArSession](https://developers.google.com/ar/reference/c/group/ar-session)
         /// </summary>
+        /// <value>The current session object.</value>
         public ArSession session { get; internal set; }
 
         /// <summary>
@@ -18,6 +19,7 @@ namespace UnityEngine.XR.ARCore
         /// which is used to filter the results of a call to
         /// [ArSession_getSupportedCameraConfigsWithFilter](https://developers.google.com/ar/reference/c/group/ar-session#arsession_getsupportedcameraconfigswithfilter)
         /// </summary>
+        /// <value>The filter object used to select eligible device cameras.</value>
         public ArCameraConfigFilter filter { get; internal set; }
 
         /// <summary>

@@ -24,7 +24,7 @@ namespace UnityEngine.XR.ARCore
         ArSession(IntPtr value) => m_Self = value;
 
         /// <summary>
-        /// Create a <see cref="ArSession"/> from an existing native pointer. The native pointer must point
+        /// Creates an <see cref="ArSession"/> from an existing native pointer. The native pointer must point
         /// to an existing <see cref="ArSession"/>.
         /// </summary>
         /// <param name="value">A pointer to an existing native <see cref="ArSession"/>.</param>
@@ -167,16 +167,16 @@ namespace UnityEngine.XR.ARCore
         /// <remarks>
         /// Restrictions:
         /// - Can only be called while the session is paused. Playback of the MP4
-        /// dataset file will start once the session is resumed.
+        /// dataset file starts once the session is resumed.
         /// - The MP4 dataset file must use the same camera facing direction as is
         /// configured in the session.
         ///
         /// When an MP4 dataset file is set:
         /// - All existing trackables (i.e., anchors and trackables) immediately enter tracking state [TrackingState.None](xref:UnityEngine.XR.ARSubsystems.TrackingState.None).
-        /// - The desired focus mode is ignored, and will not affect the previously recorded camera images.
+        /// - The desired focus mode is ignored, and does not affect the previously recorded camera images.
         /// - The current camera configuration is immediately set to the default for the device the MP4 dataset file was recorded on.
-        /// - Calls to retrieve the supported camera configurations will return camera configs supported by the device the MP4 dataset file was recorded on.
-        /// - Setting a previously obtained camera config to will have no effect.
+        /// - Calls to retrieve the supported camera configurations return camera configs supported by the device the MP4 dataset file was recorded on.
+        /// - Setting a previously obtained camera config has no effect.
         /// </remarks>
         /// <param name="path">A file path to a MP4 dataset file or `null` to use the live camera feed.</param>
         /// <returns>
@@ -207,6 +207,7 @@ namespace UnityEngine.XR.ARCore
         /// <summary>
         /// (Read Only) The playback status.
         /// </summary>
+        /// <value>Whether or not the session is playing back a recording (or has stopped because of an error).</value>
         public ArPlaybackStatus playbackStatus
         {
             get
@@ -223,7 +224,7 @@ namespace UnityEngine.XR.ARCore
         /// Starts a new MP4 dataset file recording that is written to the specific filesystem path.
         /// </summary>
         /// <remarks>
-        /// Existing files will be overwritten.
+        /// Existing files are overwritten.
         ///
         /// The MP4 video stream (VGA) bitrate is 5Mbps (40Mb per minute).
         ///
@@ -241,7 +242,7 @@ namespace UnityEngine.XR.ARCore
         static extern ArStatus StartRecording(ArSession session, ArRecordingConfig recordingConfig);
 
         /// <summary>
-        /// Stops recording and flushes unwritten data to disk. The MP4 dataset file will be ready to read after this
+        /// Stops recording and flushes unwritten data to disk. The MP4 dataset file is ready to read after this
         /// call.
         /// </summary>
         /// <remarks>
@@ -260,6 +261,7 @@ namespace UnityEngine.XR.ARCore
         /// <summary>
         /// (Read Only) The current recording status.
         /// </summary>
+        /// <value>Whether or not the session is recording (or has stopped because of an error).</value>
         public ArRecordingStatus recordingStatus
         {
             get

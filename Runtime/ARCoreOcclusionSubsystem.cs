@@ -18,7 +18,7 @@ namespace UnityEngine.XR.ARCore
     class ARCoreOcclusionSubsystem : XROcclusionSubsystem
     {
         /// <summary>
-        /// Register the ARCore occlusion subsystem if iOS and not the editor.
+        /// Registers the ARCore occlusion subsystem if iOS and not the editor.
         /// </summary>
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void Register()
@@ -80,7 +80,7 @@ namespace UnityEngine.XR.ARCore
             static readonly List<string> m_EnvironmentDepthEnabledMaterialKeywords = new List<string>() {k_EnvironmentDepthEnabledMaterialKeyword};
 
             /// <summary>
-            /// Construct the implementation provider.
+            /// Constructs the implementation provider.
             /// </summary>
             public ARCoreProvider()
             {
@@ -92,22 +92,22 @@ namespace UnityEngine.XR.ARCore
             }
 
             /// <summary>
-            /// Start the provider.
+            /// Starts the provider.
             /// </summary>
             public override void Start() => NativeApi.UnityARCore_OcclusionProvider_Start();
 
             /// <summary>
-            /// Stop the provider.
+            /// Stops the provider.
             /// </summary>
             public override void Stop() => NativeApi.UnityARCore_OcclusionProvider_Stop();
 
             /// <summary>
-            /// Destroy the provider.
+            /// Destroys the provider.
             /// </summary>
             public override void Destroy() => NativeApi.UnityARCore_OcclusionProvider_Destruct();
 
             /// <summary>
-            /// Property to get/set the requested environment depth mode.
+            /// The requested environment depth mode.
             /// </summary>
             /// <value>
             /// The requested environment depth mode.
@@ -123,13 +123,14 @@ namespace UnityEngine.XR.ARCore
             }
 
             /// <summary>
-            /// Property to get the current environment depth mode.
+            /// The current environment depth mode.
             /// </summary>
+            /// <value>Describes the resolution category of the depth image and whether depth is enabled.</value>
             public override EnvironmentDepthMode currentEnvironmentDepthMode
                 => NativeApi.UnityARCore_OcclusionProvider_GetCurrentEnvironmentDepthMode();
 
             /// <summary>
-            /// Get the environment texture descriptor.
+            /// Gets the environment texture descriptor.
             /// </summary>
             /// <param name="environmentDepthDescriptor">The environment depth texture descriptor to be populated, if
             /// available.</param>
@@ -180,7 +181,7 @@ namespace UnityEngine.XR.ARCore
             }
 
             /// <summary>
-            /// Get the enabled and disabled shader keywords for the material.
+            /// Gets the enabled and disabled shader keywords for the material.
             /// </summary>
             /// <param name="enabledKeywords">The keywords to enable for the material.</param>
             /// <param name="disabledKeywords">The keywords to disable for the material.</param>

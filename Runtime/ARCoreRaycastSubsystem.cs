@@ -6,7 +6,8 @@ using Unity.Collections;
 namespace UnityEngine.XR.ARCore
 {
     /// <summary>
-    /// ARCore implementation of the <c>XRRaycastSubsystem</c>. Do not create this directly. Use the <c>SubsystemManager</c> instead.
+    /// ARCore implementation of the [XRRaycastSubsystem](xref:UnityEngine.XR.ARSubsystems.XRRaycastSubsystem).
+    /// Do not create this directly. Use the [SubsystemManager](xref:UnityEngine.SubsystemManager) instead.
     /// </summary>
     [Preserve]
     public sealed class ARCoreRaycastSubsystem : XRRaycastSubsystem

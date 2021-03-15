@@ -18,6 +18,7 @@ namespace UnityEngine.XR.ARCore
         /// <summary>
         /// (Read Only) The native ARCore session whose corresponding configuration object will be set.
         /// </summary>
+        /// <value>The current session object.</value>
         public ArSession arSession => m_Session;
 
         /// <summary>
@@ -39,6 +40,7 @@ namespace UnityEngine.XR.ARCore
         /// [ARCore Configuration documentation](https://developers.google.com/ar/reference/c/group/config#arconfig) for
         /// more details.
         /// </remarks>
+        /// <value></value>
         public ArConfig arConfig => m_Config;
 
         /// <summary>

@@ -53,7 +53,7 @@ namespace UnityEngine.XR.ARCore
 
             /// <summary>
             /// An error occurred because the user did not dispose of all <c>XRCpuImage</c> and did not allow all
-            /// asynchronous conversion jobs complete before changing the camera configuration.
+            /// asynchronous conversion jobs to complete before changing the camera configuration.
             /// </summary>
             ErrorImagesNotDisposed = 3,
         }
@@ -72,7 +72,7 @@ namespace UnityEngine.XR.ARCore
         public static string backgroundShaderName => k_DefaultBackgroundShaderName;
 
         /// <summary>
-        /// Create and register the camera subsystem descriptor to advertise a providing implementation for camera
+        /// Creates and registers the camera subsystem descriptor to advertise a providing implementation for camera
         /// functionality.
         /// </summary>
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -122,9 +122,10 @@ namespace UnityEngine.XR.ARCore
         /// Do not destroy the <see cref="ARCoreBeforeGetCameraConfigurationEventArgs.filter"/> object in this
         /// callback. Doing so is undefined behavior and may crash.
         ///
-        /// The filter pointer to by <see cref="ARCoreBeforeGetCameraConfigurationEventArgs.filter"/> is only guaranteed
+        /// The filter provided by <see cref="ARCoreBeforeGetCameraConfigurationEventArgs.filter"/> is only guaranteed
         /// to exist for the duration of this callback. Accessing it from outside this callback is undefined behavior.
         /// </remarks>
+        /// <value>An Action delegate that you can use to modify the camera config filter.</value>
         public event Action<ARCoreBeforeGetCameraConfigurationEventArgs> beforeGetCameraConfiguration
         {
             add => ((ARCoreProvider)provider).beforeGetCameraConfiguration += value;
@@ -371,7 +372,7 @@ namespace UnityEngine.XR.ARCore
                             break;
                         case CameraConfigurationResult.InvalidCameraConfiguration:
                             throw new ArgumentException("Camera configuration does not exist in the available "
-                                                        + "configurations", "value");
+                                                        + "configurations", nameof(value));
                         case CameraConfigurationResult.InvalidSession:
                             throw new InvalidOperationException("Cannot set camera configuration because the ARCore "
                                                                 + "session is not valid");

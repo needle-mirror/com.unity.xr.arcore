@@ -18,7 +18,7 @@ namespace UnityEngine.XR.ARCore
     class ARCoreEnvironmentProbeSubsystem : XREnvironmentProbeSubsystem
     {
         /// <summary>
-        /// Create and register the environment probe subsystem descriptor to advertise a providing implementation for
+        /// Creates and registers the environment probe subsystem descriptor to advertise a providing implementation for
         /// environment probe functionality.
         /// </summary>
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]

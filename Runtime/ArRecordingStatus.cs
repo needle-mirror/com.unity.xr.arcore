@@ -1,7 +1,7 @@
 namespace UnityEngine.XR.ARCore
 {
     /// <summary>
-    /// Describe the current recording status.
+    /// Describe the possible recording statuses.
     /// </summary>
     public enum ArRecordingStatus
     {
@@ -27,9 +27,9 @@ namespace UnityEngine.XR.ARCore
     public static class ArRecordingStatusExtensions
     {
         /// <summary>
-        /// Determines whether a session is currently being recorded.
+        /// Determines whether this status indicates that a session is currently being recorded.
         /// </summary>
-        /// <param name="status">The <see cref="ArRecordingStatus"/> being extended.</param>
+        /// <param name="status">The <see cref="ArRecordingStatus"/> value to check.</param>
         /// <returns>Returns `true` if <paramref name="status"/> is <see cref="ArRecordingStatus.Ok"/>. Returns `false`
         ///     otherwise.</returns>
         public static bool Recording(this ArRecordingStatus status) => status == ArRecordingStatus.Ok;

@@ -34,7 +34,7 @@ namespace UnityEngine.XR.ARCore
         public ArConfig(ArSession session) => Create(session, out this);
 
         /// <summary>
-        /// Create a <see cref="ArConfig"/> from an existing native pointer. The native pointer must point
+        /// Creates an <see cref="ArConfig"/> from an existing native pointer. The native pointer must point
         /// to an existing <see cref="ArConfig"/>.
         /// </summary>
         /// <param name="value">A pointer to an existing native <see cref="ArConfig"/>.</param>

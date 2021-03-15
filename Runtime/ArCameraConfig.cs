@@ -9,7 +9,8 @@ namespace UnityEngine.XR.ARCore
 {
     /// <summary>
     /// Represents an
-    /// [ARCore camera configuration](https://developers.google.com/ar/reference/c/group/ar-camera-config).
+    /// [ARCore camera configuration](https://developers.google.com/ar/reference/c/group/ar-camera-config), which
+    /// describes the ARCore-related properties of a device camera.
     /// </summary>
     public struct ArCameraConfig : IDisposable, IEquatable<ArCameraConfig>
     {
@@ -18,7 +19,7 @@ namespace UnityEngine.XR.ARCore
         ArCameraConfig(IntPtr value) => m_Self = value;
 
         /// <summary>
-        /// Create a <see cref="ArCameraConfig"/> from an existing native pointer. The native pointer must point
+        /// Creates a <see cref="ArCameraConfig"/> from an existing native pointer. The native pointer must point
         /// to an existing <see cref="ArCameraConfig"/>.
         /// </summary>
         /// <param name="value">A pointer to an existing native <see cref="ArCameraConfig"/>.</param>

@@ -24,56 +24,67 @@ namespace UnityEngine.XR.ARCore
         /// <summary>
         /// The `XRSessionSubsystem` whose lifecycle is managed by this loader.
         /// </summary>
+        /// <value>The session subsystem instance.</value>
         public XRSessionSubsystem sessionSubsystem => GetLoadedSubsystem<XRSessionSubsystem>();
 
         /// <summary>
         /// The `XRCameraSubsystem` whose lifecycle is managed by this loader.
         /// </summary>
+        /// <value>The camera subsystem instance.</value>
         public XRCameraSubsystem cameraSubsystem => GetLoadedSubsystem<XRCameraSubsystem>();
 
         /// <summary>
         /// The `XRDepthSubsystem` whose lifecycle is managed by this loader.
         /// </summary>
+        /// <value>The XR depth subsystem instance.</value>
         public XRDepthSubsystem depthSubsystem => GetLoadedSubsystem<XRDepthSubsystem>();
 
         /// <summary>
         /// The `XRPlaneSubsystem` whose lifecycle is managed by this loader.
         /// </summary>
+        /// <value>The XR plane subsystem instance.</value>
         public XRPlaneSubsystem planeSubsystem => GetLoadedSubsystem<XRPlaneSubsystem>();
 
         /// <summary>
         /// The `XRAnchorSubsystem` whose lifecycle is managed by this loader.
         /// </summary>
+        /// <value>The XR anchor subsystem instance.</value>
         public XRAnchorSubsystem anchorSubsystem => GetLoadedSubsystem<XRAnchorSubsystem>();
 
         /// <summary>
         /// The `XRRaycastSubsystem` whose lifecycle is managed by this loader.
         /// </summary>
+        /// <value>The XR raycast subsystem instance.</value>
         public XRRaycastSubsystem raycastSubsystem => GetLoadedSubsystem<XRRaycastSubsystem>();
 
         /// <summary>
         /// The `XRImageTrackingSubsystem` whose lifecycle is managed by this loader.
         /// </summary>
+        /// <value>The XR image tracking subsystem instance.</value>
         public XRImageTrackingSubsystem imageTrackingSubsystem => GetLoadedSubsystem<XRImageTrackingSubsystem>();
 
         /// <summary>
         /// The `XRInputSubsystem` whose lifecycle is managed by this loader.
         /// </summary>
+        /// <value>The XR input subsystem instance.</value>
         public XRInputSubsystem inputSubsystem => GetLoadedSubsystem<XRInputSubsystem>();
 
         /// <summary>
         /// The `XRFaceSubsystem` whose lifecycle is managed by this loader.
         /// </summary>
+        /// <value>The XR face subsystem instance.</value>
         public XRFaceSubsystem faceSubsystem => GetLoadedSubsystem<XRFaceSubsystem>();
 
         /// <summary>
         /// The `XREnvironmentProbeSubsystem` whose lifecycle is managed by this loader.
         /// </summary>
+        /// <value>The XR environment probe subsystem instance.</value>
         public XREnvironmentProbeSubsystem environmentProbeSubsystem => GetLoadedSubsystem<XREnvironmentProbeSubsystem>();
 
         /// <summary>
         /// The `XROcclusionSubsystem` whose lifecycle is managed by this loader.
         /// </summary>
+        /// <value>The XR occlusion subsystem instance.</value>
         public XROcclusionSubsystem occlusionSubsystem => GetLoadedSubsystem<XROcclusionSubsystem>();
 
         /// <summary>

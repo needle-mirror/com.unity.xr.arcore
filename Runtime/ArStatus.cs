@@ -35,7 +35,7 @@ namespace UnityEngine.XR.ARCore
         ErrorSessionNotPaused = -4,
 
         /// <summary>
-        /// An operation was attempted that the session be in the
+        /// An operation was attempted that requires the session be in the
         /// [TrackingState.Tracking](xref:UnityEngine.XR.ARSubsystems.TrackingState.Tracking) state,
         /// but the session was not.
         /// </summary>
@@ -47,7 +47,7 @@ namespace UnityEngine.XR.ARCore
         ErrorTextureNotSet = -6,
 
         /// <summary>
-        /// An operation required a GL context but one was not available.
+        /// An operation requires a GL context but one was not available.
         /// </summary>
         ErrorMissingGLContext = -7,
 

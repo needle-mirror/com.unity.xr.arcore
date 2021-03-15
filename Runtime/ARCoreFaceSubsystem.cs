@@ -19,7 +19,7 @@ namespace UnityEngine.XR.ARCore
     public class ARCoreFaceSubsystem : XRFaceSubsystem
     {
         /// <summary>
-        /// Get all the available <see cref="ARCoreFaceRegion"/>s.
+        /// Gets all the available <see cref="ARCoreFaceRegion"/>s.
         /// </summary>
         /// <param name="trackableId">The id associated with the face to query.</param>
         /// <param name="allocator">The allocator to use if <paramref name="regions"/> requires a resize. C# Jobs are used, so the allocator

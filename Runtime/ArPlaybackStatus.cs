@@ -1,7 +1,7 @@
 namespace UnityEngine.XR.ARCore
 {
     /// <summary>
-    /// Describes the current playback status.
+    /// Describes the possible playback statuses.
     /// </summary>
     public enum ArPlaybackStatus
     {
@@ -32,9 +32,9 @@ namespace UnityEngine.XR.ARCore
     public static class ArPlaybackStatusExtensions
     {
         /// <summary>
-        /// Determines whether a recorded session is currently playing.
+        /// Determines whether this status indicates that a recorded session is currently playing.
         /// </summary>
-        /// <param name="status">The <see cref="ArPlaybackStatus"/> being extended.</param>
+        /// <param name="status">The <see cref="ArPlaybackStatus"/> value to check.</param>
         /// <returns>Returns `true` if the <paramref name="status"/> is <see cref="ArPlaybackStatus.Ok"/>. Returns
         ///     `false` otherwise.</returns>
         public static bool Playing(this ArPlaybackStatus status) => status == ArPlaybackStatus.Ok;

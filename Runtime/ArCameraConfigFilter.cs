@@ -19,7 +19,7 @@ namespace UnityEngine.XR.ARCore
         ArCameraConfigFilter(IntPtr value) => m_Self = value;
 
         /// <summary>
-        /// Create a <see cref="ArCameraConfigFilter"/> from an existing native pointer. The native pointer must point
+        /// Creates an <see cref="ArCameraConfigFilter"/> from an existing native pointer. The native pointer must point
         /// to an existing <see cref="ArCameraConfigFilter"/>.
         /// </summary>
         /// <param name="value">A pointer to an existing native <see cref="ArCameraConfigFilter"/>.</param>

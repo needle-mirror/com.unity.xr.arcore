@@ -12,17 +12,17 @@ namespace UnityEditor.XR.ARCore
     public class ARCoreSettings : ScriptableObject
     {
         /// <summary>
-        /// Enum which defines whether ARCore is optional or required.
+        /// Enum used to specify whether a feature is required or optional.
         /// </summary>
         public enum Requirement
         {
             /// <summary>
-            /// ARCore is required, which means the app cannot be installed on devices that do not support ARCore.
+            /// The feature is required, which means the app cannot be installed on devices that do not support the feature.
             /// </summary>
             Required,
 
             /// <summary>
-            /// ARCore is optional, which means the the app can be installed on devices that do not support ARCore.
+            /// The feature is optional, which means the app can be installed on devices that do not support the feature.
             /// </summary>
             Optional
         }
@@ -31,8 +31,11 @@ namespace UnityEditor.XR.ARCore
         Requirement m_Requirement;
 
         /// <summary>
-        /// Determines whether ARCore is required for this app: will make app only downloadable by devices with ARCore support if set to <see cref="Requirement.Required"/>.
+        /// Specifies whether ARCore is required or optional for this app. 
         /// </summary>
+        /// <remarks>
+        /// Set to <see cref="Requirement.Required"/> if the app should only be downloadable by devices with ARCore support.
+        /// </remarks>
         public Requirement requirement
         {
             get => m_Requirement;
@@ -50,8 +53,11 @@ namespace UnityEditor.XR.ARCore
         Requirement m_Depth;
 
         /// <summary>
-        /// Determines whether depth is required for this app: will make app only downloadable by devices with depth support if set to <see cref="Requirement.Required"/>.
+        /// Specifies whether depth is required or optional for this app.
         /// </summary>
+        /// <remarks>
+        /// Set to <see cref="Requirement.Required"/> if the app should only be downloadable by devices with depth support.
+        /// </remarks>
         public Requirement depth
         {
             get => m_Depth;
@@ -69,11 +75,12 @@ namespace UnityEditor.XR.ARCore
         bool m_IgnoreGradleVersion;
 
         /// <summary>
-        /// Whether the Gradle version is validated during Player build.
+        /// Whether to validate the Gradle version during a Player build.
         /// </summary>
         /// <remarks>
-        /// When building an Android Player with ARCore enabled, this package will check the Gradle version and warn if it determines
-        /// the Gradle version is too low. This check (and resulting warning notification) can be suppressed by setting this value to `true`.
+        /// When building an Android Player with ARCore enabled, this ARCore package checks the Gradle version and warns if it determines
+        /// the Gradle version to be too low. You can suppress this check (and resulting warning notification) by setting
+        /// `ignoreGradleVersion` to `true`.
         /// </remarks>
         public bool ignoreGradleVersion
         {
@@ -89,9 +96,13 @@ namespace UnityEditor.XR.ARCore
         }
 
         /// <summary>
-        /// Gets the currently selected settings, or create a default one if no <see cref="ARCoreSettings"/> has been set in Player Settings.
+        /// Gets the currently selected settings, or creates a default one if no <see cref="ARCoreSettings"/> has been set in Project Settings.
         /// </summary>
         /// <returns>The ARCore settings to use for the current Player build.</returns>
+        /// <remarks>
+        /// The current settings object, if one exists, is saved in the Project's XR Settings folder. You can also view
+        /// and modify these settings in the **XR Plug-in Management** section of your **Project Settings** window.
+        /// </remarks>
         public static ARCoreSettings GetOrCreateSettings()
         {
             var settings = currentSettings;
@@ -102,8 +113,12 @@ namespace UnityEditor.XR.ARCore
         }
 
         /// <summary>
-        /// Get or set the <see cref="ARCoreSettings"/> that will be used for the player build.
+        /// The <see cref="ARCoreSettings"/> for the Project.
         /// </summary>
+        /// <remarks>
+        /// The current settings object, if one exists, is saved in the Project's XR Settings folder. You can also view
+        /// and modify these settings in the **XR Plug-in Management** section of your **Project Settings** window.
+        /// </remarks>
         public static ARCoreSettings currentSettings
         {
             get => EditorBuildSettings.TryGetConfigObject(k_SettingsKey, out ARCoreSettings settings) ? settings : null;

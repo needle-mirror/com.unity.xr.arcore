@@ -1,9 +1,22 @@
+---
+uid: arcore-changelog
+---
 # Changelog
 
 All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+
+## [4.2.0-pre.3] - 2021-03-15
+
+### Changes
+
+- Update to ARCore 1.23.
+
+### Fixes
+
+- Fixed possible crash when converting [CPU camera images](xref:UnityEngine.XR.ARSubsystems.XRCpuImage) to RGB color formats.
 
 ## [4.2.0-pre.2] - 2021-03-03
 
@@ -23,14 +36,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - `ArCameraConfig.Null` => Use [`default`](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/default) instead.
   - `ArCameraConfigFilter.IsNull` => Compare to `null` instead.
   - `ArCameraConfigFilter.Null` => Use [`default`](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/default) instead.
-- Update [XR Plug-in Management](https://docs.unity3d.com/Packages/com.unity.xr.management@4.0) dependency to 4.0.
-- Update [known limitations](xref:arcore-manual#known-limitations) to clarify depth image support behavior.
+- Updated [XR Plug-in Management](https://docs.unity3d.com/Packages/com.unity.xr.management@4.0) dependency to 4.0.
+- Updated [known limitations](xref:arcore-manual#known-limitations) to clarify depth image support behavior.
+- The minimum Unity version for this package is now 2020.3.
 
 ### Fixes
 
-- Improve handling for spaces in pathnames when building the reference image library which may cause the build to fail.
-- Allow reference images to be located outside the `Assets` folder, e.g., in packages.
-- Fix incorrect reporting of the [plane detection mode](xref:UnityEngine.XR.ARSubsystems.XRPlaneSubsystem.PlaneDetectionMode). Both the [requestedPlaneDetectionMode](xref:UnityEngine.XR.ARSubsystems.XRPlaneSubsystem.requestedPlaneDetectionMode) and [currentPlaneDetectionMode](xref:UnityEngine.XR.ARSubsystems.XRPlaneSubsystem.currentPlaneDetectionMode) would incorrectly report that vertical plane detection was enabled/requested when only horizontal plane detection enabled/requested.
+- Improved how this package handles spaces in path names to fix an issue that caused the build to fail when Unity builds the reference image library.
+- You can now use reference images that are located outside the `Assets` folder.
+- Fixed an issue where the [plane detection mode](xref:UnityEngine.XR.ARSubsystems.PlaneDetectionMode) reported incorrectly. The [requestedPlaneDetectionMode](xref:UnityEngine.XR.ARSubsystems.XRPlaneSubsystem.requestedPlaneDetectionMode) and [currentPlaneDetectionMode](xref:UnityEngine.XR.ARSubsystems.XRPlaneSubsystem.currentPlaneDetectionMode) incorrectly reported that vertical plane detection is enabled or requested when only horizontal plane detection is enabled or requested.
+- Excluded tests from scripting API docs.
 
 ## [4.1.3] - 2021-01-05
 

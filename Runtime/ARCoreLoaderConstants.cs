@@ -6,7 +6,7 @@ namespace UnityEngine.XR.ARCore
     public static class ARCoreLoaderConstants
     {
         /// <summary>
-        /// Key we use to store and retrieve custom configuration settings from EditorBuildSettings
+        /// Key we use to store and retrieve custom configuration settings from <see cref="EditorBuildSettings"/>.
         /// </summary>
         public const string k_SettingsKey = "com.unity.xr.management.arcore_loader";
     }

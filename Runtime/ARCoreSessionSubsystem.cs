@@ -31,8 +31,11 @@ namespace UnityEngine.XR.ARCore
         void ConfigurationChangedFromProvider(ARCoreBeforeSetConfigurationEventArgs eventArgs) => beforeSetConfiguration?.Invoke(eventArgs);
 
         /// <summary>
-        /// Notifies that there has been a change in the ARCore configuration object which triggers <see cref="beforeSetConfiguration"/>.
+        /// Initiates a configuration change.
         /// </summary>
+        /// <remarks>
+        /// When you call this function, the session dispatches a <see cref="beforeSetConfiguration"/> event.
+        /// </remarks>
         public void SetConfigurationDirty()
         {
             NativeApi.UnityARCore_session_setConfigurationDirty();
@@ -48,10 +51,11 @@ namespace UnityEngine.XR.ARCore
         /// <summary>
         /// (Read Only) The <see cref="ArSession"/> associated with the subsystem. May be <see cref="ArSession.Null"/>.
         /// </summary>
+        /// <value>The session instance.</value>
         public ArSession session => ((ARCoreProvider)provider).session;
 
         /// <summary>
-        /// Start recording a session.
+        /// Starts recording a session.
         /// </summary>
         /// <param name="recordingConfig">The configuration for the recording.</param>
         /// <returns>Returns <see cref="ArStatus.Success"/> if recording successfully begins. Returns one of the
@@ -109,16 +113,20 @@ namespace UnityEngine.XR.ARCore
         /// <summary>
         /// (Read Only) The current recording status.
         /// </summary>
+        /// <value>Whether or not the session is recording (or has stopped because of an error).</value>
         public ArRecordingStatus recordingStatus => ((ARCoreProvider)provider).recordingStatus;
 
         /// <summary>
         /// (Read Only) The current playback status.
         /// </summary>
+        /// <value>Whether or not the session is playing back a recording (or has stopped because of an error).</value>
         public ArPlaybackStatus playbackStatus => ((ARCoreProvider)provider).playbackStatus;
 
         /// <summary>
-        /// Event that is triggered right before the configuration is set on the session. Allows changes to be made to the configuration before it is set.
+        /// An event that is triggered right before the configuration is set on the session.
+        /// Allows changes to be made to the configuration before it is set.
         /// </summary>
+        /// <value>An Action delegate that provides access to the new session config before it is applied.</value>
         public event Action<ARCoreBeforeSetConfigurationEventArgs> beforeSetConfiguration;
 
         class ARCoreProvider : Provider

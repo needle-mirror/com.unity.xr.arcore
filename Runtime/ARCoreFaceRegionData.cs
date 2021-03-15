@@ -16,11 +16,13 @@ namespace UnityEngine.XR.ARCore
         /// <summary>
         /// The region this data describes.
         /// </summary>
+        /// <value>Identifies which part of the face this data applies to.</value>
         public ARCoreFaceRegion region { get { return m_Region; } }
 
         /// <summary>
         /// The pose associated with the face <see cref="region"/>.
         /// </summary>
+        /// <value>Provides the 3D orientation of the region.</value>
         public Pose pose { get { return m_Pose; } }
 
         /// <summary>
