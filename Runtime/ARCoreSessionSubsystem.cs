@@ -49,7 +49,7 @@ namespace UnityEngine.XR.ARCore
         }
 
         /// <summary>
-        /// (Read Only) The <see cref="ArSession"/> associated with the subsystem. May be <see cref="ArSession.Null"/>.
+        /// (Read Only) The <see cref="ArSession"/> associated with the subsystem. May be `null`.
         /// </summary>
         /// <value>The session instance.</value>
         public ArSession session => ((ARCoreProvider)provider).session;
