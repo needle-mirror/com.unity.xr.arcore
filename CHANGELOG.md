@@ -5,6 +5,19 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [4.1.7] - 2021-03-31
+
+### Changes
+
+- Update [known limitations](xref:arcore-manual#known-limitations) to clarify depth image support behavior.
+
+### Fixes
+
+- Fix incorrect reporting of the [plane detection mode](xref:UnityEngine.XR.ARSubsystems.PlaneDetectionMode). Both the [requestedPlaneDetectionMode](xref:UnityEngine.XR.ARSubsystems.XRPlaneSubsystem.requestedPlaneDetectionMode) and [currentPlaneDetectionMode](xref:UnityEngine.XR.ARSubsystems.XRPlaneSubsystem.currentPlaneDetectionMode) would incorrectly report that vertical plane detection was enabled/requested when only horizontal plane detection enabled/requested.
+- Fixed possible crash when converting [CPU camera images](xref:UnityEngine.XR.ARSubsystems.XRCpuImage) to RGB color formats.
+- Improve handling for spaces in pathnames when building the reference image library which may cause the build to fail.
+- Allow reference images to be located outside the `Assets` folder, e.g., in packages.
+
 ## [4.1.5] - 2021-01-25
 
 ### Changes
@@ -19,7 +32,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changes
 
-- Update ARCore to version 1.22.
+- Updated ARCore to version 1.22.
+- This package now requires Unity 2019.4.15f1 or later.
 
 ### Fixes
 

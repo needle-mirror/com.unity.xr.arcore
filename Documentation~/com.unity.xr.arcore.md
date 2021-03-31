@@ -169,20 +169,22 @@ Additionally, the light estimation modes are either used or affected by other su
 The ARCore implementation of [XROcclusionSubsystem](xref:arsubsystems-occlusion-subsystem) supports [Environment Depth Texture](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@4.1/api/UnityEngine.XR.ARFoundation.AROcclusionManager.html#UnityEngine_XR_ARFoundation_AROcclusionManager_environmentDepthTexture) but does not support the other textures related to human segmentation.
 
 # Technical details
+
 ## Requirements
 
 This version of ARCore XR Plugin is compatible with the following versions of the Unity Editor:
 
-* 2019.4
-* 2020.1
-* 2020.2
+* 2019.4.15f1
+* 2020.3
 * 2021.1
+* 2021.2
 
 ## Known limitations
 
 * The **AR Core Supported** setting in the XR Settings section of the Android Player settings must remain disabled in order for apps built with the ARCore XR Plugin to work properly.
 * Color Temperature in degrees Kelvin is not presently supported.
 * Due to changes made in Google's ARCore client libraries which are redistributed in ARCore XR Plugin, projects built with Unity 2019.4 must be updated to use Gradle 5.6.4 or later. Please [refer to these instructions](https://developers.google.com/ar/develop/unity/android-11-build#unity_20193_20194_and_20201) for updating your project's Gradle version.
+* The [XROcclusionSubsystemDescriptor](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystemDescriptor) properties [supportsEnvironmentDepthImage](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystemDescriptor.supportsEnvironmentDepthImage) and [supportsEnvironmentDepthConfidenceImage](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystemDescriptor.supportsEnvironmentDepthConfidenceImage) require a session before support can be determined. If there is no session, then these properties will return `false`. They may later return `true` when a session has been established.
 
 ## Package contents
 
