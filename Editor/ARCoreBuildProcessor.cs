@@ -207,7 +207,7 @@ namespace UnityEditor.XR.ARCore
                                 if (string.Equals(extension, ".jpg", StringComparison.OrdinalIgnoreCase) ||
                                     string.Equals(extension, ".png", StringComparison.OrdinalIgnoreCase))
                                 {
-                                    entry.Append(referenceImageName).Append('|').Append(assetPath);
+                                    entry.Append(referenceImageName).Append('|').Append(Path.GetFullPath(assetPath));
                                 }
                                 else
                                 {
@@ -245,26 +245,6 @@ namespace UnityEditor.XR.ARCore
                             imageLib.name + ": Invoking arcoreimg",
                             overallProgress + progressPerLibrary * (numSteps - 1) / numSteps);
 
-                        var packagePath = Path.GetFullPath("Packages/com.unity.xr.arcore");
-
-                        string extension = "";
-                        string platformName = "Undefined";
-    #if UNITY_EDITOR_WIN
-                        platformName = "Windows";
-                        extension = ".exe";
-    #elif UNITY_EDITOR_OSX
-                        platformName = "MacOS";
-                        extension = "";
-    #elif UNITY_EDITOR_LINUX
-                        platformName = "Linux";
-                        extension = "";
-    #endif
-                        var arcoreimgPath = Path.Combine(packagePath, "Tools~", platformName, "arcoreimg" + extension);
-
-    #if UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
-                        Cli.Execute("/bin/chmod", $"+x \"{arcoreimgPath}\"");
-    #endif
-
                         // This file must have the .imgdb extension (the tool adds it otherwise)
                         var outputDbPath = ARCoreImageTrackingProvider.GetPathForLibrary(imageLib);
                         if (File.Exists(outputDbPath))
@@ -272,12 +252,7 @@ namespace UnityEditor.XR.ARCore
                             File.Delete(outputDbPath);
                         }
 
-                        var (stdOut, stdErr, _) = Cli.Execute(arcoreimgPath, new[]
-                        {
-                            "build-db",
-                            $"--input_image_list_path={inputImageListPath}",
-                            $"--output_db_path={outputDbPath}",
-                        });
+                        var (stdOut, stdErr, _) = ArCoreImg.BuildDb(inputImageListPath, outputDbPath);
 
                         if (!File.Exists(outputDbPath))
                         {

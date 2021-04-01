@@ -1,8 +1,17 @@
 # Changelog
+
 All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+
+## [2.1.18] - 2021-04-01
+
+### Fixes
+
+- Exclude tests from scripting API docs.
+- Improve handling for spaces in pathnames when building the reference image library which may cause the build to fail.
+- Allow reference images to be located outside the `Assets` folder, e.g., in packages.
 
 ## [2.1.16] - 2021-01-25
 

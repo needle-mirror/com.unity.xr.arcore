@@ -121,11 +121,12 @@ if (arcoreFaceSubsystem != null)
 ```
 
 # Technical details
+
 ## Requirements
 
 This version of *ARCore XR Plugin* is compatible with the following versions of the Unity Editor:
 
-* 2019.2 and later (recommended)
+* 2019.4.15f1 and later (recommended)
 
 ## Known limitations
 
