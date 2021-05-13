@@ -8,7 +8,24 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [4.2.0-pre.7] - 2021-05-13
+
+### Added
+
+- Added support for [ARBuildProcessor](xref:UnityEditor.XR.ARSubsystems.ARBuildProcessor).
+- Added support for the [TrackableType.Depth](xref:UnityEngine.XR.ARSubsystems.TrackableType) raycast result. This allows you to raycast against the depth map on devices that support depth.
+
+### Changed
+
+- Updated to ARCore 1.24.
+
+### Fixed
+
+- Fixed delay with switching to front-facing camera at the start/resuming of an `ARSession`.
+
 ## [4.2.0-pre.5] - 2021-04-07
+
+No changes
 
 ## [4.2.0-pre.4] - 2021-03-19
 
@@ -137,6 +154,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [4.1.0-preview.7] - 2020-08-26
 
+No changes
+
 ## [4.1.0-preview.6] - 2020-07-27
 
 ### Added
@@ -227,7 +246,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [3.1.0-preview.8] - 2020-03-12
 
+No changes
+
 ## [3.1.0-preview.7] - 2020-02-27
+
+No changes
 
 ## [3.1.0-preview.6] - 2020-02-03
 

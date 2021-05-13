@@ -182,7 +182,8 @@ namespace UnityEngine.XR.ARCore
                 supportsWorldBasedRaycast = true,
                 supportedTrackableTypes =
                     (TrackableType.Planes & ~TrackableType.PlaneWithinInfinity) |
-                    TrackableType.FeaturePoint,
+                    TrackableType.FeaturePoint |
+                    TrackableType.Depth,
                 supportsTrackedRaycasts = true,
             });
         }

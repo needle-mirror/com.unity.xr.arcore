@@ -14,6 +14,8 @@ namespace UnityEngine.XR.ARCore
         {
             Camera = 0,
             EnvironmentDepth = 1,
+            RawEnvironmentDepth = 2,
+            RawEnvironmentDepthConfidence = 3,
         }
 
         /// <summary>
@@ -177,7 +179,7 @@ namespace UnityEngine.XR.ARCore
         /// <returns>Returns `true` if <paramref name="image"/> can be converted to <paramref name="format"/>.
         ///     Returns `false` otherwise.</returns>
         public override bool FormatSupported(XRCpuImage image, TextureFormat format)
-            => (((image.format == XRCpuImage.Format.AndroidYuv420_888) || (image.format == XRCpuImage.Format.DepthUint16))
+            => (((image.format == XRCpuImage.Format.AndroidYuv420_888) || (image.format == XRCpuImage.Format.DepthUint16) || (image.format == XRCpuImage.Format.OneComponent8))
                 && s_SupportedVideoConversionFormats.Contains(format));
 
         static class NativeApi

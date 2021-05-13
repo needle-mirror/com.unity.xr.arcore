@@ -8,21 +8,15 @@ using UnityEngine.XR.ARSubsystems;
 
 namespace UnityEditor.XR.ARCore
 {
-    class ARCoreImageLibraryBuildProcessor : IPreprocessBuildWithReport
+    class ARCoreImageLibraryBuildProcessor : IPreprocessBuildWithReport, ARBuildProcessor.IPreprocessBuild
     {
         public int callbackOrder => 2;
 
         static void Rethrow(XRReferenceImageLibrary library, string message, Exception innerException) =>
             throw new Exception($"\n-\n-\n-\nError building {nameof(XRReferenceImageLibrary)} {AssetDatabase.GetAssetPath(library)}: {message}\n-\n-\n-", innerException);
 
-        public void OnPreprocessBuild(BuildReport report)
+        static void BuildAssets()
         {
-            if (report.summary.platform != BuildTarget.Android)
-                return;
-
-            if (!ARCorePreprocessBuild.isARCoreLoaderEnabled)
-                return;
-
             var assets = AssetDatabase.FindAssets($"t:{nameof(XRReferenceImageLibrary)}");
             var libraries = assets
                 .Select(AssetDatabase.GUIDToAssetPath)
@@ -59,6 +53,25 @@ namespace UnityEditor.XR.ARCore
                     Rethrow(library, $"The arcoreimg command line tool ran successfully but did not produce an image database. This is likely a bug. Please provide these details to Unity:\n=== begin arcoreimg output ===\nstdout:\n{e.stdOut}\nstderr:\n{e.stdErr}\n=== end arcoreimg output===\n", e);
                 }
             }
+        }
+
+        void ARBuildProcessor.IPreprocessBuild.OnPreprocessBuild(PreprocessBuildEventArgs buildEventArgs)
+        {
+            if (buildEventArgs.activeLoadersForBuildTarget?.OfType<ARCoreLoader>().Any() == false)
+                return;
+
+            BuildAssets();
+        }
+
+        void IPreprocessBuildWithReport.OnPreprocessBuild(BuildReport report)
+        {
+            if (report.summary.platform != BuildTarget.Android)
+                return;
+
+            if (!ARCorePreprocessBuild.isARCoreLoaderEnabled)
+                return;
+
+            BuildAssets();
         }
     }
 }

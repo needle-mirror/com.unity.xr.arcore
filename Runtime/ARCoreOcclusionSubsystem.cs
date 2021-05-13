@@ -34,6 +34,9 @@ namespace UnityEngine.XR.ARCore
                 providerType = typeof(ARCoreOcclusionSubsystem.ARCoreProvider),
                 subsystemTypeOverride = typeof(ARCoreOcclusionSubsystem),
                 environmentDepthImageSupportedDelegate = NativeApi.UnityARCore_OcclusionProvider_DoesSupportEnvironmentDepth,
+                // Confidence and smoothing is implicitly supported if environment depth is supported.
+                environmentDepthConfidenceImageSupportedDelegate = NativeApi.UnityARCore_OcclusionProvider_DoesSupportEnvironmentDepth,
+                environmentDepthTemporalSmoothingSupportedDelegate = NativeApi.UnityARCore_OcclusionProvider_DoesSupportEnvironmentDepth,
             };
 
             if (!XROcclusionSubsystem.Register(occlusionSubsystemCinfo))
@@ -129,6 +132,15 @@ namespace UnityEngine.XR.ARCore
             public override EnvironmentDepthMode currentEnvironmentDepthMode
                 => NativeApi.UnityARCore_OcclusionProvider_GetCurrentEnvironmentDepthMode();
 
+            public override bool environmentDepthTemporalSmoothingEnabled =>
+                NativeApi.UnityARCore_OcclusionProvider_GetEnvironmentDepthTemporalSmoothingEnabled();
+
+            public override bool environmentDepthTemporalSmoothingRequested
+            {
+                get => Api.GetRequestedFeatures().Any(Feature.EnvironmentDepthTemporalSmoothing);
+                set => Api.SetFeatureRequested(Feature.EnvironmentDepthTemporalSmoothing, value);
+            }
+
             /// <summary>
             /// Gets the environment texture descriptor.
             /// </summary>
@@ -149,13 +161,50 @@ namespace UnityEngine.XR.ARCore
             /// <c>true</c> if the environment depth texture is available and its CPU image construction information is
             /// returned. Otherwise, <c>false</c>.
             /// </returns>
+            /// <remarks>
+            /// If  <see cref='environmentDepthTemporalSmoothingEnabled'/> is <c>true</c> then the CPU image construction information
+            /// will be for the temporally smoothed environmental depth image otherwise it will be for the raw environmental depth image.
+            /// </remarks>
             public override bool TryAcquireEnvironmentDepthCpuImage(out XRCpuImage.Cinfo cinfo)
-                => ARCoreCpuImageApi.TryAcquireLatestImage(ARCoreCpuImageApi.ImageType.EnvironmentDepth, out cinfo);
+            {
+                return environmentDepthTemporalSmoothingEnabled 
+                    ? ARCoreCpuImageApi.TryAcquireLatestImage(ARCoreCpuImageApi.ImageType.EnvironmentDepth, out cinfo) 
+                    : ARCoreCpuImageApi.TryAcquireLatestImage(ARCoreCpuImageApi.ImageType.RawEnvironmentDepth, out cinfo);
+            }
 
             /// <summary>
             /// The CPU image API for interacting with the environment depth image.
             /// </summary>
             public override XRCpuImage.Api environmentDepthCpuImageApi => ARCoreCpuImageApi.instance;
+
+            /// <summary>
+            /// Get the environment depth confidence texture descriptor.
+            /// </summary>
+            /// <param name="environmentDepthConfidenceDescriptor">The environment depth texture descriptor to be
+            /// populated, if available.</param>
+            /// <returns>
+            /// <c>true</c> if the environment depth confidence texture descriptor is available and is returned.
+            /// Otherwise, <c>false</c>.
+            /// </returns>
+            public override bool TryGetEnvironmentDepthConfidence(out XRTextureDescriptor environmentDepthConfidenceDescriptor)
+                => NativeApi.UnityARCore_OcclusionProvider_TryGetEnvironmentDepthConfidence(out environmentDepthConfidenceDescriptor);
+
+            /// <summary>
+            /// Gets the CPU construction information for a environment depth confidence image.
+            /// </summary>
+            /// <param name="cinfo">The CPU image construction information, on success.</param>
+            /// <returns>
+            /// <c>true</c> if the environment depth texture confidence is available and its CPU image construction information is
+            /// returned. Otherwise, <c>false</c>.
+            /// </returns>
+            public override bool TryAcquireEnvironmentDepthConfidenceCpuImage(out XRCpuImage.Cinfo cinfo)
+                => ARCoreCpuImageApi.TryAcquireLatestImage(ARCoreCpuImageApi.ImageType.RawEnvironmentDepthConfidence,
+                    out cinfo);
+
+            /// <summary>
+            /// The CPU image API for interacting with the environment depth confidence image.
+            /// </summary>
+            public override XRCpuImage.Api environmentDepthConfidenceCpuImageApi => ARCoreCpuImageApi.instance;
 
             /// <summary>
             /// Gets the occlusion texture descriptors associated with the current AR frame.
@@ -242,6 +291,12 @@ namespace UnityEngine.XR.ARCore
 
             [DllImport("UnityARCore")]
             public static extern bool UnityARCore_OcclusionProvider_IsEnvironmentDepthEnabled();
+
+            [DllImport("UnityARCore")]
+            public static extern bool UnityARCore_OcclusionProvider_GetEnvironmentDepthTemporalSmoothingEnabled();
+
+            [DllImport("UnityARCore")]
+            public static extern bool UnityARCore_OcclusionProvider_TryGetEnvironmentDepthConfidence(out XRTextureDescriptor environmentDepthConfidenceDescriptor);
         }
     }
 }

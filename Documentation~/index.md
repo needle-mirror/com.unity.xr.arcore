@@ -17,7 +17,7 @@ The ARCore XR Plug-in package enables ARCore support via Unity's multi-platform 
 * [Environment probes](xref:arsubsystems-environment-probe-subsystem)
 * [Occlusion](xref:arsubsystems-occlusion-subsystem)
 
-This version of ARCore XR Plug-in uses ARCore 1.23 and supports the following functionality:
+This version of ARCore XR Plug-in uses ARCore 1.24 and supports the following functionality:
 
 * Device localization
 * Horizontal plane detection

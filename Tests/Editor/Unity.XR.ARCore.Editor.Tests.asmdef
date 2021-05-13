@@ -3,6 +3,7 @@
     "references": [
         "Unity.XR.ARSubsystems",
         "Unity.XR.ARSubsystems.Editor",
+        "Unity.XR.ARCore",
         "Unity.XR.ARCore.Editor"
     ],
     "optionalUnityReferences": [
@@ -11,5 +12,6 @@
     "includePlatforms": [
         "Editor"
     ],
-    "excludePlatforms": []
+    "excludePlatforms": [],
+    "allowUnsafeCode": true
 }
