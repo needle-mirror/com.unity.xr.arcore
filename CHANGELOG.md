@@ -8,12 +8,17 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [4.2.0-pre.8] - 2021-05-20
+
+No changes
+
 ## [4.2.0-pre.7] - 2021-05-13
 
 ### Added
 
 - Added support for [ARBuildProcessor](xref:UnityEditor.XR.ARSubsystems.ARBuildProcessor).
 - Added support for the [TrackableType.Depth](xref:UnityEngine.XR.ARSubsystems.TrackableType) raycast result. This allows you to raycast against the depth map on devices that support depth.
+- Added support for ARCore Raw Depth and Raw Depth Confidence images in both texture and [XRCpuImage](xref:UnityEngine.XR.ARSubystems.XRCpuImage) formats.
 
 ### Changed
 
