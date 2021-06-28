@@ -47,7 +47,7 @@ namespace UnityEngine.XR.ARCore
         /// Generates a hash suitable for use with containers like `HashSet` and `Dictionary`.
         /// </summary>
         /// <returns>Returns a hash code generated from this object's fields.</returns>
-        public override int GetHashCode() => HashCode.Combine(session.GetHashCode(), filter.GetHashCode());
+        public override int GetHashCode() => HashCodeUtil.Combine(session.GetHashCode(), filter.GetHashCode());
 
         /// <summary>
         /// Tests for equality. Same as <see cref="Equals(ARCoreBeforeGetCameraConfigurationEventArgs)"/>.

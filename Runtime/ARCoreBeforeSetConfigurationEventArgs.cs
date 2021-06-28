@@ -80,7 +80,7 @@ namespace UnityEngine.XR.ARCore
         /// Generates a hash suitable for use with containers like `HashSet` and `Dictionary`.
         /// </summary>
         /// <returns>A hash code generated from this object's fields.</returns>
-        public override int GetHashCode() => HashCode.Combine(m_Session.GetHashCode(), m_Config.GetHashCode());
+        public override int GetHashCode() => HashCodeUtil.Combine(m_Session.GetHashCode(), m_Config.GetHashCode());
 
         /// <summary>
         /// Tests for equality.
