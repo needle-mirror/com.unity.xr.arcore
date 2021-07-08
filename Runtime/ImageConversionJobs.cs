@@ -102,15 +102,16 @@ namespace UnityEngine.XR.ARCore
 
         public void Execute(int row)
         {
-            int colorImageOffset = (height - 1 - row) * width * 4 + 1;
-            int grayImageOffset = row * width + 1;
+            int colorImageOffset = (height - 1 - row) * width * 4;
+            int grayImageOffset = row * width;
             int lastOffset = grayImageOffset + width;
             while (grayImageOffset < lastOffset)
             {
+                //ARGB so need to account for ALPHA index.
                 grayscaleImageOut[grayImageOffset++] = (byte)(
-                    colorImageIn[colorImageOffset    ] * 0.3f +
-                    colorImageIn[colorImageOffset + 1] * 0.59f +
-                    colorImageIn[colorImageOffset + 2] * 0.11f);
+                    colorImageIn[colorImageOffset + 1] * 0.3f +
+                    colorImageIn[colorImageOffset + 2] * 0.59f +
+                    colorImageIn[colorImageOffset + 3] * 0.11f);
 
                 colorImageOffset += 4;
             }
