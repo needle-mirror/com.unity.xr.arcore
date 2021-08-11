@@ -1,7 +1,7 @@
 {
   "name": "com.unity.xr.arcore",
   "displayName": "ARCore XR Plugin",
-  "version": "4.2.0-pre.12",
+  "version": "4.2.0",
   "unity": "2020.3",
   "description": "Provides native Google ARCore integration for use with Unity's multi-platform XR API.\nSupports the following features:\n-Efficient Background Rendering\n-Horizontal Planes\n-Depth Data\n-Anchors\n-Hit Testing\n-Occlusion",
   "keywords": [
@@ -13,16 +13,16 @@
     "core"
   ],
   "dependencies": {
-    "com.unity.xr.arsubsystems": "4.2.0-pre.12",
+    "com.unity.xr.arsubsystems": "4.2.0",
     "com.unity.xr.management": "4.0.1",
     "com.unity.modules.androidjni": "1.0.0"
   },
   "upmCi": {
-    "footprint": "ec6c698db92d42fe64d1ba0d140d81666678044b"
+    "footprint": "02d9e540e659dcd38e3ed5d0dccea3cf85d29a1d"
   },
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/arfoundation.git",
     "type": "git",
-    "revision": "42c970abaa2c945cd998679c777dc06247b08179"
+    "revision": "214a8d84fe8deb14a45c8b5d6949c40b03c3495a"
   }
 }
