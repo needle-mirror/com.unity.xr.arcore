@@ -46,7 +46,7 @@ This package does not support the following subsystems:
 
 To install this package, follow the instructions in the [Package Manager documentation](https://docs.unity3d.com/Packages/com.unity.package-manager-ui@latest/index.html).
 
-You can also install the AR Foundation package, which uses the ARCore XR Plug-in and provides many useful scripts and prefabs. For more information, see the [AR Foundation documentation](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@4.2).
+You can also install the AR Foundation package, which uses the ARCore XR Plug-in and provides many useful scripts and prefabs. For more information, see the [AR Foundation documentation](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@5.0).
 
 # Using ARCore XR Plug-in
 
@@ -54,7 +54,7 @@ In most cases, you should use the scripts, prefabs, and assets provided by the A
 
 Use the ARCore XR plug-in APIs when you need access to Android ARCore-specific features. The ARCoreFaceRegions sample in the [AR Foundations repository](https://github.com/Unity-Technologies/arfoundation-samples#ARCoreFaceRegions) provides an example of using an ARCore feature.
 
-See [Using AR Foundation](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@4.2/manual/index.html#using-ar-foundation) for general information about developing AR apps in Unity.
+See [Using AR Foundation](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@5.0/manual/index.html#using-ar-foundation) for general information about developing AR apps in Unity.
 
 ## Build Settings
 
@@ -179,7 +179,7 @@ ARCore's [Face tracking](xref:UnityEngine.XR.ARCore.ARCoreFaceSubsystem) and [En
 
 ## Occlusion
 
-The ARCore implementation of [XROcclusionSubsystem](xref:arsubsystems-occlusion-subsystem) supports [Environment Depth Texture](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@4.2/api/UnityEngine.XR.ARFoundation.AROcclusionManager.html#UnityEngine_XR_ARFoundation_AROcclusionManager_environmentDepthTexture) but does not support the other Textures related to human segmentation.
+The ARCore implementation of [XROcclusionSubsystem](xref:arsubsystems-occlusion-subsystem) supports [Environment Depth Texture](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@5.0/api/UnityEngine.XR.ARFoundation.AROcclusionManager.html#UnityEngine_XR_ARFoundation_AROcclusionManager_environmentDepthTexture) but does not support the other Textures related to human segmentation.
 
 ## Recording and playback
 
@@ -204,9 +204,8 @@ To start or stop a recorded file in ARCore, the [ARCoreSessionSubsystem](xref:Un
 
 This version of ARCore XR Plug-in is compatible with the following versions of the Unity Editor:
 
-* 2020.3
-* 2021.1
 * 2021.2
+* 2022.1
 
 ## Known limitations
 

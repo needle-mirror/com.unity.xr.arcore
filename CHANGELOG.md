@@ -8,7 +8,15 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [4.2.1] - 2021-10-06
+## [5.0.0-pre.5] - 2021-10-28
+
+### Changed
+
+- The minimum Unity version for this package is now 2021.2.
+
+### Removed
+
+- Removed deprecated APIs: `ARCorePlaneProvider` and `ARCoreImageTrackingProvider`.
 
 ### Fixed
 
@@ -23,6 +31,7 @@ No changes
 ### Added
 
 - Added methods to get the [raw](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystem.TryAcquireRawEnvironmentDepthCpuImage(UnityEngine.XR.ARSubsystems.XRCpuImage@)) and [smoothed](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystem.TryAcquireSmoothedEnvironmentDepthCpuImage(UnityEngine.XR.ARSubsystems.XRCpuImage@)) depth images independently.
+- Added support for the [depthSensorSupported](xref:UnityEngine.XR.ARSubsystems.XRCameraConfiguration.depthSensorSupported) flag on the `XRCameraConfiguration` to indicate whether or not a camera configuration supports using a depth sensor.
 
 ### Fixed
 

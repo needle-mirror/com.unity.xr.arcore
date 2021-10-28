@@ -32,7 +32,7 @@ namespace UnityEditor.XR.ARCore
 
         static IXRPackageMetadata s_Metadata = new ARCorePackageMetadata()
         {
-            packageName = "ARCore XR Plugin",
+            packageName = "Google ARCore XR Plug-in",
             packageId = "com.unity.xr.arcore",
             settingsType = typeof(ARCoreSettings).FullName,
             loaderMetadata = new List<IXRLoaderMetadata>()
