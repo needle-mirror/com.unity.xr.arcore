@@ -8,6 +8,12 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [5.0.0-pre.7] - 2021-12-10
+
+### Added
+
+- Added a warning which is shown in the console when an Android app is built with only 32-bit architecture.
+
 ## [5.0.0-pre.6] - 2021-11-17
 
 No changes
@@ -62,7 +68,7 @@ No changes
 
 - Added support for [ARBuildProcessor](xref:UnityEditor.XR.ARSubsystems.ARBuildProcessor).
 - Added support for the [TrackableType.Depth](xref:UnityEngine.XR.ARSubsystems.TrackableType) raycast result. This allows you to raycast against the depth map on devices that support depth.
-- Added support for ARCore Raw Depth and Raw Depth Confidence images in both texture and [XRCpuImage](xref:UnityEngine.XR.ARSubystems.XRCpuImage) formats.
+- Added support for ARCore Raw Depth and Raw Depth Confidence images in both texture and [XRCpuImage](xref:UnityEngine.XR.ARSubsystems.XRCpuImage) formats.
 
 ### Changed
 

@@ -53,6 +53,7 @@ namespace UnityEditor.XR.ARCore
                     EnsureOnlyOpenGLES3IsUsed();
                     EnsureGradleIsUsed();
                     EnsureGradleVersionIsSupported();
+                    Check64BitArch();
                     BuildHelper.AddBackgroundShaderToProject(ARCoreCameraSubsystem.backgroundShaderName);
                     break;
                 }
@@ -191,6 +192,16 @@ namespace UnityEditor.XR.ARCore
                 {
                     plugin.SetIncludeInBuildDelegate(path => isARCoreLoaderEnabled);
                 }
+            }
+        }
+
+        void Check64BitArch()
+        {
+            // In editor versions 2021.1 and above, a warning is already shown for IL2CPP with ARMv7 only build config. 
+            // So, we only need to check for Mono scripting backend.
+            if (PlayerSettings.GetScriptingBackend(NamedBuildTarget.Android) == ScriptingImplementation.Mono2x)
+            {
+                Debug.LogWarning("Missing ARM64 architecture which is required for Android 64-bit devices. See https://developers.google.com/ar/64bit.\nSelect IL2CPP  in 'Project Settings > Player > Other Settings > Scripting Backend' and select ARM64 in 'Project Settings > Player > Other Settings > Target Architectures'.");
             }
         }
     }

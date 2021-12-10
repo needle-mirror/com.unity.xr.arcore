@@ -13,6 +13,8 @@ The [XROcclusionSubsystem](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystem
 > [!NOTE]
 > Both raw and smoothed are always available if depth is supported, regardless of the value of [environmentDepthTemporalSmoothingEnabled](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystem.environmentDepthTemporalSmoothingEnabled).
 
+For more examples that use occlusion, see the [AR Foundation Samples repo](https://github.com/Unity-Technologies/arfoundation-samples).
+
 ## Requirements
 
 Environment depth requires a device with depth support. See [ARCore supported devices](https://developers.google.com/ar/devices) for a list of devices that support depth ("Supports Depth API" in the Comments column).
