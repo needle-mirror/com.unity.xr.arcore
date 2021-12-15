@@ -35,6 +35,7 @@ namespace UnityEditor.XR.ARCore
             EnsureOnlyOpenGLES3IsUsed();
             EnsureGradleIsUsed();
             EnsureGradleVersionIsSupported();
+            Check64BitArch();
             BuildImageTrackingAssets();
         }
 
@@ -135,7 +136,18 @@ namespace UnityEditor.XR.ARCore
                         string.Format("You have enabled the {0} graphics API, which is not supported by ARCore.", graphicsApi));
             }
         }
-
+    
+        void Check64BitArch()
+        {
+            var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
+            var scriptingBackend = PlayerSettings.GetScriptingBackend(buildTargetGroup);
+            if (scriptingBackend == ScriptingImplementation.Mono2x || 
+                (scriptingBackend == ScriptingImplementation.IL2CPP && (PlayerSettings.Android.targetArchitectures & AndroidArchitecture.ARM64) == 0))
+            {
+                Debug.LogWarning("Missing ARM64 architecture which is required for Android 64-bit devices. See https://developers.google.com/ar/64bit.\nSelect IL2CPP  in 'Project Settings > Player > Other Settings > Scripting Backend' and select ARM64 in 'Project Settings > Player > Other Settings > Target Architectures'.");
+            }
+        }
+        
         void BuildImageTrackingAssets()
         {
             if (Directory.Exists(Application.streamingAssetsPath))
