@@ -5,6 +5,18 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [4.1.9] - 2022-01-06
+
+### New
+
+- Add a warning which is shown in the console when an Android app is built with only 32-bit architecture.
+
+### Fixes
+
+- Fixed a missing dependency on built-in [UnityWebRequest](https://docs.unity3d.com/2021.2/Documentation/ScriptReference/Networking.UnityWebRequest.html) module.
+- Fixed a crash that would occur when loading images into a `MutableRuntimeReferenceImageLibrary` at runtime. The issue tracker can be found [here](https://issuetracker.unity3d.com/issues/arfoundation-arcore-android-il2cpp-runtime-crash-when-initializing-mutableruntimereferenceimagelibrary).
+- Fixed an issue where Occlusion shaders would fail compilation on certain devices.
+
 ## [4.1.7] - 2021-03-31
 
 ### Changes

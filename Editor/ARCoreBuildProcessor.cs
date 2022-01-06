@@ -55,6 +55,7 @@ namespace UnityEditor.XR.ARCore
                     EnsureGradleIsUsed();
                     EnsureGradleVersionIsSupported();
                     BuildImageTrackingAssets();
+                    Check64BitArch();
                     BuildHelper.AddBackgroundShaderToProject(ARCoreCameraSubsystem.backgroundShaderName);
                     break;
                 }
@@ -359,6 +360,29 @@ namespace UnityEditor.XR.ARCore
                 {
                     plugin.SetIncludeInBuildDelegate(path => isARCoreLoaderEnabled);
                 }
+            }
+        }
+    
+        void Check64BitArch()
+        {
+            // In editor versions 2021.1 and above, a warning is already shown for IL2CPP with ARMv7 only build config. 
+            // So, we only need to check for Mono scripting backend.
+#if UNITY_2021_2_OR_NEWER
+            bool armV7Only = PlayerSettings.GetScriptingBackend(NamedBuildTarget.Android) == ScriptingImplementation.Mono2x;
+#else // UNITY_2021_2_OR_NEWER
+            var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
+            var scriptingBackend = PlayerSettings.GetScriptingBackend(buildTargetGroup);
+            bool armV7Only = scriptingBackend == ScriptingImplementation.Mono2x;
+#if !UNITY_2021_1_OR_NEWER
+            // In editor version 2020.3 and lower, we will need to check for both Mono and IL2CPP with ARMv7 only
+            // build config since there is no default warning from the core editor.
+            armV7Only = armV7Only || (scriptingBackend == ScriptingImplementation.IL2CPP &&
+                              (PlayerSettings.Android.targetArchitectures & AndroidArchitecture.ARM64) == 0);
+#endif // !UNITY_2021_1_OR_NEWER
+#endif // UNITY_2021_2_OR_NEWER
+            if (armV7Only)
+            {
+                Debug.LogWarning("Missing ARM64 architecture which is required for Android 64-bit devices. See https://developers.google.com/ar/64bit.\nSelect IL2CPP  in 'Project Settings > Player > Other Settings > Scripting Backend' and select ARM64 in 'Project Settings > Player > Other Settings > Target Architectures'.");
             }
         }
     }
