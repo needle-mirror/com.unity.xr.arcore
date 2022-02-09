@@ -8,6 +8,13 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [5.0.0-pre.8] - 2022-02-09
+
+### Fixed
+
+- Fixed a bug where the list of configurations per sesssion would not clear even when the [ARCoreSessionSubsystem](xref:UnityEngine.XR.ARCore.ARCoreSessionSubsystem) was deinitialized.
+- Fixed a [memory leak](https://issuetracker.unity3d.com/issues/arcore-android-memory-leak-in-xr-application-when-using-arocclusionmanager-component) in the [AROcclusionManager](xref:UnityEngine.XR.ARFoundation.AROcclusionManager).
+
 ## [5.0.0-pre.7] - 2021-12-10
 
 ### Added
@@ -403,7 +410,7 @@ No changes
 - Fixed an issue where generating a reference image library could fail with "Access denied" on macOS and Linux. This was because spaces in project paths were not handled when setting execution privileges for `arcoreimg` on macOS and Linux.
 - The GPU camera texture dimensions were incorrectly reported as the current screen dimensions. This has been fixed.
 - The build could fail if reference images used for image tracking had a non-lowercase extension. This has been fixed.
-- Improved error reporting when Google's ARCore SDK for Unity is detected in the project. The build will continue to fail even after removing Google's plugin until the Editor is restarted. A note explaining this has been added to the error message.
+- Improved error reporting when Google's ARCore SDK for Unity is detected in the project. The build will continue to fail even after removing Google's plug-in until the Editor is restarted. A note explaining this has been added to the error message.
 - Fixed a potential crash when changing image libraries.
 
 ## [3.0.0-preview.3] - 2019-09-26
@@ -530,7 +537,7 @@ and project files needed to adapt ARCore to the Unity multi-platform AR API.
   - xmldoc referred to ARKit instead of ARCore
   - Make currentSettings public so users can override this easily.
 - Improved ARCore build error message
-    'Error building Player: BuildFailedException: "ARCore Supported" (Player Settings > XR Settings) refers to the built-in ARCore support in Unity and conflicts with the ARCore package.') that doesn't explain that that the "ARCore package" is in fact the "ARCore XR Plugin" package. The package name should match from the package manager window.
+    'Error building Player: BuildFailedException: "ARCore Supported" (Player Settings > XR Settings) refers to the built-in ARCore support in Unity and conflicts with the ARCore package.') that doesn't explain that that the "ARCore package" is in fact the "Google ARCore XR Plug-in" package. The package name should match from the package manager window.
 - Change dependency to `ARExtensions` preview.2
 - Only report display and projection matrices if we actually get them from ARCore.
 

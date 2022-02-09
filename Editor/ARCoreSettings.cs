@@ -5,7 +5,7 @@ using System.IO;
 namespace UnityEditor.XR.ARCore
 {
     /// <summary>
-    /// Holds settings that are used to configure the Unity ARCore Plugin.
+    /// Holds settings that are used to configure the Google ARCore XR Plug-in.
     /// </summary>
     [System.Serializable]
     [XRConfigurationData("ARCore", "UnityEditor.XR.ARCore.ARCoreSettings")]

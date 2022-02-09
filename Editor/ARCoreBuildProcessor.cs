@@ -72,7 +72,7 @@ namespace UnityEditor.XR.ARCore
         static void EnsureGradleIsUsed()
         {
             if (EditorUserBuildSettings.androidBuildSystem != AndroidBuildSystem.Gradle)
-                throw new BuildFailedException("ARCore XR Plugin requires the Gradle build system. See File > Build Settings... > Android");
+                throw new BuildFailedException("Google ARCore XR Plug-in requires the Gradle build system. See File > Build Settings... > Android");
         }
 
         static void EnsureGradleVersionIsSupported()
@@ -126,7 +126,7 @@ namespace UnityEditor.XR.ARCore
             var googleARAssetPath = AssetDatabase.GUIDToAssetPath("afb3e05691ff94d2cbad20643e5c5879");
             if (!string.IsNullOrEmpty(googleARAssetPath))
             {
-                throw new BuildFailedException("GoogleARCore detected. Google's \"ARCore SDK for Unity\" and Unity's \"ARCore XR Plugin\" package cannot be used together. If you have already removed GoogleARCore, you may need to restart the Editor.");
+                throw new BuildFailedException("GoogleARCore detected. Google's \"ARCore SDK for Unity\" and Unity's \"Google ARCore XR Plug-in\" package cannot be used together. If you have already removed GoogleARCore, you may need to restart the Editor.");
             }
         }
 

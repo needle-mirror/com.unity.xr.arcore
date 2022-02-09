@@ -1,9 +1,9 @@
 ---
 uid: arcore-manual
 ---
-# About ARCore XR Plug-in
+# About Google ARCore XR Plug-in
 
-The ARCore XR Plug-in package enables ARCore support via Unity's multi-platform XR API. This package implements the following XR subsystems:
+The Google ARCore XR Plug-in package enables ARCore support via Unity's multi-platform XR API. This package implements the following XR subsystems:
 
 * [Session](xref:arsubsystems-session-subsystem)
 * [Camera](xref:arsubsystems-camera-subsystem)
@@ -17,7 +17,7 @@ The ARCore XR Plug-in package enables ARCore support via Unity's multi-platform 
 * [Environment probes](xref:arsubsystems-environment-probe-subsystem)
 * [Occlusion](xref:arsubsystems-occlusion-subsystem)
 
-This version of ARCore XR Plug-in uses ARCore 1.24 and supports the following functionality:
+This version of Google ARCore XR Plug-in uses ARCore 1.24 and supports the following functionality:
 
 * Device localization
 * Horizontal plane detection
@@ -42,23 +42,23 @@ This package does not support the following subsystems:
 * [Mesh](xref:arsubsystems-mesh-subsystem)
 * [Body tracking](xref:UnityEngine.XR.ARSubsystems.XRHumanBodySubsystem)
 
-# Installing ARCore XR Plug-in
+# Installing Google ARCore XR Plug-in
 
 To install this package, follow the instructions in the [Package Manager documentation](https://docs.unity3d.com/Packages/com.unity.package-manager-ui@latest/index.html).
 
-You can also install the AR Foundation package, which uses the ARCore XR Plug-in and provides many useful scripts and prefabs. For more information, see the [AR Foundation documentation](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@5.0).
+You can also install the AR Foundation package, which uses the Google ARCore XR Plug-in and provides many useful scripts and prefabs. For more information, see the [AR Foundation documentation](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@5.0).
 
-# Using ARCore XR Plug-in
+# Using Google ARCore XR Plug-in
 
-In most cases, you should use the scripts, prefabs, and assets provided by the AR Foundation package as the basis for your handheld AR apps rather than using ARCore APIs directly. The ARCore XR plug-in supports AR Foundation features on the Android platform by implementing the native endpoints required to target Google’s ARCore platform using Unity's multi-platform XR API.
+In most cases, you should use the scripts, prefabs, and assets provided by the AR Foundation package as the basis for your handheld AR apps rather than using ARCore APIs directly. The Google ARCore XR Plug-in supports AR Foundation features on the Android platform by implementing the native endpoints required to target Google’s ARCore platform using Unity's multi-platform XR API.
 
-Use the ARCore XR plug-in APIs when you need access to Android ARCore-specific features. The ARCoreFaceRegions sample in the [AR Foundations repository](https://github.com/Unity-Technologies/arfoundation-samples#ARCoreFaceRegions) provides an example of using an ARCore feature.
+Use the Google ARCore XR Plug-in APIs when you need access to Android ARCore-specific features. The ARCoreFaceRegions sample in the [AR Foundations repository](https://github.com/Unity-Technologies/arfoundation-samples#ARCoreFaceRegions) provides an example of using an ARCore feature.
 
 See [Using AR Foundation](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@5.0/manual/index.html#using-ar-foundation) for general information about developing AR apps in Unity.
 
 ## Build Settings
 
-You can flag the ARCore XR Plug-in as **Required** or **Optional** in the Project Settings window.
+You can flag the Google ARCore XR Plug-in as **Required** or **Optional** in the Project Settings window.
 
 ARCore is set to **Required** by default. If you set the ARCore plug-in to **Optional** instead, the Google Play store lets users install your app on devices that don't support ARCore, or devices that support ARCore but don't have it installed. Use the **Optional** setting when creating an app that provides different experiences depending on whether ARCore is available.
 
@@ -202,7 +202,7 @@ To start or stop a recorded file in ARCore, the [ARCoreSessionSubsystem](xref:Un
 
 ## Requirements
 
-This version of ARCore XR Plug-in is compatible with the following versions of the Unity Editor:
+This version of Google ARCore XR Plug-in is compatible with the following versions of the Unity Editor:
 
 * 2021.2
 * 2022.1
@@ -214,7 +214,7 @@ This version of ARCore XR Plug-in is compatible with the following versions of t
 
 ## Package contents
 
-This version of ARCore XR Plug-in includes:
+This version of Google ARCore XR Plug-in includes:
 
 * A shared library which provides implementation of the XR Subsystems listed above
 * A shader used for rendering the camera image
