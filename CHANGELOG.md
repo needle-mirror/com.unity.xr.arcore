@@ -8,6 +8,14 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [4.2.3] - 2022-03-01
+
+### Fixed
+
+- Fixed a bug where the list of configurations per sesssion would not clear even when the [ARCoreSessionSubsystem](xref:UnityEngine.XR.ARCore.ARCoreSessionSubsystem) was deinitialized.
+- Fixed a [memory leak](https://issuetracker.unity3d.com/issues/arcore-android-memory-leak-in-xr-application-when-using-arocclusionmanager-component) in the [AROcclusionManager](xref:UnityEngine.XR.ARFoundation.AROcclusionManager).
+- Removed an errant bit mask that was being applied to the occlusion `XRCpuImage`s.
+
 ## [4.2.2] - 2021-12-09
 
 ### Added
