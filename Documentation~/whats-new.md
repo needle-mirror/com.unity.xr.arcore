@@ -7,6 +7,10 @@ Summary of changes in ARCore XR Plug-in package version 5.0.
 
 The main updates in this release include:
 
+**Added**
+
+- Added support for a new [OcclusionPreferenceMode.NoOcclusion](xref:UnityEngine.XR.ARSubsystems.Configuration.OcclusionPreferenceMode) mode that, when set, disables occlusion rendering on the camera background when using [ARCameraBackground](xref:UnityEngine.XR.ARFoundation.ARCameraBackground) and [AROcclusionManager](xref:UnityEngine.XR.ARFoundation.AROcclusionManager).
+
 **Changed**
 
 - The minimum Unity version for this package is now 2021.2.

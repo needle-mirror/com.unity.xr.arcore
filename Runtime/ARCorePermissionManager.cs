@@ -50,6 +50,14 @@ namespace UnityEngine.XR.ARCore
             s_CurrentCallback = callback;
         }
 
+        /// <summary>
+        /// Cancels any pending Android permission requests.
+        /// </summary>
+        public static void CancelPermissionRequest()
+        {
+            s_CurrentCallback = null;
+        }
+
         // UnityAndroidPermissions interface
         [Preserve]
         void OnPermissionGranted(string permissionName)

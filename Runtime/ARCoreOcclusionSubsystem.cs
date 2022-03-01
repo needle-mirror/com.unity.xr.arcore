@@ -83,6 +83,11 @@ namespace UnityEngine.XR.ARCore
             static readonly List<string> m_EnvironmentDepthEnabledMaterialKeywords = new List<string>() {k_EnvironmentDepthEnabledMaterialKeyword};
 
             /// <summary>
+            /// The occlusion preference mode for when rendering the background.
+            /// </summary>
+            OcclusionPreferenceMode m_OcclusionPreferenceMode;
+
+            /// <summary>
             /// Constructs the implementation provider.
             /// </summary>
             public ARCoreProvider()
@@ -140,6 +145,23 @@ namespace UnityEngine.XR.ARCore
                 get => Api.GetRequestedFeatures().Any(Feature.EnvironmentDepthTemporalSmoothing);
                 set => Api.SetFeatureRequested(Feature.EnvironmentDepthTemporalSmoothing, value);
             }
+
+            /// <summary>
+            /// Specifies the requested occlusion preference mode.
+            /// </summary>
+            /// <value>
+            /// The requested occlusion preference mode.
+            /// </value>
+            public override OcclusionPreferenceMode requestedOcclusionPreferenceMode
+            {
+                get => m_OcclusionPreferenceMode;
+                set => m_OcclusionPreferenceMode = value;
+            }
+
+            /// <summary>
+            /// Get the occlusion preference mode currently in use by the provider.
+            /// </summary>
+            public override OcclusionPreferenceMode currentOcclusionPreferenceMode => m_OcclusionPreferenceMode;
 
             /// <summary>
             /// Gets the environment texture descriptor.
@@ -244,15 +266,15 @@ namespace UnityEngine.XR.ARCore
             {
                 bool isEnvDepthEnabled = NativeApi.UnityARCore_OcclusionProvider_IsEnvironmentDepthEnabled();
 
-                if (isEnvDepthEnabled)
-                {
-                    enabledKeywords = m_EnvironmentDepthEnabledMaterialKeywords;
-                    disabledKeywords = null;
-                }
-                else
+                if ((m_OcclusionPreferenceMode == OcclusionPreferenceMode.NoOcclusion) || !isEnvDepthEnabled)
                 {
                     enabledKeywords = null;
                     disabledKeywords = m_EnvironmentDepthEnabledMaterialKeywords;
+                }
+                else
+                {
+                    enabledKeywords = m_EnvironmentDepthEnabledMaterialKeywords;
+                    disabledKeywords = null;
                 }
             }
         }

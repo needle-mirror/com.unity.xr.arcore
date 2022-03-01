@@ -402,7 +402,7 @@ namespace UnityEngine.XR.ARCore
             [MonoPInvokeCallback(typeof(NativeApi.CameraPermissionRequestProviderDelegate))]
             static void CameraPermissionRequestProvider(NativeApi.CameraPermissionsResultCallbackDelegate callback, IntPtr context)
             {
-                ARCorePermissionManager.RequestPermission(k_CameraPermissionName, (permissinName, granted) =>
+                ARCorePermissionManager.RequestPermission(k_CameraPermissionName, (permissionName, granted) =>
                 {
                     callback(granted, context);
                 });

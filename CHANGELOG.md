@@ -8,6 +8,18 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [5.0.0-pre.9] - 2022-03-01
+
+### Added
+
+- Added support for a new [OcclusionPreferenceMode.NoOcclusion](xref:UnityEngine.XR.ARSubsystems.Configuration.OcclusionPreferenceMode) mode that, when set, disables occlusion rendering on the camera background when using [ARCameraBackground](xref:UnityEngine.XR.ARFoundation.ARCameraBackground) and [AROcclusionManager](xref:UnityEngine.XR.ARFoundation.AROcclusionManager).
+
+- Added the method `CancelPermissionRequest` in [ARCorePermissionManager](xref:UnityEngine.XR.ARCore.ARCorePermissionManager) for users who want to do permission handling on their own. This addresses [issue 1387507](https://issuetracker.unity3d.com/issues/arfoundation-camera-request-permission-window-is-not-shown-when-app-is-minimized-and-opened-again-on-android-device).
+
+### Fixed
+
+- Removed an errant bit mask that was being applied to the occlusion `XRCpuImage`s.
+
 ## [5.0.0-pre.8] - 2022-02-09
 
 ### Fixed

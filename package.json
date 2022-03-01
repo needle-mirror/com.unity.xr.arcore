@@ -1,7 +1,7 @@
 {
   "name": "com.unity.xr.arcore",
   "displayName": "Google ARCore XR Plugin",
-  "version": "5.0.0-pre.8",
+  "version": "5.0.0-pre.9",
   "unity": "2021.2",
   "description": "Provides native Google ARCore integration for use with Unity's multi-platform XR API.\nSupports the following features:\n-Efficient Background Rendering\n-Horizontal Planes\n-Depth Data\n-Anchors\n-Hit Testing\n-Occlusion",
   "keywords": [
@@ -13,17 +13,20 @@
     "core"
   ],
   "dependencies": {
-    "com.unity.xr.arfoundation": "5.0.0-pre.8",
+    "com.unity.xr.arfoundation": "5.0.0-pre.9",
     "com.unity.xr.management": "4.0.1",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.unitywebrequest": "1.0.0"
   },
+  "upm": {
+    "changelog": "### Added,- Added support for a new [OcclusionPreferenceMode.NoOcclusion](xref:UnityEngine.XR.ARSubsystems.Configuration.OcclusionPreferenceMode) mode that, when set, disables occlusion rendering on the camera background when using [ARCameraBackground](xref:UnityEngine.XR.ARFoundation.ARCameraBackground) and [AROcclusionManager](xref:UnityEngine.XR.ARFoundation.AROcclusionManager).,- Added the method `CancelPermissionRequest` in [ARCorePermissionManager](xref:UnityEngine.XR.ARCore.ARCorePermissionManager) for users who want to do permission handling on their own. This addresses [issue 1387507](https://issuetracker.unity3d.com/issues/arfoundation-camera-request-permission-window-is-not-shown-when-app-is-minimized-and-opened-again-on-android-device).,### Fixed,- Removed an errant bit mask that was being applied to the occlusion `XRCpuImage`s."
+  },
   "upmCi": {
-    "footprint": "e168c2044134f58928d924bce8ce318d096526e4"
+    "footprint": "b2e9b3132629d55eb52714a2bb324823d6c3b29b"
   },
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/arfoundation.git",
     "type": "git",
-    "revision": "e119669b1d882a469dfaa01f37c6f806f2c56355"
+    "revision": "4f50d482f45e77dc73e4c6ae898578c60efc7c8c"
   }
 }
