@@ -1,4 +1,4 @@
-﻿Shader "Unlit/ARCoreBackground"
+Shader "Unlit/ARCoreBackground/AfterOpaques"
 {
     Properties
     {
@@ -8,7 +8,7 @@
 
     SubShader
     {
-        Name "ARCore Background (Before Opaques)"
+        Name "ARCore Background (After Opaques)"
         Tags
         {
             "Queue" = "Background"
@@ -18,9 +18,107 @@
 
         Pass
         {
+            Name "ARCore Background Occlusion Handling"
+            Cull Off
+            ZTest GEqual
+            ZWrite On
+            Lighting Off
+            LOD 100
+            Tags
+            {
+                "LightMode" = "Always"
+            }
+
+            GLSLPROGRAM
+
+            #pragma multi_compile_local __ ARCORE_ENVIRONMENT_DEPTH_ENABLED
+
+            #pragma only_renderers gles3
+
+            #include "UnityCG.glslinc"
+
+#ifdef SHADER_API_GLES3
+#extension GL_OES_EGL_image_external_essl3 : require
+#endif // SHADER_API_GLES3
+
+            // Device display transform is provided by the AR Foundation camera background renderer.
+            uniform mat4 _UnityDisplayTransform;
+
+#ifdef VERTEX
+            varying vec2 textureCoord;
+
+            void main()
+            {
+#if defined(SHADER_API_GLES3) && defined(ARCORE_ENVIRONMENT_DEPTH_ENABLED)
+                // Transform the position from object space to clip space.
+                gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
+
+                // Get quad uvs for sampling camera texture
+                textureCoordQuad = gl_MultiTexCoord0;
+
+                // Remap the texture coordinates based on the device rotation.
+                textureCoordEnvironment = (_UnityDisplayTransform * vec4(gl_MultiTexCoord0.x, 1.0f - gl_MultiTexCoord0.y, 1.0f, 0.0f)).xy;
+#endif // SHADER_API_GLES3 && ARCORE_ENVIRONMENT_DEPTH_ENABLED
+            }
+#endif // VERTEX
+
+#ifdef FRAGMENT
+            varying vec2 textureCoordQuad;
+            varying vec2 textureCoordEnvironment;
+            uniform float _UnityCameraForwardScale;
+
+#ifdef ARCORE_ENVIRONMENT_DEPTH_ENABLED
+            uniform sampler2D _EnvironmentDepth;
+            uniform sampler2D _CameraDepthTexture;
+#endif // ARCORE_ENVIRONMENT_DEPTH_ENABLED
+
+            float ConvertDistanceToDepth(float d)
+            {
+                d = _UnityCameraForwardScale > 0.0 ? _UnityCameraForwardScale * d : d;
+
+                float zBufferParamsW = 1.0 / _ProjectionParams.y;
+                float zBufferParamsY = _ProjectionParams.z * zBufferParamsW;
+                float zBufferParamsX = 1.0 - zBufferParamsY;
+                float zBufferParamsZ = zBufferParamsX * _ProjectionParams.w;
+
+                // Clip any distances smaller than the near clip plane, and compute the depth value from the distance.
+                return (d < _ProjectionParams.y) ? 1.0f : ((1.0 / zBufferParamsZ) * ((1.0 / d) - zBufferParamsW));
+            }
+
+            void main()
+            {
+#if defined(SHADER_API_GLES3) && defined(ARCORE_ENVIRONMENT_DEPTH_ENABLED)
+
+                vec3 result = texture(_MainTex, textureCoord).xyz;
+
+                float depth = texture(_CameraDepthTexture, textureCoordQuad).x;
+
+                float distance = texture(_EnvironmentDepth, textureCoordEnvironment).x;
+                float environmentDepth = ConvertDistanceToDepth(distance);
+
+#ifndef UNITY_COLORSPACE_GAMMA
+                result = GammaToLinearSpace(result);
+#endif // !UNITY_COLORSPACE_GAMMA
+
+                if (depth >= environmentDepth)
+                {
+                    discard;
+                }
+
+                gl_FragColor = vec4(result, 1.0);
+                gl_FragDepth = depth;
+#endif // SHADER_API_GLES3 && ARCORE_ENVIRONMENT_DEPTH_ENABLED
+            }
+
+#endif // FRAGMENT
+            ENDGLSL
+        }
+
+        Pass
+        {
             Name "AR Camera Background (ARCore)"
             Cull Off
-            ZTest Always
+            ZTest LEqual
             ZWrite On
             Lighting Off
             LOD 100

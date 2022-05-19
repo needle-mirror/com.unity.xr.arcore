@@ -8,6 +8,29 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [5.0.0-pre.12] - 2022-05-19
+
+### Added
+
+- Added support for changing the Camera Background rendering order so that the background can be rendered either `BeforeOpaques` or `AfterOpaques` by setting the `ARCoreCameraSubsystem.requestedRenderingMode`. Shader code for rendering `AfterOpaques` can be found in `com.unity.xr.ARCore/Assets/ARCoreBackgroundAfterOpaque.shader`.
+- Added Project Validation for assessing project setup correctness. See [Project Validation manual](xref:arcore-project-config) for details.
+
+### Changed
+
+- Updated to ARCore 1.31.
+- Updated to use the new 16-bit depth APIs introduced in ARCore SDK 1.31. This increases the depth range in ARCore from 8.191 meters to 65.535 meters.
+
+### Deprecated
+
+- `ARCoreCameraSubsystem.backgroundShaderName` has been marked obsolete. Instead use `ARCoreCameraSubsystem.backgroundShaderNames` to receive an array of available shader names.
+- Deprecated the following depth subsystem APIs in favor of point cloud subsystem APIs. Unity's API Updater should automatically convert any deprecated APIs references to the new APIs when the project is loaded into the Editor again.
+  - `ARCoreXRDepthSubsystem` has been renamed to `ARCoreXRPointCloudSubsystem`.
+  - `ARCoreLoader.depthSubsystem` has been deprecated. Use `ARCoreLoader.pointCloudSubsystem` instead.
+
+### Fixed
+
+- Fixed `TryAddRaycast` api in AR Raycast provider where only the first hit result in the list was processed after performing a raycast. Now all the hit results are processed. This should not have any impact on user facing APIs since ARCore SDK always returns a single `ArHitResult` in the list.
+
 ## [5.0.0-pre.9] - 2022-03-01
 
 ### Added

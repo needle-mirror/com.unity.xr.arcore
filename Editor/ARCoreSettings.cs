@@ -8,7 +8,7 @@ namespace UnityEditor.XR.ARCore
     /// Holds settings that are used to configure the Google ARCore XR Plug-in.
     /// </summary>
     [System.Serializable]
-    [XRConfigurationData("ARCore", "UnityEditor.XR.ARCore.ARCoreSettings")]
+    [XRConfigurationData("Google ARCore", "UnityEditor.XR.ARCore.ARCoreSettings")]
     public class ARCoreSettings : ScriptableObject
     {
         /// <summary>
@@ -31,7 +31,7 @@ namespace UnityEditor.XR.ARCore
         Requirement m_Requirement;
 
         /// <summary>
-        /// Specifies whether ARCore is required or optional for this app. 
+        /// Specifies whether ARCore is required or optional for this app.
         /// </summary>
         /// <remarks>
         /// Set to <see cref="Requirement.Required"/> if the app should only be downloadable by devices with ARCore support.

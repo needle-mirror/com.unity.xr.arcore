@@ -1,7 +1,7 @@
 {
   "name": "com.unity.xr.arcore",
   "displayName": "Google ARCore XR Plugin",
-  "version": "5.0.0-pre.9",
+  "version": "5.0.0-pre.12",
   "unity": "2021.2",
   "description": "Provides native Google ARCore integration for use with Unity's multi-platform XR API.\nSupports the following features:\n-Efficient Background Rendering\n-Horizontal Planes\n-Depth Data\n-Anchors\n-Hit Testing\n-Occlusion",
   "keywords": [
@@ -13,20 +13,21 @@
     "core"
   ],
   "dependencies": {
-    "com.unity.xr.arfoundation": "5.0.0-pre.9",
+    "com.unity.xr.arfoundation": "5.0.0-pre.12",
+    "com.unity.xr.core-utils": "2.1.0-pre.1",
     "com.unity.xr.management": "4.0.1",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.unitywebrequest": "1.0.0"
   },
-  "upm": {
-    "changelog": "### Added,- Added support for a new [OcclusionPreferenceMode.NoOcclusion](xref:UnityEngine.XR.ARSubsystems.Configuration.OcclusionPreferenceMode) mode that, when set, disables occlusion rendering on the camera background when using [ARCameraBackground](xref:UnityEngine.XR.ARFoundation.ARCameraBackground) and [AROcclusionManager](xref:UnityEngine.XR.ARFoundation.AROcclusionManager).,- Added the method `CancelPermissionRequest` in [ARCorePermissionManager](xref:UnityEngine.XR.ARCore.ARCorePermissionManager) for users who want to do permission handling on their own. This addresses [issue 1387507](https://issuetracker.unity3d.com/issues/arfoundation-camera-request-permission-window-is-not-shown-when-app-is-minimized-and-opened-again-on-android-device).,### Fixed,- Removed an errant bit mask that was being applied to the occlusion `XRCpuImage`s."
+  "_upm": {
+    "changelog": "### Added\n\n- Added support for changing the Camera Background rendering order so that the background can be rendered either `BeforeOpaques` or `AfterOpaques` by setting the `ARCoreCameraSubsystem.requestedRenderingMode`. Shader code for rendering `AfterOpaques` can be found in `com.unity.xr.ARCore/Assets/ARCoreBackgroundAfterOpaque.shader`.\n- Added Project Validation for assessing project setup correctness. See [Project Validation manual](xref:arcore-project-config) for details.\n\n### Changed\n\n- Updated to ARCore 1.31.\n- Updated to use the new 16-bit depth APIs introduced in ARCore SDK 1.31. This increases the depth range in ARCore from 8.191 meters to 65.535 meters.\n\n### Deprecated\n\n- `ARCoreCameraSubsystem.backgroundShaderName` has been marked obsolete. Instead use `ARCoreCameraSubsystem.backgroundShaderNames` to receive an array of available shader names.\n- Deprecated the following depth subsystem APIs in favor of point cloud subsystem APIs. Unity's API Updater should automatically convert any deprecated APIs references to the new APIs when the project is loaded into the Editor again.\n  - `ARCoreXRDepthSubsystem` has been renamed to `ARCoreXRPointCloudSubsystem`.\n  - `ARCoreLoader.depthSubsystem` has been deprecated. Use `ARCoreLoader.pointCloudSubsystem` instead.\n\n### Fixed\n\n- Fixed `TryAddRaycast` api in AR Raycast provider where only the first hit result in the list was processed after performing a raycast. Now all the hit results are processed. This should not have any impact on user facing APIs since ARCore SDK always returns a single `ArHitResult` in the list."
   },
   "upmCi": {
-    "footprint": "b2e9b3132629d55eb52714a2bb324823d6c3b29b"
+    "footprint": "3581d04e0ee9d09ab8507508bb21a61689d4464b"
   },
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/arfoundation.git",
     "type": "git",
-    "revision": "4f50d482f45e77dc73e4c6ae898578c60efc7c8c"
+    "revision": "4577f2a07a8b076ccc52ae239e6b66396e9d05eb"
   }
 }

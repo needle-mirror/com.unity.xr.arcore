@@ -39,7 +39,7 @@ namespace UnityEditor.XR.ARCore
             {
                 new ARCoreLoaderMetadata()
                 {
-                    loaderName = "ARCore",
+                    loaderName = "Google ARCore",
                     loaderType = typeof(ARCoreLoader).FullName,
                     supportedBuildTargets = new List<BuildTargetGroup>()
                     {

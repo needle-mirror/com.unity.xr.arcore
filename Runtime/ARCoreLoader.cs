@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine.XR.ARSubsystems;
 using UnityEngine.XR.Management;
@@ -11,7 +12,7 @@ namespace UnityEngine.XR.ARCore
     {
         static List<XRSessionSubsystemDescriptor> s_SessionSubsystemDescriptors = new List<XRSessionSubsystemDescriptor>();
         static List<XRCameraSubsystemDescriptor> s_CameraSubsystemDescriptors = new List<XRCameraSubsystemDescriptor>();
-        static List<XRDepthSubsystemDescriptor> s_DepthSubsystemDescriptors = new List<XRDepthSubsystemDescriptor>();
+        static List<XRPointCloudSubsystemDescriptor> s_PointCloudSubsystemDescriptors = new List<XRPointCloudSubsystemDescriptor>();
         static List<XRPlaneSubsystemDescriptor> s_PlaneSubsystemDescriptors = new List<XRPlaneSubsystemDescriptor>();
         static List<XRAnchorSubsystemDescriptor> s_AnchorSubsystemDescriptors = new List<XRAnchorSubsystemDescriptor>();
         static List<XRRaycastSubsystemDescriptor> s_RaycastSubsystemDescriptors = new List<XRRaycastSubsystemDescriptor>();
@@ -34,10 +35,18 @@ namespace UnityEngine.XR.ARCore
         public XRCameraSubsystem cameraSubsystem => GetLoadedSubsystem<XRCameraSubsystem>();
 
         /// <summary>
-        /// The `XRDepthSubsystem` whose lifecycle is managed by this loader.
+        /// The [XRDepthSubsystem](xref:UnityEngine.XR.ARSubsystems.XRDepthSubsystem) whose lifecycle is managed by this loader.
+        /// This field is obsolete. Use <see cref="pointCloudSubsystem"/> instead.
         /// </summary>
-        /// <value>The XR depth subsystem instance.</value>
+        /// <value>The XR point cloud subsystem instance.</value>
+        [Obsolete("Use pointCloudSubsystem instead. (2022-02-03)")]
         public XRDepthSubsystem depthSubsystem => GetLoadedSubsystem<XRDepthSubsystem>();
+        
+        /// <summary>
+        /// The `XRPointCloudSubsystem` whose lifecycle is managed by this loader.
+        /// </summary>
+        /// <value>The XR point cloud subsystem instance.</value>
+        public XRPointCloudSubsystem pointCloudSubsystem => GetLoadedSubsystem<XRPointCloudSubsystem>();
 
         /// <summary>
         /// The `XRPlaneSubsystem` whose lifecycle is managed by this loader.
@@ -96,7 +105,7 @@ namespace UnityEngine.XR.ARCore
 #if UNITY_ANDROID && !UNITY_EDITOR
             CreateSubsystem<XRSessionSubsystemDescriptor, XRSessionSubsystem>(s_SessionSubsystemDescriptors, "ARCore-Session");
             CreateSubsystem<XRCameraSubsystemDescriptor, XRCameraSubsystem>(s_CameraSubsystemDescriptors, "ARCore-Camera");
-            CreateSubsystem<XRDepthSubsystemDescriptor, XRDepthSubsystem>(s_DepthSubsystemDescriptors, "ARCore-Depth");
+            CreateSubsystem<XRPointCloudSubsystemDescriptor, XRPointCloudSubsystem>(s_PointCloudSubsystemDescriptors, "ARCore-PointCloud");
             CreateSubsystem<XRPlaneSubsystemDescriptor, XRPlaneSubsystem>(s_PlaneSubsystemDescriptors, "ARCore-Plane");
             CreateSubsystem<XRAnchorSubsystemDescriptor, XRAnchorSubsystem>(s_AnchorSubsystemDescriptors, "ARCore-Anchor");
             CreateSubsystem<XRRaycastSubsystemDescriptor, XRRaycastSubsystem>(s_RaycastSubsystemDescriptors, "ARCore-Raycast");
@@ -143,7 +152,7 @@ namespace UnityEngine.XR.ARCore
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
             DestroySubsystem<XRCameraSubsystem>();
-            DestroySubsystem<XRDepthSubsystem>();
+            DestroySubsystem<XRPointCloudSubsystem>();
             DestroySubsystem<XRPlaneSubsystem>();
             DestroySubsystem<XRAnchorSubsystem>();
             DestroySubsystem<XRRaycastSubsystem>();

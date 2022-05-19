@@ -36,7 +36,8 @@ namespace UnityEditor.XR.ARCore
             {
                 // Sometimes (e.g., build failure), the shader can get "stuck" in the Preloaded Assets array.
                 // Make sure that if we are not building for Android, we remove that shader.
-                BuildHelper.RemoveShaderFromProject(ARCoreCameraSubsystem.backgroundShaderName);
+                foreach (var backgroundShaderName in ARCoreCameraSubsystem.backgroundShaderNames)
+                    BuildHelper.RemoveShaderFromProject(backgroundShaderName);
                 return;
             }
 
@@ -54,7 +55,10 @@ namespace UnityEditor.XR.ARCore
                     EnsureGradleIsUsed();
                     EnsureGradleVersionIsSupported();
                     Check64BitArch();
-                    BuildHelper.AddBackgroundShaderToProject(ARCoreCameraSubsystem.backgroundShaderName);
+
+                    foreach (var backgroundShaderName in ARCoreCameraSubsystem.backgroundShaderNames)
+                        BuildHelper.AddBackgroundShaderToProject(backgroundShaderName);
+
                     break;
                 }
             }
@@ -65,7 +69,9 @@ namespace UnityEditor.XR.ARCore
             if (report.summary.platform != BuildTarget.Android)
                 return;
 
-            BuildHelper.RemoveShaderFromProject(ARCoreCameraSubsystem.backgroundShaderName);
+            foreach (var backgroundShaderName in ARCoreCameraSubsystem.backgroundShaderNames)
+                BuildHelper.RemoveShaderFromProject(backgroundShaderName);
+
             RemoveGeneratedStreamingAssets();
         }
 
@@ -197,7 +203,7 @@ namespace UnityEditor.XR.ARCore
 
         void Check64BitArch()
         {
-            // In editor versions 2021.1 and above, a warning is already shown for IL2CPP with ARMv7 only build config. 
+            // In editor versions 2021.1 and above, a warning is already shown for IL2CPP with ARMv7 only build config.
             // So, we only need to check for Mono scripting backend.
             if (PlayerSettings.GetScriptingBackend(NamedBuildTarget.Android) == ScriptingImplementation.Mono2x)
             {

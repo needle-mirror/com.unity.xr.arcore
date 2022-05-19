@@ -27,12 +27,20 @@ namespace UnityEngine.XR.ARCore
         const string k_SubsystemId = "ARCore-Camera";
 
         /// <summary>
-        /// The name for the shader for rendering the camera texture.
+        /// The name of the shader for rendering the camera texture before opaques render.
         /// </summary>
         /// <value>
-        /// The name for the shader for rendering the camera texture.
+        /// The name of the shader for rendering the camera texture.
         /// </value>
-        const string k_DefaultBackgroundShaderName = "Unlit/ARCoreBackground";
+        const string k_BeforeOpaquesBackgroundShaderName = "Unlit/ARCoreBackground";
+
+        /// <summary>
+        /// The name of the shader for rendering the camera texture after opaques have rendered.
+        /// </summary>
+        /// <value>
+        /// The name of the shader for rendering the camera texture.
+        /// </value>
+        const string k_AfterOpaquesBackgroundShaderName = "Unlit/ARCoreBackground/AfterOpaques";
 
         enum CameraConfigurationResult
         {
@@ -69,7 +77,32 @@ namespace UnityEngine.XR.ARCore
         /// The value for the <c>GraphicsSettings.currentRenderPipeline</c> is not expected to change within the lifetime
         /// of the application.
         /// </remarks>
-        public static string backgroundShaderName => k_DefaultBackgroundShaderName;
+        [Obsolete("'backgroundShaderName' is obsolete, use 'backgroundShaderNames' instead. (2022/04/04)")]
+        public static string backgroundShaderName => k_BeforeOpaquesBackgroundShaderName;
+
+        /// <summary>
+        /// The names for the background shaders based on the current render pipeline.
+        /// </summary>
+        /// <value>
+        /// The names for the background shaders based on the current render pipeline. Or, <c>null</c> if the current
+        /// render pipeline is incompatible with the set of shaders.
+        /// </value>
+        /// <remarks>
+        /// The value for the <c>GraphicsSettings.currentRenderPipeline</c> is not expected to change within the lifetime
+        /// of the application.
+        ///
+        /// There are two shaders in the Google ARCore Provider Package. One is used for rendering
+        /// before opaques and one is used for rendering after opaques.
+        ///
+        /// In order:
+        /// 1. Before Opaque Shader Name
+        /// 2. After Opaque Shader Name
+        /// </remarks>
+        public static readonly string[] backgroundShaderNames = new[]
+        {
+            k_BeforeOpaquesBackgroundShaderName,
+            k_AfterOpaquesBackgroundShaderName
+        };
 
         /// <summary>
         /// Creates and registers the camera subsystem descriptor to advertise a providing implementation for camera
@@ -167,8 +200,31 @@ namespace UnityEngine.XR.ARCore
             /// <returns>
             /// The material to render the camera texture.
             /// </returns>
-            public override Material cameraMaterial => m_CameraMaterial;
-            Material m_CameraMaterial;
+            /// <remarks>
+            /// This subsystem will lazily create the camera materials depending on the <see cref="currentBackgroundRenderingMode"/>.
+            /// Once created, the materials exist for the lifespan of this subsystem.
+            /// </remarks>
+            public override Material cameraMaterial
+            {
+                get
+                {
+                    switch (currentBackgroundRenderingMode)
+                    {
+                        case XRCameraBackgroundRenderingMode.BeforeOpaques:
+                            return m_BeforeOpaqueCameraMaterial ??= CreateCameraMaterial(k_BeforeOpaquesBackgroundShaderName);
+
+                        case XRCameraBackgroundRenderingMode.AfterOpaques:
+                            return m_AfterOpaqueCameraMaterial ??= CreateCameraMaterial(k_AfterOpaquesBackgroundShaderName);
+
+                        default:
+                            Debug.LogError($"Unable to create material for unknown background rendering mode {currentBackgroundRenderingMode}.");
+                            return null;
+                    }
+                }
+            }
+
+            Material m_BeforeOpaqueCameraMaterial;
+            Material m_AfterOpaqueCameraMaterial;
 
             /// <summary>
             /// Determine whether camera permission has been granted.
@@ -178,9 +234,52 @@ namespace UnityEngine.XR.ARCore
             /// </returns>
             public override bool permissionGranted => ARCorePermissionManager.IsPermissionGranted(k_CameraPermissionName);
 
+            /// <inheritdoc />
             public override bool invertCulling => NativeApi.UnityARCore_Camera_ShouldInvertCulling();
 
+            /// <inheritdoc />
             public override XRCpuImage.Api cpuImageApi => ARCoreCpuImageApi.instance;
+
+            /// <summary>
+            /// Describes the subsystem's current (xref: UnityEngine.XR.ARSubsystems.XRCameraBackgroundRenderingMode).
+            /// </summary>
+            /// <remarks>
+            /// If the <see cref="requestedBackgroundRenderingMode"/> is set to (xref: UnityEngine.XR.ARSubsystems.XRCameraBackgroundRenderingMode.Any)
+            /// then this subsystem will default to (xref: UnityEngine.XR.ARSubsystems.XRCameraBackgroundRenderingMode.BeforeOpaques).
+            /// </remarks>
+            public override XRCameraBackgroundRenderingMode currentBackgroundRenderingMode
+            {
+                get
+                {
+                    switch (m_RequestedCameraRenderingMode)
+                    {
+                        case XRSupportedCameraBackgroundRenderingMode.Any:
+                        case XRSupportedCameraBackgroundRenderingMode.BeforeOpaques:
+                            return XRCameraBackgroundRenderingMode.BeforeOpaques;
+
+                        case XRSupportedCameraBackgroundRenderingMode.AfterOpaques:
+                            return XRCameraBackgroundRenderingMode.AfterOpaques;
+
+                        case XRSupportedCameraBackgroundRenderingMode.None:
+                        default:
+                            return XRCameraBackgroundRenderingMode.None;
+                    }
+                }
+            }
+
+            /// <inheritdoc />
+            public override XRSupportedCameraBackgroundRenderingMode requestedBackgroundRenderingMode
+            {
+                get => m_RequestedCameraRenderingMode;
+                set => m_RequestedCameraRenderingMode = value;
+            }
+
+            XRSupportedCameraBackgroundRenderingMode m_RequestedCameraRenderingMode = XRSupportedCameraBackgroundRenderingMode.Any;
+
+            /// <inheritdoc />
+            public override XRSupportedCameraBackgroundRenderingMode supportedBackgroundRenderingMode
+                => XRSupportedCameraBackgroundRenderingMode.Any;
+
 
             static Action<IntPtr, ArSession, ArCameraConfigFilter> s_OnBeforeGetCameraConfigurationDelegate = OnBeforeGetCameraConfiguration;
 
@@ -192,7 +291,6 @@ namespace UnityEngine.XR.ARCore
             public ARCoreProvider()
             {
                 NativeApi.UnityARCore_Camera_Construct(k_MainTexPropertyNameId);
-                m_CameraMaterial = CreateCameraMaterial(ARCoreCameraSubsystem.backgroundShaderName);
                 m_GCHandle = GCHandle.Alloc(this);
             }
 

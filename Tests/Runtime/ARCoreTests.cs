@@ -8,10 +8,10 @@ namespace UnityEngine.XR.ARCore.Tests
     public class ARCoreTestFixture
     {
         [Test]
-        public void DepthSubsystemRegistered()
+        public void PointCloudSubsystemRegistered()
         {
 #if !UNITY_EDITOR
-            Assert.That(SubsystemDescriptorRegistered<XRDepthSubsystemDescriptor>("ARCore-Depth"));
+            Assert.That(SubsystemDescriptorRegistered<XRPointCloudSubsystemDescriptor>("ARCore-PointCloud"));
 #endif
         }
 

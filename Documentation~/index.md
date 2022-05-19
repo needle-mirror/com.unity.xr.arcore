@@ -7,7 +7,7 @@ The Google ARCore XR Plug-in package enables ARCore support via Unity's multi-pl
 
 * [Session](xref:arsubsystems-session-subsystem)
 * [Camera](xref:arsubsystems-camera-subsystem)
-* [Depth](xref:arsubsystems-depth-subsystem)
+* [Point cloud](xref:arsubsystems-point-cloud-subsystem)
 * [Input](xref:UnityEngine.XR.XRInputSubsystem)
 * [Planes](xref:arsubsystems-plane-subsystem)
 * [Raycast](xref:arsubsystems-raycast-subsystem)
@@ -17,7 +17,7 @@ The Google ARCore XR Plug-in package enables ARCore support via Unity's multi-pl
 * [Environment probes](xref:arsubsystems-environment-probe-subsystem)
 * [Occlusion](xref:arsubsystems-occlusion-subsystem)
 
-This version of Google ARCore XR Plug-in uses ARCore 1.24 and supports the following functionality:
+This version of Google ARCore XR Plug-in uses ARCore 1.31 and supports the following functionality:
 
 * Device localization
 * Horizontal plane detection
@@ -44,9 +44,30 @@ This package does not support the following subsystems:
 
 # Installing Google ARCore XR Plug-in
 
-To install this package, follow the instructions in the [Package Manager documentation](https://docs.unity3d.com/Packages/com.unity.package-manager-ui@latest/index.html).
+When you enable the ARCore plug-in in the **XR Plug-in Management** settings, Unity automatically installs the ARCore package (if necessary). See [Enable the ARCore plug-in](xref:arcore-project-config#enable-arcore) for instructions.
 
 You can also install the AR Foundation package, which uses the Google ARCore XR Plug-in and provides many useful scripts and prefabs. For more information, see the [AR Foundation documentation](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@5.0).
+
+> [!TIP]
+> You can also install and uninstall this package using the Unity Package Manager. Installing through the Package Manager does not automatically enable the plug-in. You must still enable it in the **XR Plug-in Management settings**. See [Installing from a registry](xref:upm-ui-install) for more information about installing packages with the Unity Package Manager.
+
+
+# Project configuration
+
+See [Project configuration](xref:arcore-project-config) for information about the project settings that affect ARCore applications. 
+
+
+## Requiring AR
+
+You can flag ARCore as either required or optional. By default, ARCore is required when you enable the plug-in, which means your app can only be installed on AR-supported devices. If you specify that AR is optional, your app can be installed on all Android devices.
+
+See [Set the ARCore support Requirement](xref:arcore-project-config#arcore-required) for instructions on how to change this setting.
+
+
+## Project Validation
+
+The Google ARCore XR Plug-in package supports project validation. Project validation is a set of rules that the Unity Editor checks to detect possible problems with your project's configuration. See [Project Validation](xref:arcore-project-config#project-validation) section for more information about the rules checked for Google ARCore XR Plug-in.
+
 
 # Using Google ARCore XR Plug-in
 
@@ -55,23 +76,6 @@ In most cases, you should use the scripts, prefabs, and assets provided by the A
 Use the Google ARCore XR Plug-in APIs when you need access to Android ARCore-specific features. The ARCoreFaceRegions sample in the [AR Foundations repository](https://github.com/Unity-Technologies/arfoundation-samples#ARCoreFaceRegions) provides an example of using an ARCore feature.
 
 See [Using AR Foundation](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@5.0/manual/index.html#using-ar-foundation) for general information about developing AR apps in Unity.
-
-## Build Settings
-
-You can flag the Google ARCore XR Plug-in as **Required** or **Optional** in the Project Settings window.
-
-ARCore is set to **Required** by default. If you set the ARCore plug-in to **Optional** instead, the Google Play store lets users install your app on devices that don't support ARCore, or devices that support ARCore but don't have it installed. Use the **Optional** setting when creating an app that provides different experiences depending on whether ARCore is available.
-
-To create an `ARCoreSettings` Asset and assign it to your build settings, open the Project Settings window in **Edit &gt; Project Settings**, then navigate to the **XR Plug-in Management** menu and enable the **ARCore** plug-in provider:
-
-![XR Plug-in Management](images/arcore-xrmanagement.png "ARCore in XR Management")
-
-When you enable this setting, Unity creates an `ARCoreSettings` asset that you can access in the **XR Plug-in Management &gt; ARCore** settings:
-
-![ARCore Settings](images/arcore-project-settings.png "ARCore Settings")
-
-> [!NOTE]
-> If you set ARCore as **Required** and install your app on a device that does not support ARCore -- which you can do using Unity's **Build and Run** feature or by "side-loading" via USB -- the device will incorrectly report that ARCore is available. (This is because the Google Play Store prevents the installation of apps that require ARCore on unsupported devices, so these apps always assume they're running on a supported device.)
 
 
 ## Session
@@ -84,15 +88,15 @@ If the device is supported, but ARCore is not installed or requires an update, c
 
 For more information, see [ARSubsystems session documentation](xref:arsubsystems-session-subsystem).
 
-## Depth subsystem
+## Point Cloud subsystem
 
 Ray casts return a `Pose` for the item the ray cast hits. When you use a ray cast against feature points, the pose orientation provides an estimate for the surface the feature point might represent.
 
-The depth subsystem doesn't require any additional resources, so it doesn't affect performance.
+The point cloud subsystem doesn't require any additional resources, so it doesn't affect performance.
 
-ARCore's depth subsystem only produces one [`XRPointCloud`](xref:UnityEngine.XR.ARSubsystems.XRPointCloud).
+ARCore's point cloud subsystem only produces one [`XRPointCloud`](xref:UnityEngine.XR.ARSubsystems.XRPointCloud).
 
-For more information, see [ARSubsystems depth subsystem](xref:arsubsystems-depth-subsystem).
+For more information, see [ARSubsystems point cloud subsystem](xref:arsubsystems-point-cloud-subsystem).
 
 ## Plane tracking
 
@@ -197,6 +201,7 @@ To play back a video, use the `StartPlayback` method, and specify an `.mp4` file
 To start or stop a recorded file in ARCore, the [ARCoreSessionSubsystem](xref:UnityEngine.XR.ARCore.ARCoreSessionSubsystem) pauses the session. Pausing and resuming a session can take between 0.5 and 1.0 seconds.
 
 **Note**: Video recordings contain sensor data, but not the computed results. ARCore does not always produce the same output, which means trackables might not be consistent between playbacks of the same recording. For example, multiple playbacks of the same recording might give different plane detection results.
+
 
 # Technical details
 

@@ -10,37 +10,37 @@ using UnityEngine.XR.ARSubsystems;
 namespace UnityEngine.XR.ARCore
 {
     /// <summary>
-    /// The ARCore implementation of the <c>XRDepthSubsystem</c>. Do not create this directly. Use the <c>SubsystemManager</c> instead.
+    /// The ARCore implementation of the <c>XRPointCloudSubsystem</c>. Do not create this directly. Use the <c>SubsystemManager</c> instead.
     /// </summary>
     [Preserve]
-    public sealed class ARCoreXRDepthSubsystem : XRDepthSubsystem
+    public sealed class ARCoreXRPointCloudSubsystem : XRPointCloudSubsystem
     {
         class ARCoreProvider : Provider
         {
             [DllImport("UnityARCore")]
-            static extern void UnityARCore_depth_Create(Func<Guid> guidGenerator);
+            static extern void UnityARCore_pointCloud_Create(Func<Guid> guidGenerator);
 
             [DllImport("UnityARCore")]
-            static extern void UnityARCore_depth_Start();
+            static extern void UnityARCore_pointCloud_Start();
 
             [DllImport("UnityARCore")]
-            static extern void UnityARCore_depth_Stop();
+            static extern void UnityARCore_pointCloud_Stop();
 
             [DllImport("UnityARCore")]
-            static extern void UnityARCore_depth_Destroy();
+            static extern void UnityARCore_pointCloud_Destroy();
 
             [DllImport("UnityARCore")]
-            static extern unsafe void* UnityARCore_depth_AcquireChanges(
+            static extern unsafe void* UnityARCore_pointCloud_AcquireChanges(
                 out void* addedPtr, out int addedLength,
                 out void* updatedPtr, out int updatedLength,
                 out void* removedPtr, out int removedLength,
                 out int elementSize);
 
             [DllImport("UnityARCore")]
-            static extern unsafe void UnityARCore_depth_ReleaseChanges(void* changes);
+            static extern unsafe void UnityARCore_pointCloud_ReleaseChanges(void* changes);
 
             [DllImport("UnityARCore")]
-            static extern unsafe int UnityARCore_depth_getPointCloudPtrs(
+            static extern unsafe int UnityARCore_pointCloud_getPointCloudPtrs(
                 TrackableId trackableId,
                 out void* dataPtr, out void* identifierPtr);
 
@@ -48,7 +48,7 @@ namespace UnityEngine.XR.ARCore
                 XRPointCloud defaultPointCloud,
                 Allocator allocator)
             {
-                var context = UnityARCore_depth_AcquireChanges(
+                var context = UnityARCore_pointCloud_AcquireChanges(
                     out var addedPtr, out var addedLength,
                     out var updatedPtr, out var updatedLength,
                     out var removedPtr, out var removedLength,
@@ -65,7 +65,7 @@ namespace UnityEngine.XR.ARCore
                 }
                 finally
                 {
-                    UnityARCore_depth_ReleaseChanges(context);
+                    UnityARCore_pointCloud_ReleaseChanges(context);
                 }
             }
 
@@ -73,7 +73,7 @@ namespace UnityEngine.XR.ARCore
                 TrackableId trackableId,
                 Allocator allocator)
             {
-                int numPoints = UnityARCore_depth_getPointCloudPtrs(
+                int numPoints = UnityARCore_pointCloud_getPointCloudPtrs(
                     trackableId,
                     out var dataPtr, out var identifierPtr);
 
@@ -162,19 +162,19 @@ namespace UnityEngine.XR.ARCore
 
             static Func<Guid> s_GenerateGuidDelegate = GenerateGuid;
 
-            public ARCoreProvider() => UnityARCore_depth_Create(s_GenerateGuidDelegate);
+            public ARCoreProvider() => UnityARCore_pointCloud_Create(s_GenerateGuidDelegate);
 
-            public override void Destroy() => UnityARCore_depth_Destroy();
-
-            /// <summary>
-            /// Starts the DepthSubsystem provider to begin providing face data via the callback delegates
-            /// </summary>
-            public override void Start() => UnityARCore_depth_Start();
+            public override void Destroy() => UnityARCore_pointCloud_Destroy();
 
             /// <summary>
-            /// Stops the DepthSubsystem provider from providing face data
+            /// Starts the PointCloudSubsystem provider to begin providing face data via the callback delegates
             /// </summary>
-            public override void Stop() => UnityARCore_depth_Stop();
+            public override void Start() => UnityARCore_pointCloud_Start();
+
+            /// <summary>
+            /// Stops the PointCloudSubsystem provider from providing face data
+            /// </summary>
+            public override void Stop() => UnityARCore_pointCloud_Stop();
         }
 
         // this method is run on startup of the app to register this provider with XR Subsystem Manager
@@ -184,17 +184,17 @@ namespace UnityEngine.XR.ARCore
             if (!Api.platformAndroid || !Api.loaderPresent)
                 return;
 
-            var descriptorParams = new XRDepthSubsystemDescriptor.Cinfo
+            var descriptorParams = new XRPointCloudSubsystemDescriptor.Cinfo
             {
-                id = "ARCore-Depth",
-                providerType = typeof(ARCoreXRDepthSubsystem.ARCoreProvider),
-                subsystemTypeOverride = typeof(ARCoreXRDepthSubsystem),
+                id = "ARCore-PointCloud",
+                providerType = typeof(ARCoreXRPointCloudSubsystem.ARCoreProvider),
+                subsystemTypeOverride = typeof(ARCoreXRPointCloudSubsystem),
                 supportsFeaturePoints = true,
                 supportsUniqueIds = true,
                 supportsConfidence = true
             };
 
-            XRDepthSubsystemDescriptor.RegisterDescriptor(descriptorParams);
+            XRPointCloudSubsystemDescriptor.RegisterDescriptor(descriptorParams);
         }
     }
 }
