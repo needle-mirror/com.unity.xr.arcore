@@ -210,7 +210,9 @@ To start or stop a recorded file in ARCore, the [ARCoreSessionSubsystem](xref:Un
 This version of Google ARCore XR Plug-in is compatible with the following versions of the Unity Editor:
 
 * 2021.2
+* 2021.3
 * 2022.1
+* 2022.2
 
 ## Known limitations
 
