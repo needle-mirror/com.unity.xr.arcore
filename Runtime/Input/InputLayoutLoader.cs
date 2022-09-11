@@ -28,8 +28,10 @@ namespace UnityEngine.XR.ARCore
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         static void RegisterLayouts()
         {
+#if !UNITY_EDITOR
             if (!Api.platformAndroid || !Api.loaderPresent)
                 return;
+#endif
 
             Inputs.RegisterLayout<HandheldARInputDevice>(
                 matches: new InputDeviceMatcher()
