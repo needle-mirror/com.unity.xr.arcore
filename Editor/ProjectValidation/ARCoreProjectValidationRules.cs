@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.XR.CoreUtils.Editor;
+using UnityEditor.Build;
 using UnityEditor.XR.Management;
 using UnityEngine.Rendering;
 using UnityEngine.XR.ARCore;
@@ -93,14 +94,14 @@ namespace UnityEditor.XR.ARCore
                     IsRuleEnabled = IsARCorePluginEnabled,
                     CheckPredicate = () =>
                     {
-                        return PlayerSettings.GetScriptingBackend(BuildTargetGroup.Android) == ScriptingImplementation.IL2CPP
+                        return PlayerSettings.GetScriptingBackend(NamedBuildTarget.Android) == ScriptingImplementation.IL2CPP
                             && (PlayerSettings.Android.targetArchitectures & AndroidArchitecture.ARM64) != AndroidArchitecture.None;
                     },
                     FixItMessage = "Open Project Settings > Player Settings > Android tab and ensure 'Scripting Backend'" +
                         " is set to 'IL2CPP'. Then under 'Target Architectures' enable 'ARM64'.",
                     FixIt = () =>
                     {
-                        PlayerSettings.SetScriptingBackend(BuildTargetGroup.Android, ScriptingImplementation.IL2CPP);
+                        PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android, ScriptingImplementation.IL2CPP);
                         PlayerSettings.Android.targetArchitectures |= AndroidArchitecture.ARM64;
                     },
                     Error = false
