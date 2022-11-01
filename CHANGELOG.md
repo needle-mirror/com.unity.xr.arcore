@@ -8,6 +8,10 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [5.1.0-pre.2] - 2022-11-01
+
+No changes
+
 ## [5.1.0-pre.1] - 2022-10-06
 
 No changes
@@ -49,7 +53,7 @@ No changes
 
 ### Added
 
-- Added support for a new [OcclusionPreferenceMode.NoOcclusion](xref:UnityEngine.XR.ARSubsystems.Configuration.OcclusionPreferenceMode) mode that, when set, disables occlusion rendering on the camera background when using [ARCameraBackground](xref:UnityEngine.XR.ARFoundation.ARCameraBackground) and [AROcclusionManager](xref:UnityEngine.XR.ARFoundation.AROcclusionManager).
+- Added support for a new [OcclusionPreferenceMode.NoOcclusion](xref:UnityEngine.XR.ARSubsystems.OcclusionPreferenceMode) mode that, when set, disables occlusion rendering on the camera background when using [ARCameraBackground](xref:UnityEngine.XR.ARFoundation.ARCameraBackground) and [AROcclusionManager](xref:UnityEngine.XR.ARFoundation.AROcclusionManager).
 
 - Added the method `CancelPermissionRequest` in [ARCorePermissionManager](xref:UnityEngine.XR.ARCore.ARCorePermissionManager) for users who want to do permission handling on their own. This addresses [issue 1387507](https://issuetracker.unity3d.com/issues/arfoundation-camera-request-permission-window-is-not-shown-when-app-is-minimized-and-opened-again-on-android-device).
 
@@ -159,7 +163,7 @@ No changes
 ### Added
 
 - When building an Android Player with ARCore enabled, this package will check the Gradle version and warn if it determines the Gradle version is too low. The option to suppress this check and resulting warning notification can now be affected programmatically with a new public API [ARCoreSettings.ignoreGradleVersion](xref:UnityEditor.XR.ARCore.ARCoreSettings.ignoreGradleVersion).
-- Added support for [session recording and playback](xref:arcore-manual#recording-and-playback).
+- Added support for [session recording and playback](xref:arcore-session-recording).
 
 ### Changed
 
@@ -261,7 +265,7 @@ No changes
 
 - Fix links in documentation.
 - Handle non-unit scale in the background shader when calculating depth for environmental occlusion.
-- Fix unhandled exception when processing [reference image libraries](xref:arsubsystems-image-tracking-subsystem). This did not prevent the generation of the image libraries, but may have adversely affected error reporting.
+- Fix unhandled exception when processing reference image libraries. This did not prevent the generation of the image libraries, but may have adversely affected error reporting.
 
 ## [4.1.0-preview.7] - 2020-08-26
 
