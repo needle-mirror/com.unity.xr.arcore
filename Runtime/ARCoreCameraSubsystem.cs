@@ -365,7 +365,7 @@ namespace UnityEngine.XR.ARCore
             /// <summary>
             /// Called on the render thread by background rendering code immediately before the background
             /// is rendered.
-            /// For ARCore this is required in order to submit the GL commands for waiting on the fence
+            /// For ARCore, this is required in order to submit the GL commands for waiting on the fence
             /// created on the main thread after calling ArPresto_Update().
             /// </summary>
             /// <param name="id">Platform-specific data.</param>
