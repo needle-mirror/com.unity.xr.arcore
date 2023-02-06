@@ -1,19 +1,26 @@
 {
-  "name": "Unity.XR.ARCore.Runtime.Tests",
+    "name": "Unity.XR.ARCore.Runtime.Tests",
+    "rootNamespace": "",
     "references": [
         "Unity.XR.ARCore",
-        "Unity.XR.ARSubsystems"
+        "Unity.XR.ARSubsystems",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
     ],
-    "optionalUnityReferences": [
-        "TestAssemblies"
+    "includePlatforms": [
+        "Android",
+        "Editor"
     ],
-    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
     "defineConstraints": [
         "UNITY_INCLUDE_TESTS"
-    ]
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

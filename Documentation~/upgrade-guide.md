@@ -1,9 +1,9 @@
 ---
 uid: arcore-upgrade-guide
 ---
-# Upgrading to ARCore XR Plug-in version 5.0
+# Upgrade to ARCore XR Plug-in version 5.0 or newer
 
-To upgrade to ARCore XR Plug-in package version 5.0, you need to do the following:
+To upgrade to ARCore XR Plug-in package version 5.0 or newer, you need to do the following:
 
 - Use Unity 2021.2 or newer.
 - `ARCoreXRDepthSubsystem` is now `ARCoreXRPointCloudSubsystem`.

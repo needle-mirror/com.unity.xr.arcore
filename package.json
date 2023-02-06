@@ -1,7 +1,7 @@
 {
   "name": "com.unity.xr.arcore",
   "displayName": "Google ARCore XR Plugin",
-  "version": "5.0.3",
+  "version": "5.0.4",
   "unity": "2021.2",
   "description": "Provides native Google ARCore integration for use with Unity's multi-platform XR API.\nSupports the following features:\n-Efficient Background Rendering\n-Horizontal Planes\n-Depth Data\n-Anchors\n-Hit Testing\n-Occlusion",
   "keywords": [
@@ -13,18 +13,22 @@
     "core"
   ],
   "dependencies": {
-    "com.unity.xr.arfoundation": "5.0.3",
+    "com.unity.xr.arfoundation": "5.0.4",
     "com.unity.xr.core-utils": "2.1.0",
     "com.unity.xr.management": "4.0.1",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.unitywebrequest": "1.0.0"
   },
-  "upmCi": {
-    "footprint": "4180723357a4919e3c822bae523e3d5888cb70c3"
+  "_upm": {
+    "changelog": "### Fixed\n\n- Fixed [Issue #1017](https://github.com/Unity-Technologies/arfoundation-samples/issues/1017) in the `ARCoreBackgroundAfterOpaques` shader where some variables were not scoped to the vertex shader correctly."
   },
+  "upmCi": {
+    "footprint": "8a4a00eb72fc0152aae9b920c456f6afe6b4f193"
+  },
+  "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.xr.arcore@5.0/manual/index.html",
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/arfoundation.git",
     "type": "git",
-    "revision": "dcbaf640b3101b43f9bcf3bd5f7f7c18653d754b"
+    "revision": "94a902cd16c68d5df55e4cc90955fc669f83f0e5"
   }
 }

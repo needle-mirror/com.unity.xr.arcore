@@ -1,8 +1,6 @@
 using System;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Xml;
 using UnityEditor.Android;
 using UnityEditor.Build;
@@ -12,40 +10,38 @@ using UnityEditor.XR.Management;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.XR.ARCore;
-using UnityEngine.XR.ARSubsystems;
-using UnityEngine.XR.Management;
 using Diag = System.Diagnostics;
 
 namespace UnityEditor.XR.ARCore
 {
     class ARCorePreprocessBuild : IPreprocessBuildWithReport, IPostprocessBuildWithReport
     {
-        // NB: Needs to be > 0 to make sure we remove the shader since the
-        //     Input System overwrites the preloaded assets array
+        // Needs to be > 0 to make sure we remove the shader since the Input System overwrites the preloaded assets array
         public int callbackOrder => 1;
 
-        static readonly Version k_MinimumGradleVersion = new Version(5, 6, 4);
+        static readonly Version k_MinimumGradleVersion = new(5, 6, 4);
 
         internal const string gradleLauncherPrefix = "gradle-launcher-";
 
-        public void OnPreprocessBuild(BuildReport report)
+        void IPreprocessBuildWithReport.OnPreprocessBuild(BuildReport report)
         {
-            SetRuntimePluginCopyDelegate();
-
             if (report.summary.platform != BuildTarget.Android)
             {
                 // Sometimes (e.g., build failure), the shader can get "stuck" in the Preloaded Assets array.
                 // Make sure that if we are not building for Android, we remove that shader.
                 foreach (var backgroundShaderName in ARCoreCameraSubsystem.backgroundShaderNames)
                     BuildHelper.RemoveShaderFromProject(backgroundShaderName);
+
                 return;
             }
 
-            var generalSettings = XRGeneralSettingsPerBuildTarget.XRGeneralSettingsForBuildTarget(BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget));
-            if (generalSettings == null)
+            SetRuntimePluginCopyDelegate();
+
+            var androidXrSettings = XRGeneralSettingsPerBuildTarget.XRGeneralSettingsForBuildTarget(BuildPipeline.GetBuildTargetGroup(BuildTarget.Android));
+            if (androidXrSettings == null)
                 return;
 
-            foreach (var loader in generalSettings.Manager.activeLoaders)
+            foreach (var loader in androidXrSettings.Manager.activeLoaders)
             {
                 if (loader is ARCoreLoader)
                 {
@@ -64,7 +60,7 @@ namespace UnityEditor.XR.ARCore
             }
         }
 
-        public void OnPostprocessBuild(BuildReport report)
+        void IPostprocessBuildWithReport.OnPostprocessBuild(BuildReport report)
         {
             if (report.summary.platform != BuildTarget.Android)
                 return;
@@ -184,12 +180,12 @@ namespace UnityEditor.XR.ARCore
         {
             get
             {
-                var generalSettings = XRGeneralSettingsPerBuildTarget.XRGeneralSettingsForBuildTarget(BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget));
+                var generalSettings = XRGeneralSettingsPerBuildTarget.XRGeneralSettingsForBuildTarget(BuildPipeline.GetBuildTargetGroup(BuildTarget.Android));
                 return generalSettings != null && generalSettings.Manager.activeLoaders.OfType<ARCoreLoader>().Any();
             }
         }
 
-        void SetRuntimePluginCopyDelegate()
+        static void SetRuntimePluginCopyDelegate()
         {
             foreach (var plugin in PluginImporter.GetAllImporters())
             {
@@ -201,7 +197,7 @@ namespace UnityEditor.XR.ARCore
             }
         }
 
-        void Check64BitArch()
+        static void Check64BitArch()
         {
             // In editor versions 2021.1 and above, a warning is already shown for IL2CPP with ARMv7 only build config.
             // So, we only need to check for Mono scripting backend.
@@ -215,18 +211,15 @@ namespace UnityEditor.XR.ARCore
     class ARCoreManifest : IPostGenerateGradleAndroidProject
     {
         const string k_AndroidUri = "http://schemas.android.com/apk/res/android";
-
         const string k_AndroidNameValue = "com.google.ar.core";
-
         const string k_AndroidManifestPath = "/src/main/AndroidManifest.xml";
-
         const string k_AndroidHardwareCameraAr = "android.hardware.camera.ar";
-
         const string k_AndroidPermissionCamera = "android.permission.CAMERA";
-
         const string k_AndroidDepth = "com.google.ar.core.depth";
 
-        XmlNode FindFirstChild(XmlNode node, string tag)
+        public int callbackOrder => 2;
+
+        static XmlNode FindFirstChild(XmlNode node, string tag)
         {
             if (node.HasChildNodes)
             {
@@ -241,14 +234,14 @@ namespace UnityEditor.XR.ARCore
             return null;
         }
 
-        void AppendNewAttribute(XmlDocument doc, XmlElement element, string attributeName, string attributeValue)
+        static void AppendNewAttribute(XmlDocument doc, XmlElement element, string attributeName, string attributeValue)
         {
             var attribute = doc.CreateAttribute(attributeName, k_AndroidUri);
             attribute.Value = attributeValue;
             element.Attributes.Append(attribute);
         }
 
-        void FindOrCreateTagWithAttribute(XmlDocument doc, XmlNode containingNode, string tagName,
+        static void FindOrCreateTagWithAttribute(XmlDocument doc, XmlNode containingNode, string tagName,
             string attributeName, string attributeValue)
         {
             if (containingNode.HasChildNodes)
@@ -275,7 +268,7 @@ namespace UnityEditor.XR.ARCore
             containingNode.AppendChild(element);
         }
 
-        void FindOrCreateTagWithAttributes(XmlDocument doc, XmlNode containingNode, string tagName,
+        static void FindOrCreateTagWithAttributes(XmlDocument doc, XmlNode containingNode, string tagName,
             string firstAttributeName, string firstAttributeValue, string secondAttributeName, string secondAttributeValue)
         {
             if (containingNode.HasChildNodes)
@@ -353,15 +346,5 @@ namespace UnityEditor.XR.ARCore
             }
             manifestDoc.Save(manifestPath);
         }
-
-        void DebugPrint(XmlDocument doc)
-        {
-            var sw = new System.IO.StringWriter();
-            var xw = XmlWriter.Create(sw);
-            doc.Save(xw);
-            Debug.Log(sw);
-        }
-
-        public int callbackOrder => 2;
     }
 }

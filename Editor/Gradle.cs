@@ -117,4 +117,3 @@ namespace UnityEditor.XR.ARCore
         }
     }
 }
-
