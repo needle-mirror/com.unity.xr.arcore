@@ -20,7 +20,7 @@ namespace UnityEditor.XR.ARCore
         [InitializeOnLoadMethod]
         static void AddARCoreValidationRules()
         {
-            // When adding a new validation rule, please rememeber to add it in the docs also with a user-friendly description
+            // When adding a new validation rule, please remember to add it in the docs also with a user-friendly description
             var androidGlobalRules = new[]
             {
                 new BuildValidationRule

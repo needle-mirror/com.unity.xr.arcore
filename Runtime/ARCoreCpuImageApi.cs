@@ -24,13 +24,13 @@ namespace UnityEngine.XR.ARCore
         public static ARCoreCpuImageApi instance { get; } = new ARCoreCpuImageApi();
 
         /// <summary>
-        /// Tries to acquire the latest image of a particular type.
+        /// Tries to acquire the latest image of type <paramref name="imageType"/>.
         /// </summary>
         /// <param name="imageType">The type of image to acquire.</param>
-        /// <param name="cinfo">On success, populated with construction information information for a
+        /// <param name="cinfo">On success, populated with construction information for an
         ///     <see cref="XRCpuImage"/>.</param>
-        /// <returns>Returns `true` if the latest image of type <paramref name="imageType"/> was successfully acquired.
-        ///     Returns `false` otherwise.</returns>
+        /// <returns>Returns <see langword="true"/> if the latest image of type <paramref name="imageType"/> was successfully acquired.
+        /// Otherwise, returns <see langword="false"/>.</returns>
         public static bool TryAcquireLatestImage(ImageType imageType, out XRCpuImage.Cinfo cinfo)
             => NativeApi.UnityARCore_CpuImage_TryAcquireLatestImage(imageType, out cinfo);
 
@@ -86,7 +86,7 @@ namespace UnityEngine.XR.ARCore
             => NativeApi.UnityARCore_CpuImage_HandleValid(nativeHandle);
 
         /// <summary>
-        /// Get the number of bytes required to store an image with the iven dimensions and <c>TextureFormat</c>.
+        /// Get the number of bytes required to store an image with the given dimensions and <c>TextureFormat</c>.
         /// </summary>
         /// <param name="nativeHandle">A unique identifier for the camera image to convert.</param>
         /// <param name="dimensions">The dimensions of the output image.</param>
@@ -148,7 +148,7 @@ namespace UnityEngine.XR.ARCore
         /// <param name="nativeHandle">A unique identifier for the camera image to convert.</param>
         /// <param name="conversionParams">The parameters to use during the conversion.</param>
         /// <param name="callback">A delegate which must be invoked when the request is complete, whether the
-        /// conversion was successfully or not.</param>
+        /// conversion was successful or not.</param>
         /// <param name="context">A native pointer which must be passed back unaltered to
         /// <paramref name="callback"/>.</param>
         public override void ConvertAsync(int nativeHandle, XRCpuImage.ConversionParams conversionParams,
@@ -169,12 +169,10 @@ namespace UnityEngine.XR.ARCore
         };
 
         /// <summary>
-        /// Determines whether a given
-        /// [`TextureFormat`](https://docs.unity3d.com/ScriptReference/TextureFormat.html) is supported for image
-        /// conversion.
+        /// Determines whether a given <see cref="UnityEngine.TextureFormat"/> is supported for image conversion.
         /// </summary>
         /// <param name="image">The <see cref="XRCpuImage"/> to convert.</param>
-        /// <param name="format">The [`TextureFormat`](https://docs.unity3d.com/ScriptReference/TextureFormat.html)
+        /// <param name="format">The <see cref="UnityEngine.TextureFormat"/>
         ///     to test.</param>
         /// <returns>Returns `true` if <paramref name="image"/> can be converted to <paramref name="format"/>.
         ///     Returns `false` otherwise.</returns>

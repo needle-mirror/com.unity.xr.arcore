@@ -5,7 +5,7 @@
 * Subsystems
   * [Session](xref:arcore-session)
   * [Camera](xref:arcore-camera)
-  * [Plane tracking](xref:arcore-plane-tracking)
+  * [Plane detection](xref:arcore-plane-detection)
   * [Image tracking](xref:arcore-image-tracking)
   * [Face tracking](xref:arcore-face-tracking)
   * [Point clouds](xref:arcore-point-clouds)

@@ -45,7 +45,9 @@ Shader "Unlit/ARCoreBackground/AfterOpaques"
             uniform mat4 _UnityDisplayTransform;
 
 #ifdef VERTEX
-            varying vec2 textureCoord;
+
+            varying vec2 textureCoordQuad;
+            varying vec2 textureCoordEnvironment;
 
             void main()
             {
@@ -63,8 +65,10 @@ Shader "Unlit/ARCoreBackground/AfterOpaques"
 #endif // VERTEX
 
 #ifdef FRAGMENT
+            varying vec2 textureCoord;
             varying vec2 textureCoordQuad;
             varying vec2 textureCoordEnvironment;
+
             uniform float _UnityCameraForwardScale;
 
 #ifdef ARCORE_ENVIRONMENT_DEPTH_ENABLED

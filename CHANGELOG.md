@@ -8,6 +8,12 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [5.1.0-pre.3] - 2023-02-06
+
+### Fixed
+
+- Fixed [Issue #1017](https://github.com/Unity-Technologies/arfoundation-samples/issues/1017) in the `ARCoreBackgroundAfterOpaques` shader where some variables were not scoped to the vertex shader correctly.
+
 ## [5.1.0-pre.2] - 2022-11-01
 
 No changes

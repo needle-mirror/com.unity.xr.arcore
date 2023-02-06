@@ -1,5 +1,5 @@
 ---
-uid: arcore-plane-tracking
+uid: arcore-plane-detection
 ---
 # Plane tracking
 
