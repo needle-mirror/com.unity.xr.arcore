@@ -135,7 +135,7 @@ namespace UnityEditor.XR.ARCore
                 new BuildValidationRule
                 {
                     Category = k_Catergory,
-                    Message = "Please enable the 'Google ARCore' plug-in in 'XR Plug-in Management'.",
+                    Message = "If targeting ARCore, enable the 'Google ARCore' plug-in in 'XR Plug-in Management'.",
                     CheckPredicate = IsARCorePluginEnabled,
                     FixItMessage = "Open Project Setting > XR Plug-in Management > Android tab and enable `Google ARCore`.",
                     FixIt = () =>
