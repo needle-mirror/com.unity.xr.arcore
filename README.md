@@ -23,5 +23,5 @@ git submodule update --init --recursive
 cd com.unity.xr.arcore/Source~
 ```
 4. Build the source using `bee`.
-  - On Windows: ```bee.exe```
-  - On Mac: ```mono bee.exe```
+  - On Windows: ```bee.cmd```
+  - On Mac: ```./bee.sh```

@@ -8,6 +8,12 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [4.2.8] - 2023-05-15
+
+### Fixed
+
+- Fixed issues [ARFB-251](https://issuetracker.unity3d.com/issues/autofocus-stops-working-on-android-when-arsession-dot-reset-is-triggered) and [ARFB-258](https://issuetracker.unity3d.com/issues/camera-feed-turns-off-when-arsession-dot-reset-is-called) where [ARSession.Reset](xref:UnityEngine.XR.ARFoundation.ARSession.Reset) could have unintended side effects such as disabling the device camera's autofocus.
+
 ## [4.2.7] - 2022-10-31
 
 No changes
