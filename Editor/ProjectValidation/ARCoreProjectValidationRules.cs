@@ -20,28 +20,37 @@ namespace UnityEditor.XR.ARCore
         [InitializeOnLoadMethod]
         static void AddARCoreValidationRules()
         {
+#if UNITY_2023_2_OR_NEWER
+            const int minSdkVersionInEditor = 23;
+            const string minSdkNameInEditor = "Android 6.0 'Marshmallow'";
+#else
+            const int minSdkVersionInEditor = 22;
+            const string minSdkNameInEditor = "Android 5.1 'Lollipop'";
+#endif
+
             // When adding a new validation rule, please remember to add it in the docs also with a user-friendly description
             var androidGlobalRules = new[]
             {
                 new BuildValidationRule
                 {
                     Category = k_Catergory,
-                    Message = $"Google ARCore requires targeting minimum Android 7.0 'Nougat' API level 24 when AR is 'Required' or Android 4.0 'Ice Cream Sandwich' API Level 14 when AR is 'Optional' (currently: {PlayerSettings.Android.minSdkVersion}).",
+                    Message = $"Google ARCore requires targeting minimum Android 7.0 'Nougat' API level 24 when AR is 'Required' or {minSdkNameInEditor} API Level {minSdkVersionInEditor} when AR is 'Optional' (currently: {PlayerSettings.Android.minSdkVersion}).",
                     IsRuleEnabled = IsARCorePluginEnabled,
                     CheckPredicate = () =>
                     {
                         var arcoreSettings = ARCoreSettings.GetOrCreateSettings();
-                        var minSdkVersion = arcoreSettings.requirement == ARCoreSettings.Requirement.Optional ? 14 : 24;
+                        var minSdkVersion = arcoreSettings.requirement == ARCoreSettings.Requirement.Optional ? minSdkVersionInEditor : 24;
 
                         return (int)PlayerSettings.Android.minSdkVersion >= minSdkVersion;
                     },
                     FixItMessage = "Open Project Settings > Player Settings > Android tab and increase the 'Minimum API " +
-                        "Level' to 'API Level 24' or greater for AR Required and to 'API Level 14' or greater for AR Optional.",
+                        $"Level' to 'API Level 24' or greater for AR Required and to 'API Level {minSdkVersionInEditor}' or greater for AR Optional.",
                     FixIt = () =>
                     {
                         var arcoreSettings = ARCoreSettings.GetOrCreateSettings();
-                        var minSdkVersion = arcoreSettings.requirement == ARCoreSettings.Requirement.Optional ? AndroidSdkVersions.AndroidApiLevel22 : AndroidSdkVersions.AndroidApiLevel24;
-                        PlayerSettings.Android.minSdkVersion = minSdkVersion;
+                        if (arcoreSettings.requirement != ARCoreSettings.Requirement.Optional
+                            && PlayerSettings.Android.minSdkVersion < AndroidSdkVersions.AndroidApiLevel24)
+                            PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel24;
                     },
                     Error = true
                 },

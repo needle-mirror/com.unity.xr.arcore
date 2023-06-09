@@ -116,8 +116,14 @@ namespace UnityEditor.XR.ARCore
 
         static void EnsureMinSdkVersion()
         {
+#if UNITY_2023_2_OR_NEWER
+            const int minSdkVersionInEditor = 23;
+#else
+            const int minSdkVersionInEditor = 22;
+#endif
+
             var arcoreSettings = ARCoreSettings.GetOrCreateSettings();
-            var minSdkVersion = arcoreSettings.requirement == ARCoreSettings.Requirement.Optional ? 14 : 24;
+            var minSdkVersion = arcoreSettings.requirement == ARCoreSettings.Requirement.Optional ? minSdkVersionInEditor : 24;
 
             if ((int)PlayerSettings.Android.minSdkVersion < minSdkVersion)
                 throw new BuildFailedException($"ARCore {arcoreSettings.requirement} apps require a minimum SDK version of {minSdkVersion}. Currently set to {PlayerSettings.Android.minSdkVersion}");
