@@ -10,32 +10,56 @@ namespace UnityEngine.XR.ARCore
     /// </summary>
     public class ARCorePermissionManager : AndroidJavaProxy
     {
+        const string k_IsPermissionGrantedString = "IsPermissionGranted";
+        const string k_AndroidPermissionsClass = "com.unity3d.plugin.UnityAndroidPermissions$IPermissionRequestResult";
+        const string k_AndroidPermissionService = "com.unity3d.plugin.UnityAndroidPermissions";
+
+        static ARCorePermissionManager s_Instance;
+        static AndroidJavaObject s_Activity;
+        static AndroidJavaObject s_PermissionService;
+        static Action<string, bool> s_CurrentCallback;
+
+#if UNITY_2022_2_OR_NEWER
+        static IntPtr s_IsPermissionGrantedMethodId;
+#endif
+
         /// <summary>
         /// Checks if an Android permission is granted to the application.
         /// </summary>
         /// <param name="permissionName">The full name of the Android permission to check (e.g.
         /// android.permission.CAMERA).</param>
-        /// <returns><c>true</c> if <c>permissionName</c> is granted to the application, otherwise
-        /// <c>false</c>.</returns>
+        /// <returns><see langword="true"/> if <paramref name="permissionName"/> is granted to the application.
+        /// Otherwise, <see langword="false"/>.</returns>
         public static bool IsPermissionGranted(string permissionName)
         {
             if (Application.isEditor)
                 return true;
+            
+#if UNITY_2022_2_OR_NEWER
+            if (s_IsPermissionGrantedMethodId == IntPtr.Zero)
+            {
+                var androidPermissionClass = new AndroidJavaClass(k_AndroidPermissionService).GetRawClass();
+                object[] args = { activity, permissionName };
+                s_IsPermissionGrantedMethodId = AndroidJNIHelper.GetMethodID<bool>(androidPermissionClass, k_IsPermissionGrantedString, args, false);
+            }
 
-            return permissionsService.Call<bool>("IsPermissionGranted", activity, permissionName);
+            return permissionsService.Call<bool>(s_IsPermissionGrantedMethodId, activity, permissionName);
+#else
+            return permissionsService.Call<bool>(k_IsPermissionGrantedString, activity, permissionName);
+#endif
         }
 
         /// <summary>
         /// Requests an Android permission from the user.
         /// </summary>
-        /// <param name="permissionName">The permission to be requested (e.g. android.permission.CAMERA).</param>
+        /// <param name="permissionName">The permission to request (e.g. android.permission.CAMERA).</param>
         /// <param name="callback">A delegate to invoke when the permission has been granted or denied. The
         /// parameters of the delegate are the <paramref name="permissionName"/> being requested and a <c>bool</c>
         /// indicating whether permission was granted.</param>
         public static void RequestPermission(string permissionName, Action<string, bool> callback)
         {
             if (callback == null)
-                throw new ArgumentNullException("callback");
+                throw new ArgumentNullException(nameof(callback));
 
             if (IsPermissionGranted(permissionName))
             {
@@ -78,20 +102,10 @@ namespace UnityEngine.XR.ARCore
         [Preserve]
         void OnActivityResult() { }
 
-        ARCorePermissionManager()
-            : base(k_AndroidPermissionsClass)
+        ARCorePermissionManager() : base(k_AndroidPermissionsClass)
         { }
 
-        static ARCorePermissionManager instance
-        {
-            get
-            {
-                if (s_Instance == null)
-                    s_Instance = new ARCorePermissionManager();
-
-                return s_Instance;
-            }
-        }
+        static ARCorePermissionManager instance => s_Instance ??= new ARCorePermissionManager();
 
         static AndroidJavaObject activity
         {
@@ -107,27 +121,7 @@ namespace UnityEngine.XR.ARCore
             }
         }
 
-        static AndroidJavaObject permissionsService
-        {
-            get
-            {
-                if (s_PermissionService == null)
-                    s_PermissionService = new AndroidJavaObject(k_AndroidPermissionService);
-
-                return s_PermissionService;
-            }
-        }
-
-        static ARCorePermissionManager s_Instance;
-
-        static AndroidJavaObject s_Activity;
-
-        static AndroidJavaObject s_PermissionService;
-
-        static Action<string, bool> s_CurrentCallback;
-
-        static readonly string k_AndroidPermissionsClass = "com.unity3d.plugin.UnityAndroidPermissions$IPermissionRequestResult";
-
-        static readonly string k_AndroidPermissionService = "com.unity3d.plugin.UnityAndroidPermissions";
+        static AndroidJavaObject permissionsService =>
+            s_PermissionService ??= new AndroidJavaObject(k_AndroidPermissionService);
     }
 }

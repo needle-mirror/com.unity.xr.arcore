@@ -7,7 +7,7 @@ namespace UnityEditor.XR.ARCore.Tests
     {
         const string k_LogPrefix = "[Java Tests]";
 
-        [MenuItem("AR Foundation/Tests/Log Java path")]
+        [MenuItem("AR Foundation/ARCore/Tests/Log Java path")]
         static void LogFullPathToJava()
         {
             if (Java.TryGetFullPathToJava(out var fullPathToJava, out var diagnosticMessage))

@@ -14,7 +14,7 @@ namespace UnityEditor.XR.ARCore.Tests
 
         const string k_LogPrefix = "[Gradle Tests]";
 
-        [MenuItem("AR Foundation/Tests/Log Gradle version by parsing gradle-launcher-*.jar")]
+        [MenuItem("AR Foundation/ARCore/Tests/Log Gradle version by parsing gradle-launcher-*.jar")]
         static void LogGradleVersionByParsingFileName()
         {
             if (!Gradle.TryGetFullPathToGradleLauncher(out var fullPathToGradleLauncher, out var diagnosticMessage))
@@ -35,7 +35,7 @@ namespace UnityEditor.XR.ARCore.Tests
             }
         }
 
-        [MenuItem("AR Foundation/Tests/Log Gradle version from Java")]
+        [MenuItem("AR Foundation/ARCore/Tests/Log Gradle version from Java")]
         static void LogGradleVersionByExecutingJava()
         {
             // Get the path to the gradle-launcher-*.jar file

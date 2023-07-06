@@ -2,7 +2,7 @@
 {
     static class ManagementTests
     {
-        [MenuItem("AR Foundation/Tests/Detect ARCore Enabled")]
+        [MenuItem("AR Foundation/ARCore/Tests/Detect ARCore Enabled")]
         public static void DetectedARCoreEnabled()
         {
             EditorUtility.DisplayDialog(
