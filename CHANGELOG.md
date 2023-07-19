@@ -8,6 +8,13 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [5.0.7] - 2023-07-19
+
+### Fixed
+
+- Fixed issue [ARCB-11](https://issuetracker.unity3d.com/issues/ar-foundation-gcalloc-is-using-1-dot-8kb-when-built-on-android) where unnecessary memory was allocated when requesting Camera permissions. This fix requires Unity Editor version 2022.2 or newer.
+- Fixed issue [ARFB-283](https://issuetracker.unity3d.com/issues/autofocusrequested-can-not-automatically-focus-after-configuring-camera-settings-on-a-device) where changing [ARCameraManager.currentConfiguration](xref:UnityEngine.XR.ARFoundation.ARCameraManager.currentConfiguration) could disable some ARCore features, including autofocus.
+
 ## [5.0.6] - 2023-05-13
 
 ### Fixed

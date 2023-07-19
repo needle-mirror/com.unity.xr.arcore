@@ -21,8 +21,19 @@ namespace UnityEngine.XR.ARCore
         {
             if (Application.isEditor)
                 return true;
+            
+#if UNITY_2022_2_OR_NEWER
+            if (s_IsPermissionGrantedMethodId == IntPtr.Zero)
+            {
+                var androidPermissionClass = new AndroidJavaClass(k_AndroidPermissionService).GetRawClass();
+                object[] args = { activity, permissionName };
+                s_IsPermissionGrantedMethodId = AndroidJNIHelper.GetMethodID<bool>(androidPermissionClass, k_IsPermissionGrantedString, args, false);
+            }
 
-            return permissionsService.Call<bool>("IsPermissionGranted", activity, permissionName);
+            return permissionsService.Call<bool>(s_IsPermissionGrantedMethodId, activity, permissionName);
+#else
+            return permissionsService.Call<bool>(k_IsPermissionGrantedString, activity, permissionName);
+#endif
         }
 
         /// <summary>
@@ -119,6 +130,12 @@ namespace UnityEngine.XR.ARCore
         }
 
         static ARCorePermissionManager s_Instance;
+        
+#if UNITY_2022_2_OR_NEWER
+        static IntPtr s_IsPermissionGrantedMethodId;
+#endif
+
+        static readonly string k_IsPermissionGrantedString = "IsPermissionGranted";
 
         static AndroidJavaObject s_Activity;
 
