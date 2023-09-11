@@ -32,6 +32,7 @@ Shader "Unlit/ARCoreBackground/AfterOpaques"
             GLSLPROGRAM
 
             #pragma multi_compile_local __ ARCORE_ENVIRONMENT_DEPTH_ENABLED
+            #pragma multi_compile_local __ ARCORE_IMAGE_STABILIZATION_ENABLED
 
             #pragma only_renderers gles3
 
@@ -41,34 +42,55 @@ Shader "Unlit/ARCoreBackground/AfterOpaques"
 #extension GL_OES_EGL_image_external_essl3 : require
 #endif // SHADER_API_GLES3
 
+#ifndef ARCORE_IMAGE_STABILIZATION_ENABLED
+#define ARCORE_TEXCOORD_TYPE vec2
+#else // ARCORE_IMAGE_STABILIZATION_ENABLED
+#define ARCORE_TEXCOORD_TYPE vec3
+#endif // !ARCORE_IMAGE_STABILIZATION_ENABLED
+
             // Device display transform is provided by the AR Foundation camera background renderer.
             uniform mat4 _UnityDisplayTransform;
 
 #ifdef VERTEX
 
+            varying ARCORE_TEXCOORD_TYPE textureCoord;
             varying vec2 textureCoordQuad;
-            varying vec2 textureCoordEnvironment;
 
             void main()
             {
-#if defined(SHADER_API_GLES3) && defined(ARCORE_ENVIRONMENT_DEPTH_ENABLED)
+#ifdef SHADER_API_GLES3
+#ifdef ARCORE_ENVIRONMENT_DEPTH_ENABLED
                 // Transform the position from object space to clip space.
                 gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
 
+#ifndef ARCORE_IMAGE_STABILIZATION_ENABLED
                 // Get quad uvs for sampling camera texture
                 textureCoordQuad = gl_MultiTexCoord0;
 
                 // Remap the texture coordinates based on the device rotation.
-                textureCoordEnvironment = (_UnityDisplayTransform * vec4(gl_MultiTexCoord0.x, 1.0f - gl_MultiTexCoord0.y, 1.0f, 0.0f)).xy;
-#endif // SHADER_API_GLES3 && ARCORE_ENVIRONMENT_DEPTH_ENABLED
+                textureCoord = (_UnityDisplayTransform * vec4(gl_MultiTexCoord0.x, 1.0f - gl_MultiTexCoord0.y, 1.0f, 0.0f)).xy;
+
+#else // ARCORE_IMAGE_STABILIZATION_ENABLED
+                textureCoordQuad = ComputeScreenPos(gl_Position);
+
+                textureCoord = gl_MultiTexCoord0.xyz;
+#endif // !ARCORE_IMAGE_STABILIZATION_ENABLED
+
+#else // !ARCORE_ENVIRONMENT_DEPTH_ENABLED
+                // Don't Subtract depth when ARCore Occlusion is not enabled.
+                // Accomplish this by clipping all four vertices of the mesh/
+                gl_Position = vec4(0.0f, 0.0f, -1.0f, 0.0f);
+#endif // ARCORE_ENVIRONMENT_DEPTH_ENABLED
+#endif // SHADER_API_GLES3
             }
 #endif // VERTEX
 
 #ifdef FRAGMENT
-            varying vec2 textureCoord;
-            varying vec2 textureCoordQuad;
-            varying vec2 textureCoordEnvironment;
+            varying ARCORE_TEXCOORD_TYPE textureCoord;
 
+            varying vec2 textureCoordQuad;
+
+            uniform samplerExternalOES _MainTex;
             uniform float _UnityCameraForwardScale;
 
 #ifdef ARCORE_ENVIRONMENT_DEPTH_ENABLED
@@ -91,13 +113,20 @@ Shader "Unlit/ARCoreBackground/AfterOpaques"
 
             void main()
             {
-#if defined(SHADER_API_GLES3) && defined(ARCORE_ENVIRONMENT_DEPTH_ENABLED)
+#ifdef SHADER_API_GLES3
+#ifdef ARCORE_ENVIRONMENT_DEPTH_ENABLED
+#ifndef ARCORE_IMAGE_STABILIZATION_ENABLED
+                vec2 uvs = textureCoord.xy;
+#else // ARCORE_IMAGE_STABILIZATION_ENABLED
+                // apply perspective correction
+                vec2 uvs = textureCoord.xy / textureCoord.z;
+#endif
 
-                vec3 result = texture(_MainTex, textureCoord).xyz;
+                vec3 result = texture(_MainTex, uvs).xyz;
 
                 float depth = texture(_CameraDepthTexture, textureCoordQuad).x;
 
-                float distance = texture(_EnvironmentDepth, textureCoordEnvironment).x;
+                float distance = texture(_EnvironmentDepth, uvs).x;
                 float environmentDepth = ConvertDistanceToDepth(distance);
 
 #ifndef UNITY_COLORSPACE_GAMMA
@@ -111,7 +140,8 @@ Shader "Unlit/ARCoreBackground/AfterOpaques"
 
                 gl_FragColor = vec4(result, 1.0);
                 gl_FragDepth = depth;
-#endif // SHADER_API_GLES3 && ARCORE_ENVIRONMENT_DEPTH_ENABLED
+#endif // ARCORE_ENVIRONMENT_DEPTH_ENABLED
+#endif // SHADER_API_GLES3
             }
 
 #endif // FRAGMENT
@@ -134,6 +164,7 @@ Shader "Unlit/ARCoreBackground/AfterOpaques"
             GLSLPROGRAM
 
             #pragma multi_compile_local __ ARCORE_ENVIRONMENT_DEPTH_ENABLED
+            #pragma multi_compile_local __ ARCORE_IMAGE_STABILIZATION_ENABLED
 
             #pragma only_renderers gles3
 
@@ -143,11 +174,17 @@ Shader "Unlit/ARCoreBackground/AfterOpaques"
 #extension GL_OES_EGL_image_external_essl3 : require
 #endif // SHADER_API_GLES3
 
+#ifndef ARCORE_IMAGE_STABILIZATION_ENABLED
+#define ARCORE_TEXCOORD_TYPE vec2
+#else // ARCORE_IMAGE_STABILIZATION_ENABLED
+#define ARCORE_TEXCOORD_TYPE vec3
+#endif // !ARCORE_IMAGE_STABILIZATION_ENABLED
+
             // Device display transform is provided by the AR Foundation camera background renderer.
             uniform mat4 _UnityDisplayTransform;
 
 #ifdef VERTEX
-            varying vec2 textureCoord;
+            varying ARCORE_TEXCOORD_TYPE textureCoord;
 
             void main()
             {
@@ -155,14 +192,18 @@ Shader "Unlit/ARCoreBackground/AfterOpaques"
                 // Transform the position from object space to clip space.
                 gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
 
+#ifdef ARCORE_IMAGE_STABILIZATION_ENABLED
+                textureCoord = gl_MultiTexCoord0.xyz;
+#else
                 // Remap the texture coordinates based on the device rotation.
-                textureCoord = (_UnityDisplayTransform * vec4(gl_MultiTexCoord0.x, 1.0f - gl_MultiTexCoord0.y, 1.0f, 0.0f)).xy;
+                textureCoord.xy = (_UnityDisplayTransform * vec4(gl_MultiTexCoord0.x, 1.0f - gl_MultiTexCoord0.y, 1.0f, 0.0f)).xy;
+#endif
 #endif // SHADER_API_GLES3
             }
 #endif // VERTEX
 
 #ifdef FRAGMENT
-            varying vec2 textureCoord;
+            varying ARCORE_TEXCOORD_TYPE textureCoord;
             uniform samplerExternalOES _MainTex;
             uniform float _UnityCameraForwardScale;
 
@@ -208,11 +249,16 @@ Shader "Unlit/ARCoreBackground/AfterOpaques"
             void main()
             {
 #ifdef SHADER_API_GLES3
-                vec3 result = texture(_MainTex, textureCoord).xyz;
+#ifdef ARCORE_IMAGE_STABILIZATION_ENABLED
+                vec2 tc = textureCoord.xy / textureCoord.z;
+#else
+                vec2 tc = textureCoord;
+#endif
+                vec3 result = texture(_MainTex, tc).xyz;
                 float depth = 1.0;
 
 #ifdef ARCORE_ENVIRONMENT_DEPTH_ENABLED
-                float distance = texture(_EnvironmentDepth, textureCoord).x;
+                float distance = texture(_EnvironmentDepth, tc).x;
                 depth = ConvertDistanceToDepth(distance);
 #endif // ARCORE_ENVIRONMENT_DEPTH_ENABLED
 

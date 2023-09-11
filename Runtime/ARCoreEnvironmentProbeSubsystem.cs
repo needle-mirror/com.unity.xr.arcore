@@ -28,7 +28,7 @@ namespace UnityEngine.XR.ARCore
                 return;
 
             const string subsystemId = "ARCore-EnvironmentProbe";
-            XREnvironmentProbeSubsystemCinfo environmentProbeSubsystemInfo = new XREnvironmentProbeSubsystemCinfo()
+            var environmentProbeSubsystemInfo = new XREnvironmentProbeSubsystemDescriptor.Cinfo()
             {
                 id = subsystemId,
                 providerType = typeof(ARCoreEnvironmentProbeSubsystem.ARCoreProvider),
@@ -41,7 +41,7 @@ namespace UnityEngine.XR.ARCore
                 supportsEnvironmentTextureHDR = true,
             };
 
-            XREnvironmentProbeSubsystem.Register(environmentProbeSubsystemInfo);
+            XREnvironmentProbeSubsystemDescriptor.Register(environmentProbeSubsystemInfo);
         }
 
         class ARCoreProvider : Provider

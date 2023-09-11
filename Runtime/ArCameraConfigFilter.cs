@@ -28,14 +28,6 @@ namespace UnityEngine.XR.ARCore
         public static ArCameraConfigFilter FromIntPtr(IntPtr value) => new ArCameraConfigFilter(value);
 
         /// <summary>
-        /// (Read Only) Represents a null <see cref="ArCameraConfigFilter"/>, i.e., one whose underlying native pointer
-        /// is `null`.
-        /// This property is deprecated. Use <see langword="default"/> instead.
-        /// </summary>
-        [Obsolete("Use default instead.")]
-        public static ArCameraConfigFilter Null => default;
-
-        /// <summary>
         /// Creates a new, default-constructed <see cref="ArCameraConfigFilter"/>.
         /// </summary>
         /// <remarks>
@@ -50,13 +42,6 @@ namespace UnityEngine.XR.ARCore
         /// </summary>
         /// <returns>Returns the underlying native pointer for this <see cref="ArCameraConfigFilter"/>.</returns>
         public IntPtr AsIntPtr() => m_Self;
-
-        /// <summary>
-        /// (Read Only) Indicates whether this <see cref="ArCameraConfigFilter"/> is `null`.
-        /// This property is deprecated. Use the equality operator (`==`) to compare with `null` instead.
-        /// </summary>
-        [Obsolete("Compare to null instead.")]
-        public bool IsNull => m_Self == IntPtr.Zero;
 
         /// <summary>
         /// Gets the desired depth sensor usages to allow.

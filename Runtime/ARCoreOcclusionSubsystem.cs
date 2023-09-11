@@ -28,7 +28,7 @@ namespace UnityEngine.XR.ARCore
 
             const string k_SubsystemId = "ARCore-Occlusion";
 
-            var occlusionSubsystemCinfo = new XROcclusionSubsystemCinfo()
+            var occlusionSubsystemCinfo = new XROcclusionSubsystemDescriptor.Cinfo()
             {
                 id = k_SubsystemId,
                 providerType = typeof(ARCoreOcclusionSubsystem.ARCoreProvider),
@@ -39,10 +39,7 @@ namespace UnityEngine.XR.ARCore
                 environmentDepthTemporalSmoothingSupportedDelegate = NativeApi.UnityARCore_OcclusionProvider_DoesSupportEnvironmentDepth,
             };
 
-            if (!XROcclusionSubsystem.Register(occlusionSubsystemCinfo))
-            {
-                Debug.Log($"Cannot register the {k_SubsystemId} subsystem");
-            }
+            XROcclusionSubsystemDescriptor.Register(occlusionSubsystemCinfo);
         }
 
         /// <summary>

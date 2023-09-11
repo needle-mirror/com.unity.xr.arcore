@@ -13,7 +13,7 @@ namespace UnityEngine.XR.ARCore
     /// The ARCore implementation of the <c>XRPointCloudSubsystem</c>. Do not create this directly. Use the <c>SubsystemManager</c> instead.
     /// </summary>
     [Preserve]
-    public sealed class ARCoreXRPointCloudSubsystem : XRPointCloudSubsystem
+    public sealed class ARCorePointCloudSubsystem : XRPointCloudSubsystem
     {
         class ARCoreProvider : Provider
         {
@@ -187,14 +187,14 @@ namespace UnityEngine.XR.ARCore
             var descriptorParams = new XRPointCloudSubsystemDescriptor.Cinfo
             {
                 id = "ARCore-PointCloud",
-                providerType = typeof(ARCoreXRPointCloudSubsystem.ARCoreProvider),
-                subsystemTypeOverride = typeof(ARCoreXRPointCloudSubsystem),
+                providerType = typeof(ARCorePointCloudSubsystem.ARCoreProvider),
+                subsystemTypeOverride = typeof(ARCorePointCloudSubsystem),
                 supportsFeaturePoints = true,
                 supportsUniqueIds = true,
                 supportsConfidence = true
             };
 
-            XRPointCloudSubsystemDescriptor.RegisterDescriptor(descriptorParams);
+            XRPointCloudSubsystemDescriptor.Register(descriptorParams);
         }
     }
 }

@@ -467,7 +467,7 @@ namespace UnityEngine.XR.ARCore
             if (!Api.platformAndroid || !Api.loaderPresent)
                 return;
 
-            XRSessionSubsystemDescriptor.RegisterDescriptor(new XRSessionSubsystemDescriptor.Cinfo
+            XRSessionSubsystemDescriptor.Register(new XRSessionSubsystemDescriptor.Cinfo
             {
                 id = "ARCore-Session",
                 providerType = typeof(ARCoreProvider),

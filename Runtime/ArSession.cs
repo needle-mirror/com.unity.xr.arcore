@@ -33,20 +33,6 @@ namespace UnityEngine.XR.ARCore
         public static ArSession FromIntPtr(IntPtr value) => new ArSession(value);
 
         /// <summary>
-        /// Represents a null <see cref="ArSession"/>, i.e., one whose underlying native pointer is `null`.
-        /// This property is obsolete. Use <see langword="default"/> instead.
-        /// </summary>
-        [Obsolete("Use default instead.")]
-        public static ArSession Null => default;
-
-        /// <summary>
-        /// (Read Only) Indicates whether this <see cref="ArSession"/> is `null`.
-        /// This property is deprecated. Use the equality operator (`==`) to compare with `null` instead.
-        /// </summary>
-        [Obsolete("Compare to null instead.")]
-        public bool IsNull => m_Self == IntPtr.Zero;
-
-        /// <summary>
         /// Gets the underlying native pointer for this <see cref="ArSession"/>.
         /// </summary>
         /// <returns>Returns the underlying native pointer for this <see cref="ArSession"/>.</returns>

@@ -8,6 +8,36 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [6.0.0-pre.3] - 2023-09-11
+
+### Added
+
+- Added support for Image Stabilization, which helps stabilize shaky video from the camera.
+
+### Changed
+
+- Upgraded ARCore version to 1.37 from 1.31.
+
+### Deprecated
+
+- `ARCoreXRPointCloudSubsystem` has been deprecated and renamed to `ARCorePointCloudSubsystem` for consistency with other subsystems. Unity's API Updater should automatically convert any deprecated APIs references to the new APIs when the project is loaded into the Editor again.
+
+### Removed
+
+- Removed the following deprecated APIs:
+  - `ArCameraConfig.Null` property
+  - `ArCameraConfig.IsNull` property
+  - `ArCameraConfigFilter.Null` property
+  - `ArCameraConfigFilter.IsNull` property
+  - `ArConfig.Null` property
+  - `ArConfig.IsNull` property
+  - `ARCoreBeforeSetConfigurationEventArgs.session` property
+  - `ARCoreBeforeSetConfigurationEventArgs.config` property
+  - `ARCoreBeforeSetConfigurationEventArgs(IntPtr session, IntPtr config)` constructor
+  - `ARCoreSettingsProvider` class
+  - `ArSession.Null` property
+  - `ArSession.IsNull` property
+
 ## [5.1.0-pre.10] - 2023-07-21
 
 No changes

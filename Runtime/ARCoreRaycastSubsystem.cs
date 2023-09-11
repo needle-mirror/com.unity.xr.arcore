@@ -173,7 +173,7 @@ namespace UnityEngine.XR.ARCore
             if (!Api.platformAndroid || !Api.loaderPresent)
                 return;
 
-            XRRaycastSubsystemDescriptor.RegisterDescriptor(new XRRaycastSubsystemDescriptor.Cinfo
+            XRRaycastSubsystemDescriptor.Register(new XRRaycastSubsystemDescriptor.Cinfo
             {
                 id = "ARCore-Raycast",
                 providerType = typeof(ARCoreRaycastSubsystem.ARCoreProvider),

@@ -28,20 +28,6 @@ namespace UnityEngine.XR.ARCore
         public static ArCameraConfig FromIntPtr(IntPtr value) => new ArCameraConfig(value);
 
         /// <summary>
-        /// Represents a null <see cref="ArCameraConfig"/>, i.e., one whose underlying native pointer is `null`.
-        /// This property is deprecated. Use <see langword="default"/> instead.
-        /// </summary>
-        [Obsolete("Use default instead.")]
-        public static ArCameraConfig Null => default;
-
-        /// <summary>
-        /// (Read Only) Indicates whether this <see cref="ArCameraConfig"/> is `null`.
-        /// This property is deprecated. Use the equality operator (`==`) to compare with `null` instead.
-        /// </summary>
-        [Obsolete("Compare to null instead.")]
-        public bool IsNull => m_Self == IntPtr.Zero;
-
-        /// <summary>
         /// Gets the underlying native pointer for this <see cref="ArCameraConfig"/>.
         /// </summary>
         /// <returns>Returns the underlying native pointer for this <see cref="ArCameraConfig"/>.</returns>

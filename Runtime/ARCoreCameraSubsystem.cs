@@ -114,7 +114,7 @@ namespace UnityEngine.XR.ARCore
             if (!Api.platformAndroid || !Api.loaderPresent)
                 return;
 
-            var cameraSubsystemCinfo = new XRCameraSubsystemCinfo
+            var cameraSubsystemCinfo = new XRCameraSubsystemDescriptor.Cinfo
             {
                 id = k_SubsystemId,
                 providerType = typeof(ARCoreCameraSubsystem.ARCoreProvider),
@@ -134,12 +134,11 @@ namespace UnityEngine.XR.ARCore
                 supportsWorldTrackingAmbientIntensityLightEstimation = true,
                 supportsWorldTrackingHDRLightEstimation = true,
                 supportsCameraGrain = false,
+                // uses delegate because support query need ARSession and cannot be determined on load
+                supportsImageStabilizationDelegate = NativeApi.UnityARCore_Camera_GetImageStabilizationSupported,
             };
 
-            if (!XRCameraSubsystem.Register(cameraSubsystemCinfo))
-            {
-                Debug.LogError($"Failed to register the {k_SubsystemId} subsystem.");
-            }
+            XRCameraSubsystemDescriptor.Register(cameraSubsystemCinfo);
         }
 
         /// <summary>
@@ -195,6 +194,38 @@ namespace UnityEngine.XR.ARCore
             static readonly int k_MainTexPropertyNameId = Shader.PropertyToID(k_MainTexPropertyName);
 
             /// <summary>
+            /// The shader keyword for enabling image stabilization mode when rendering the camera background.
+            /// </summary>
+            /// <value>
+            /// The shader keyword for enabling image stabilization mode when rendering the camera background.
+            /// </value>
+            const string k_ImageStabilizationEnabledMaterialKeyword = "ARCORE_IMAGE_STABILIZATION_ENABLED";
+
+            /// <summary>
+            /// The shader keywords for enabling image stabilization rendering.
+            /// </summary>
+            /// <value>
+            /// The shader keywords for enabling image stabilization rendering.
+            /// </value>
+            static readonly List<string> k_EnabledMaterialKeywords = new() { k_ImageStabilizationEnabledMaterialKeyword };
+
+            Material GetOrCreateCameraMaterial()
+            {
+                switch (currentBackgroundRenderingMode)
+                {
+                    case XRCameraBackgroundRenderingMode.BeforeOpaques:
+                        return m_BeforeOpaqueCameraMaterial ??= CreateCameraMaterial(k_BeforeOpaquesBackgroundShaderName);
+
+                    case XRCameraBackgroundRenderingMode.AfterOpaques:
+                        return m_AfterOpaqueCameraMaterial ??= CreateCameraMaterial(k_AfterOpaquesBackgroundShaderName);
+
+                    default:
+                        Debug.LogError($"Unable to create material for unknown background rendering mode {currentBackgroundRenderingMode}.");
+                        return null;
+                }
+            }
+
+            /// <summary>
             /// Get the material used by <c>XRCameraSubsystem</c> to render the camera texture.
             /// </summary>
             /// <returns>
@@ -204,24 +235,7 @@ namespace UnityEngine.XR.ARCore
             /// This subsystem will lazily create the camera materials depending on the <see cref="currentBackgroundRenderingMode"/>.
             /// Once created, the materials exist for the lifespan of this subsystem.
             /// </remarks>
-            public override Material cameraMaterial
-            {
-                get
-                {
-                    switch (currentBackgroundRenderingMode)
-                    {
-                        case XRCameraBackgroundRenderingMode.BeforeOpaques:
-                            return m_BeforeOpaqueCameraMaterial ??= CreateCameraMaterial(k_BeforeOpaquesBackgroundShaderName);
-
-                        case XRCameraBackgroundRenderingMode.AfterOpaques:
-                            return m_AfterOpaqueCameraMaterial ??= CreateCameraMaterial(k_AfterOpaquesBackgroundShaderName);
-
-                        default:
-                            Debug.LogError($"Unable to create material for unknown background rendering mode {currentBackgroundRenderingMode}.");
-                            return null;
-                    }
-                }
-            }
+            public override Material cameraMaterial => GetOrCreateCameraMaterial();
 
             Material m_BeforeOpaqueCameraMaterial;
             Material m_AfterOpaqueCameraMaterial;
@@ -230,7 +244,7 @@ namespace UnityEngine.XR.ARCore
             /// Determine whether camera permission has been granted.
             /// </summary>
             /// <returns>
-            /// <c>true</c> if camera permission has been granted for this app. Otherwise, <c>false</c>.
+            /// <see langword="true"/> if camera permission has been granted for this app. Otherwise, <see langword="false"/>.
             /// </returns>
             public override bool permissionGranted => ARCorePermissionManager.IsPermissionGranted(k_CameraPermissionName);
 
@@ -274,6 +288,38 @@ namespace UnityEngine.XR.ARCore
                 set => m_RequestedCameraRenderingMode = value;
             }
 
+            /// <summary>
+            /// Attempts to get the platform specific rendering parameters for rendering the camera background texture.
+            /// </summary>
+            /// <param name="cameraBackgroundRenderingParameters">
+            /// The platform specific rendering parameters for rendering the camera background texture.
+            /// </param>
+            /// <returns>
+            /// <see langword="true"/> if the platform provides specialized rendering parameters or <see langword="false"/> otherwise.
+            /// </returns>
+            /// <remarks>
+            /// ARCore provides a specialized rendering path for rendering the camera background texture when <see cref="imageStabilizationEnabled"/>
+            /// is <see langword="true"/>. In this case, ARCore will render the camera background texture to a mesh that is provided
+            /// by ARCore with specialized UVW coordinates and perspective correction.
+            /// </remarks>
+            public override bool TryGetRenderingParameters(out XRCameraBackgroundRenderingParams cameraBackgroundRenderingParameters)
+            {
+                if (!imageStabilizationEnabled || ARCoreImageStabilizationUtils.ImageStabilizationMesh == null)
+                {
+                    cameraBackgroundRenderingParameters = default;
+                    return false;
+                }
+
+                var zTranslation = currentBackgroundRenderingMode == XRCameraBackgroundRenderingMode.AfterOpaques ? 1f : 0f;
+                cameraBackgroundRenderingParameters = new XRCameraBackgroundRenderingParams(
+                    ARCoreImageStabilizationUtils.ImageStabilizationMesh,
+                    // Place the mesh at the proper distance from the camera for a given render mode.
+                    Matrix4x4.Translate(new Vector3(0f, 0f, zTranslation)),
+                    Matrix4x4.identity,
+                    ARCoreImageStabilizationUtils.k_OrthographicProjectionGlesNdc);
+                return true;
+            }
+
             XRSupportedCameraBackgroundRenderingMode m_RequestedCameraRenderingMode = XRSupportedCameraBackgroundRenderingMode.Any;
 
             /// <inheritdoc />
@@ -292,6 +338,13 @@ namespace UnityEngine.XR.ARCore
             {
                 NativeApi.UnityARCore_Camera_Construct(k_MainTexPropertyNameId);
                 m_GCHandle = GCHandle.Alloc(this);
+            }
+
+            protected override bool TryInitialize()
+            {
+                NativeApi.UnityARCore_Camera_SetMeshUpdateFunction(
+                    ARCoreImageStabilizationUtils.UpdateBackgroundGeometry);
+                return base.TryInitialize();
             }
 
             /// <summary>
@@ -341,7 +394,7 @@ namespace UnityEngine.XR.ARCore
             /// <param name="cameraParams">The current Unity <c>Camera</c> parameters.</param>
             /// <param name="cameraFrame">The current camera frame returned by the method.</param>
             /// <returns>
-            /// <c>true</c> if the method successfully got a frame. Otherwise, <c>false</c>.
+            /// <see langword="true"/> if the method successfully got a frame. Otherwise, <see langword="false"/>.
             /// </returns>
             public override bool TryGetFrame(XRCameraParams cameraParams, out XRCameraFrame cameraFrame)
             {
@@ -363,6 +416,21 @@ namespace UnityEngine.XR.ARCore
             public override bool autoFocusEnabled => NativeApi.GetAutoFocusEnabled();
 
             /// <summary>
+            /// Get or set the Image Stabilization for the camera.
+            /// </summary>
+            /// <value><see langword="true"/> if EIS is requested. Otherwise, <see langword="false"/>.</value>
+            public override bool imageStabilizationRequested
+            {
+                get => Api.GetRequestedFeatures().All(Feature.ImageStabilization);
+                set => Api.SetFeatureRequested(Feature.ImageStabilization, value);
+            }
+
+            /// <summary>
+            /// Get the actual Image Stabilization state
+            /// </summary>
+            public override bool imageStabilizationEnabled => NativeApi.UnityARCore_Camera_GetImageStabilizationEnabled();
+
+            /// <summary>
             /// Called on the render thread by background rendering code immediately before the background
             /// is rendered.
             /// For ARCore, this is required in order to submit the GL commands for waiting on the fence
@@ -372,6 +440,21 @@ namespace UnityEngine.XR.ARCore
             public override void OnBeforeBackgroundRender(int id)
             {
                 NativeApi.UnityARCore_Camera_GetFenceWaitHandler(id);
+            }
+
+            /// <inheritdoc />
+            public override void GetMaterialKeywords(out List<string> enabledKeywords, out List<string> disabledKeywords)
+            {
+                if (imageStabilizationEnabled)
+                {
+                    enabledKeywords = k_EnabledMaterialKeywords;
+                    disabledKeywords = null;
+                }
+                else
+                {
+                    enabledKeywords = null;
+                    disabledKeywords = k_EnabledMaterialKeywords;
+                }
             }
 
             /// <summary>
@@ -397,7 +480,7 @@ namespace UnityEngine.XR.ARCore
             /// </summary>
             /// <param name="cameraIntrinsics">The camera intrinsics information returned from the method.</param>
             /// <returns>
-            /// <c>true</c> if the method successfully gets the camera intrinsics information. Otherwise, <c>false</c>.
+            /// <see langword="true"/> if the method successfully gets the camera intrinsics information. Otherwise, <see langword="false"/>.
             /// </returns>
             public override bool TryGetIntrinsics(out XRCameraIntrinsics cameraIntrinsics) => NativeApi.UnityARCore_Camera_TryGetIntrinsics(out cameraIntrinsics);
 
@@ -515,7 +598,7 @@ namespace UnityEngine.XR.ARCore
             /// </summary>
             /// <param name="cameraImageCinfo">The metadata required to construct a <see cref="XRCpuImage"/></param>
             /// <returns>
-            /// <c>true</c> if the camera image is acquired. Otherwise, <c>false</c>.
+            /// <see langword="true"/> if the camera image is acquired. Otherwise, <see langword="false"/>.
             /// </returns>
             public override bool TryAcquireLatestCpuImage(out XRCpuImage.Cinfo cameraImageCinfo)
                 => ARCoreCpuImageApi.TryAcquireLatestImage(ARCoreCpuImageApi.ImageType.Camera, out cameraImageCinfo);
@@ -583,6 +666,12 @@ namespace UnityEngine.XR.ARCore
             [DllImport("UnityARCore", EntryPoint="UnityARCore_Camera_GetAutoFocusEnabled")]
             public static extern bool GetAutoFocusEnabled();
 
+            [DllImport("UnityARCore")]
+            public static extern bool UnityARCore_Camera_GetImageStabilizationEnabled();
+
+            [DllImport(("UnityARCore"))]
+            public static extern Supported UnityARCore_Camera_GetImageStabilizationSupported();
+
             [DllImport("UnityARCore", EntryPoint="UnityARCore_Camera_GetCurrentLightEstimation")]
             public static extern Feature GetCurrentLightEstimation();
 
@@ -618,6 +707,10 @@ namespace UnityEngine.XR.ARCore
 
             [DllImport("UnityARCore")]
             public static extern void UnityARCore_Camera_GetFenceWaitHandler(int unused);
+
+            [DllImport("UnityARCore")]
+            public static extern void UnityARCore_Camera_SetMeshUpdateFunction(
+                Action<IntPtr, int, IntPtr, int> updateMeshDelegate);
         }
     }
 }

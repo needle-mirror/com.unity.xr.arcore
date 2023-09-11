@@ -322,7 +322,7 @@ namespace UnityEngine.XR.ARCore
             if (!Api.platformAndroid || !Api.loaderPresent)
                 return;
 
-            var descriptorParams = new FaceSubsystemParams
+            var descriptorParams = new XRFaceSubsystemDescriptor.Cinfo
             {
                 supportsFacePose = true,
                 supportsFaceMeshVerticesAndIndices = true,
@@ -333,7 +333,7 @@ namespace UnityEngine.XR.ARCore
                 subsystemTypeOverride = typeof(ARCoreFaceSubsystem)
             };
 
-            XRFaceSubsystemDescriptor.Create(descriptorParams);
+            XRFaceSubsystemDescriptor.Register(descriptorParams);
         }
     }
 }

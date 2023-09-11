@@ -3,14 +3,14 @@ uid: arcore-manual
 ---
 # Google ARCore XR Plug-in
 
-Use the Google ARCore XR Plug-in package to enable ARCore support in your [AR Foundation](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@latest) project. This package implements the following AR Foundation features using ARCore 1.31:
+Use the Google ARCore XR Plug-in package to enable ARCore support in your [AR Foundation](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@latest) project. This package implements the following AR Foundation features using ARCore 1.37:
 
 | Feature | Description |
 | :------ | :---------- |
 | [Session](xref:arcore-session) | Enable, disable, and configure AR on the target platform. |
 | [Device tracking](xref:arfoundation-device-tracking) | Track the device's position and rotation in physical space. |
 | [Camera](xref:arcore-camera) | Render images from device cameras and perform light estimation. |
-| [Plane detection](xref:arcore-plane-detection) | Detect and track surfaces. |
+| [Plane detection](xref:arcore-plane-detection) | Detect and track flat surfaces. |
 | [Image tracking](xref:arcore-image-tracking) | Detect and track 2D images. |
 | [Face tracking](xref:arcore-face-tracking) | Detect and track human faces. |
 | [Point clouds](xref:arcore-point-clouds) | Detect and track feature points. |
@@ -21,7 +21,7 @@ Use the Google ARCore XR Plug-in package to enable ARCore support in your [AR Fo
 
 ## Unsupported features
 
-This package does not implement the following AR Foundation features as they are not supported by ARCore 1.31:
+This package does not implement the following AR Foundation features as they are not supported by ARCore 1.37:
 
 | Feature | Description |
 | :------ | :---------- |
@@ -62,10 +62,8 @@ Use the Google ARCore XR Plug-in APIs when you need access to Android ARCore-spe
 
 This version of Google ARCore XR Plug-in is compatible with the following versions of the Unity Editor:
 
-* 2021.2
-* 2021.3
-* 2022.1
-* 2022.2
+* 2023.2
+* 2023.3
 
 ## Known limitations
 

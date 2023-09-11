@@ -10,10 +10,10 @@ using UnityEngine.XR.ARSubsystems;
 namespace UnityEngine.XR.ARCore
 {
     /// <summary>
-    /// The ARCore implementation of the <c>XRDepthSubsystem</c>. Do not create this directly. Use the <c>SubsystemManager</c> instead.
+    /// The ARCore implementation of the <c>XRPointCloudSubsystem</c>. Do not create this directly. Use the <c>SubsystemManager</c> instead.
     /// </summary>
-    [Obsolete("ARCoreXRDepthSubsystem has been deprecated. Use ARCorePointCloudSubsystem instead (UnityUpgradable) -> UnityEngine.XR.ARCore.ARCorePointCloudSubsystem", true)]
-    public sealed class ARCoreXRDepthSubsystem : XRDepthSubsystem
+    [Obsolete("ARCoreXRPointCloudSubsystem has been deprecated in Google AR Core Plug-in 6.0. Use ARCorePointCloudSubsystem instead (UnityUpgradable) -> UnityEngine.XR.ARCore.ARCorePointCloudSubsystem", true)]
+    public sealed class ARCoreXRPointCloudSubsystem : XRPointCloudSubsystem
     {
         class ARCoreProvider : Provider
         {
@@ -167,12 +167,12 @@ namespace UnityEngine.XR.ARCore
             public override void Destroy() => UnityARCore_pointCloud_Destroy();
 
             /// <summary>
-            /// Starts the DepthSubsystem provider to begin providing face data via the callback delegates
+            /// Starts the PointCloudSubsystem provider to begin providing face data via the callback delegates
             /// </summary>
             public override void Start() => UnityARCore_pointCloud_Start();
 
             /// <summary>
-            /// Stops the DepthSubsystem provider from providing face data
+            /// Stops the PointCloudSubsystem provider from providing face data
             /// </summary>
             public override void Stop() => UnityARCore_pointCloud_Stop();
         }

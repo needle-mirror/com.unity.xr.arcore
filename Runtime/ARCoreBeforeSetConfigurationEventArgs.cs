@@ -12,12 +12,6 @@ namespace UnityEngine.XR.ARCore
         /// <summary>
         /// (Read Only) The native ARCore session whose corresponding configuration object will be set.
         /// </summary>
-        [Obsolete("Use " + nameof(arSession) + " to access the session. (2020-10-02")]
-        public IntPtr session => m_Session.AsIntPtr();
-
-        /// <summary>
-        /// (Read Only) The native ARCore session whose corresponding configuration object will be set.
-        /// </summary>
         /// <value>The current session object.</value>
         public ArSession arSession => m_Session;
 
@@ -29,31 +23,8 @@ namespace UnityEngine.XR.ARCore
         /// [ARCore Configuration documentation](https://developers.google.com/ar/reference/c/group/config#arconfig) for
         /// more details.
         /// </remarks>
-        [Obsolete("Use " + nameof(arConfig) + " to access the configuration. (2020-10-02)")]
-        public IntPtr config => m_Config.AsIntPtr();
-
-        /// <summary>
-        /// (Read Only) The native ARCore configuration which will be set.
-        /// </summary>
-        /// <remarks>
-        /// See the
-        /// [ARCore Configuration documentation](https://developers.google.com/ar/reference/c/group/config#arconfig) for
-        /// more details.
-        /// </remarks>
         /// <value></value>
         public ArConfig arConfig => m_Config;
-
-        /// <summary>
-        /// Constructs an <see cref="ARCoreBeforeSetConfigurationEventArgs"/>.
-        /// </summary>
-        /// <param name="session">The native ARCore session whose corresponding configuration object will be set.</param>
-        /// <param name="config">The native ARCore configuration which will be set.</param>
-        [Obsolete("Use " + nameof(ARCoreBeforeSetConfigurationEventArgs) + "(" + nameof(ArSession) + ", " + nameof(ArConfig) + ") instead. (2020-10-02)")]
-        public ARCoreBeforeSetConfigurationEventArgs(IntPtr session, IntPtr config)
-        {
-            m_Session = ArSession.FromIntPtr(session);
-            m_Config = ArConfig.FromIntPtr(config);
-        }
 
         /// <summary>
         /// Constructs an <see cref="ARCoreBeforeSetConfigurationEventArgs"/>.

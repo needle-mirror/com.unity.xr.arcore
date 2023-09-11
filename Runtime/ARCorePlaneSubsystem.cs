@@ -177,7 +177,7 @@ namespace UnityEngine.XR.ARCore
                 supportsBoundaryVertices = true
             };
 
-            XRPlaneSubsystemDescriptor.Create(cinfo);
+            XRPlaneSubsystemDescriptor.Register(cinfo);
         }
     }
 }

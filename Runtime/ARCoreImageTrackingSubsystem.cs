@@ -127,7 +127,7 @@ namespace UnityEngine.XR.ARCore
             if (!Api.platformAndroid || !Api.loaderPresent)
                 return;
 
-            XRImageTrackingSubsystemDescriptor.Create(new XRImageTrackingSubsystemDescriptor.Cinfo
+            XRImageTrackingSubsystemDescriptor.Register(new XRImageTrackingSubsystemDescriptor.Cinfo
             {
                 id = "ARCore-ImageTracking",
                 providerType = typeof(ARCoreImageTrackingSubsystem.ARCoreProvider),

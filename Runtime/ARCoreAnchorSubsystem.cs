@@ -117,10 +117,11 @@ namespace UnityEngine.XR.ARCore
                 id = "ARCore-Anchor",
                 providerType = typeof(ARCoreAnchorSubsystem.ARCoreProvider),
                 subsystemTypeOverride = typeof(ARCoreAnchorSubsystem),
-                supportsTrackableAttachments = true
+                supportsTrackableAttachments = true,
+                supportsSynchronousAdd = true,
             };
 
-            XRAnchorSubsystemDescriptor.Create(cinfo);
+            XRAnchorSubsystemDescriptor.Register(cinfo);
         }
     }
 }

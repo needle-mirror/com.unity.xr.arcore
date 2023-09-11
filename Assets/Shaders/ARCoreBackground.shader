@@ -32,6 +32,7 @@
             GLSLPROGRAM
 
             #pragma multi_compile_local __ ARCORE_ENVIRONMENT_DEPTH_ENABLED
+            #pragma multi_compile_local __ ARCORE_IMAGE_STABILIZATION_ENABLED
 
             #pragma only_renderers gles3
 
@@ -41,11 +42,17 @@
 #extension GL_OES_EGL_image_external_essl3 : require
 #endif // SHADER_API_GLES3
 
+#ifndef ARCORE_IMAGE_STABILIZATION_ENABLED
+#define ARCORE_TEXCOORD_TYPE vec2
+#else // ARCORE_IMAGE_STABILIZATION_ENABLED
+#define ARCORE_TEXCOORD_TYPE vec3
+#endif // !ARCORE_IMAGE_STABILIZATION_ENABLED
+
             // Device display transform is provided by the AR Foundation camera background renderer.
             uniform mat4 _UnityDisplayTransform;
 
 #ifdef VERTEX
-            varying vec2 textureCoord;
+            varying ARCORE_TEXCOORD_TYPE textureCoord;
 
             void main()
             {
@@ -53,14 +60,18 @@
                 // Transform the position from object space to clip space.
                 gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
 
+#ifdef ARCORE_IMAGE_STABILIZATION_ENABLED
+                textureCoord = gl_MultiTexCoord0.xyz;
+#else
                 // Remap the texture coordinates based on the device rotation.
                 textureCoord = (_UnityDisplayTransform * vec4(gl_MultiTexCoord0.x, 1.0f - gl_MultiTexCoord0.y, 1.0f, 0.0f)).xy;
+#endif
 #endif // SHADER_API_GLES3
             }
 #endif // VERTEX
 
 #ifdef FRAGMENT
-            varying vec2 textureCoord;
+            varying ARCORE_TEXCOORD_TYPE textureCoord;
             uniform samplerExternalOES _MainTex;
             uniform float _UnityCameraForwardScale;
 
@@ -106,11 +117,16 @@
             void main()
             {
 #ifdef SHADER_API_GLES3
-                vec3 result = texture(_MainTex, textureCoord).xyz;
+#ifdef ARCORE_IMAGE_STABILIZATION_ENABLED
+                vec2 tc = textureCoord.xy / textureCoord.z;
+#else
+                vec2 tc = textureCoord;
+#endif
+                vec3 result = texture(_MainTex, tc).xyz;
                 float depth = 1.0;
 
 #ifdef ARCORE_ENVIRONMENT_DEPTH_ENABLED
-                float distance = texture(_EnvironmentDepth, textureCoord).x;
+                float distance = texture(_EnvironmentDepth, tc).x;
                 depth = ConvertDistanceToDepth(distance);
 #endif // ARCORE_ENVIRONMENT_DEPTH_ENABLED
 
