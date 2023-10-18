@@ -17,29 +17,29 @@ namespace UnityEngine.XR.ARCore
     {
         class ARCoreProvider : Provider
         {
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             static extern void UnityARCore_pointCloud_Create(Func<Guid> guidGenerator);
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             static extern void UnityARCore_pointCloud_Start();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             static extern void UnityARCore_pointCloud_Stop();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             static extern void UnityARCore_pointCloud_Destroy();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             static extern unsafe void* UnityARCore_pointCloud_AcquireChanges(
                 out void* addedPtr, out int addedLength,
                 out void* updatedPtr, out int updatedLength,
                 out void* removedPtr, out int removedLength,
                 out int elementSize);
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             static extern unsafe void UnityARCore_pointCloud_ReleaseChanges(void* changes);
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             static extern unsafe int UnityARCore_pointCloud_getPointCloudPtrs(
                 TrackableId trackableId,
                 out void* dataPtr, out void* identifierPtr);

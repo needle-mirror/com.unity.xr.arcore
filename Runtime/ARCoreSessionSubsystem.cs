@@ -514,90 +514,90 @@ namespace UnityEngine.XR.ARCore
                 bool granted,
                 IntPtr context);
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern IntPtr UnityARCore_session_getNativePtr();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern void ArPresto_checkApkAvailability(
                 Action<ArAvailability, IntPtr> onResult, IntPtr context);
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern void ArPresto_requestApkInstallation(
                 bool userRequested, Action<ArPrestoApkInstallStatus, IntPtr> onResult, IntPtr context);
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern void UnityARCore_session_update(
                 ScreenOrientation orientation,
                 Vector2Int screenDimensions,
                 IntPtr configId,
                 Feature features);
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern void UnityARCore_session_getConfigurationDescriptors(
                 out IntPtr ptr, out int count, out int stride);
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern void UnityARCore_session_construct(
                 CameraPermissionRequestProviderDelegate cameraPermissionRequestProvider);
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern void UnityARCore_session_destroy();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern void UnityARCore_session_resume(Guid guid);
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern void UnityARCore_session_pause();
 
-            [DllImport("UnityARCore", EntryPoint = "UnityARCore_session_isPauseDesired")]
+            [DllImport(Constants.k_LibraryName, EntryPoint = "UnityARCore_session_isPauseDesired")]
             public static extern bool IsPauseDesired();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern void UnityARCore_session_onApplicationResume();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern void UnityARCore_session_onApplicationPause();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern void UnityARCore_session_reset();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern TrackingState UnityARCore_session_getTrackingState();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern NotTrackingReason UnityARCore_session_getNotTrackingReason();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern IntPtr UnityARCore_session_getRenderEventFunc();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern void UnityARCore_session_setRenderEventPending();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern void UnityARCore_session_waitForRenderEvent();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern void UnityARCore_session_createTextureMainThread();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern void UnityARCore_session_deleteTextureMainThread();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern bool UnityARCore_session_getMatchFrameRateEnabled();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern bool UnityARCore_session_getMatchFrameRateRequested();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern void UnityARCore_session_setMatchFrameRateRequested(bool value);
 
-            [DllImport("UnityARCore", EntryPoint="UnityARCore_session_getCurrentTrackingMode")]
+            [DllImport(Constants.k_LibraryName, EntryPoint="UnityARCore_session_getCurrentTrackingMode")]
             public static extern Feature GetCurrentTrackingMode();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern void UnityARCore_session_setConfigurationDirty();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern void UnityARCore_session_setConfigCallback(Action<ArSession, ArConfig, IntPtr> callback, IntPtr context);
         }
     }

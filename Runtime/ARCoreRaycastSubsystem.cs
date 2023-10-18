@@ -114,7 +114,7 @@ namespace UnityEngine.XR.ARCore
                 }
             }
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             static unsafe extern void UnityARCore_raycast_acquireHitResults(
                 Vector2 screenPoint,
                 TrackableType filter,
@@ -122,7 +122,7 @@ namespace UnityEngine.XR.ARCore
                 out int hitCount,
                 out int elementSize);
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             static unsafe extern void UnityARCore_raycast_acquireHitResultsRay(
                 Vector3 rayOrigin,
                 Vector3 rayDirection,
@@ -131,38 +131,38 @@ namespace UnityEngine.XR.ARCore
                 out int hitCount,
                 out int elementSize);
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             static unsafe extern void UnityARCore_raycast_releaseHitResults(
                 void* buffer);
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             static unsafe extern bool UnityARCore_raycast_tryAddRaycast(
                 Vector2 screenPoint,
                 float estimatedDistance,
                 out XRRaycast raycastOut);
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             static unsafe extern void UnityARCore_raycast_removeRaycast(
                TrackableId trackableId);
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             static extern void UnityARCore_raycast_startTracking();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             static extern void UnityARCore_raycast_stopTracking();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             static extern unsafe void* UnityARCore_raycast_acquireChanges(
                 out void* addedPtr, out int addedLength,
                 out void* updatedPtr, out int updatedLength,
                 out void* removedPtr, out int removedLength,
                 out int elementSize);
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             static extern unsafe void UnityARCore_raycast_releaseChanges(
                 void* changes);
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             static extern void UnityARCore_raycast_destroy();
 
         }

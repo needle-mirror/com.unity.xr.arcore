@@ -47,7 +47,7 @@ namespace UnityEngine.XR.ARCore
                 RcoApi.Release(database);
             }
 
-            [DllImport("UnityARCore", EntryPoint = "UnityARCore_ImageDatabase_AddImage")]
+            [DllImport(Constants.k_LibraryName, EntryPoint = "UnityARCore_ImageDatabase_AddImage")]
             static extern unsafe void AddImage(
                 IntPtr database, IntPtr validator,
                 ref ManagedReferenceImage managedReferenceImage,
@@ -223,19 +223,19 @@ namespace UnityEngine.XR.ARCore
         }
         public static bool operator !=(ARCoreImageDatabase lhs, ARCoreImageDatabase rhs) => !(lhs == rhs);
 
-        [DllImport("UnityARCore", EntryPoint = "UnityARCore_ImageDatabase_GetReferenceImage")]
+        [DllImport(Constants.k_LibraryName, EntryPoint = "UnityARCore_ImageDatabase_GetReferenceImage")]
         static extern ManagedReferenceImage GetReferenceImage(IntPtr self, int index);
 
-        [DllImport("UnityARCore", EntryPoint = "UnityARCore_ImageDatabase_GetReferenceImageCount")]
+        [DllImport(Constants.k_LibraryName, EntryPoint = "UnityARCore_ImageDatabase_GetReferenceImageCount")]
         static extern int GetReferenceImageCount(IntPtr self);
 
-        [DllImport("UnityARCore", EntryPoint = "UnityARCore_ImageDatabase_Deserialize")]
+        [DllImport(Constants.k_LibraryName, EntryPoint = "UnityARCore_ImageDatabase_Deserialize")]
         static extern IntPtr Deserialize(NativeView serializedDatabase, NativeView referenceImages);
 
-        [DllImport("UnityARCore", EntryPoint = "UnityARCore_ImageDatabase_CreateValidator")]
+        [DllImport(Constants.k_LibraryName, EntryPoint = "UnityARCore_ImageDatabase_CreateValidator")]
         static extern IntPtr CreateValidator(IntPtr self);
 
-        [DllImport("UnityARCore", EntryPoint = "UnityARCore_ReferenceImageValidator_GetStatus")]
+        [DllImport(Constants.k_LibraryName, EntryPoint = "UnityARCore_ReferenceImageValidator_GetStatus")]
         static extern AddReferenceImageJobStatus GetStatus(IntPtr validator);
     }
 }

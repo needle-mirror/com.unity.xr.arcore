@@ -120,41 +120,41 @@ namespace UnityEngine.XR.ARCore
 
             public override PlaneDetectionMode currentPlaneDetectionMode => GetCurrentPlaneDetectionMode();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             static extern void UnityARCore_planeTracking_startTracking();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             static extern void UnityARCore_planeTracking_stopTracking();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             static extern unsafe void* UnityARCore_planeTracking_acquireChanges(
                 out void* addedPtr, out int addedLength,
                 out void* updatedPtr, out int updatedLength,
                 out void* removedPtr, out int removedLength,
                 out int elementSize);
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             static extern unsafe void UnityARCore_planeTracking_releaseChanges(
                 void* changes);
 
-            [DllImport("UnityARCore", EntryPoint="UnityARCore_planeTracking_getRequestedPlaneDetectionMode")]
+            [DllImport(Constants.k_LibraryName, EntryPoint="UnityARCore_planeTracking_getRequestedPlaneDetectionMode")]
             static extern PlaneDetectionMode GetRequestedPlaneDetectionMode();
 
-            [DllImport("UnityARCore", EntryPoint="UnityARCore_planeTracking_setRequestedPlaneDetectionMode")]
+            [DllImport(Constants.k_LibraryName, EntryPoint="UnityARCore_planeTracking_setRequestedPlaneDetectionMode")]
             static extern void SetRequestedPlaneDetectionMode(PlaneDetectionMode mode);
 
-            [DllImport("UnityARCore", EntryPoint="UnityARCore_planeTracking_getCurrentPlaneDetectionMode")]
+            [DllImport(Constants.k_LibraryName, EntryPoint="UnityARCore_planeTracking_getCurrentPlaneDetectionMode")]
             static extern PlaneDetectionMode GetCurrentPlaneDetectionMode();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             static extern void UnityARCore_planeTracking_destroy();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             static extern unsafe void* UnityARCore_planeTracking_acquireBoundary(
                 TrackableId trackableId,
                 out int numPoints);
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             static extern unsafe bool UnityARCore_planeTracking_tryCopyBoundary(
                 void* plane,
                 void* boundaryOut);

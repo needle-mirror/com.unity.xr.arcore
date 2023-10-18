@@ -101,23 +101,23 @@ namespace UnityEngine.XR.ARCore
 
             public override int currentMaxNumberOfMovingImages => Mathf.Max(m_RequestedMaxNumberOfMovingImages, GetNumberOfTrackedImages());
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             static unsafe extern void UnityARCore_imageTracking_setDatabase(IntPtr imageDatabase);
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             static extern void UnityARCore_imageTracking_destroy();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             static extern unsafe void* UnityARCore_imageTracking_acquireChanges(
                 out void* addedPtr, out int addedLength,
                 out void* updatedPtr, out int updatedLength,
                 out void* removedPtr, out int removedLength,
                 out int stride);
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             static extern unsafe void UnityARCore_imageTracking_releaseChanges(void* changes);
 
-            [DllImport("UnityARCore", EntryPoint="UnityARCore_imageTracking_getNumberOfTrackedImages")]
+            [DllImport(Constants.k_LibraryName, EntryPoint="UnityARCore_imageTracking_getNumberOfTrackedImages")]
             static extern int GetNumberOfTrackedImages();
         }
 

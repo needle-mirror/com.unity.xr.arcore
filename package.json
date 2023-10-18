@@ -1,7 +1,7 @@
 {
   "name": "com.unity.xr.arcore",
   "displayName": "Google ARCore XR Plugin",
-  "version": "6.0.0-pre.3",
+  "version": "6.0.0-pre.4",
   "unity": "2023.2",
   "description": "Provides native Google ARCore integration for use with Unity's multi-platform XR API.\nSupports the following features:\n-Efficient Background Rendering\n-Horizontal Planes\n-Depth Data\n-Anchors\n-Hit Testing\n-Occlusion",
   "keywords": [
@@ -13,22 +13,22 @@
     "core"
   ],
   "dependencies": {
-    "com.unity.xr.arfoundation": "6.0.0-pre.3",
+    "com.unity.xr.arfoundation": "6.0.0-pre.4",
     "com.unity.xr.core-utils": "2.2.2",
     "com.unity.xr.management": "4.4.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.unitywebrequest": "1.0.0"
   },
   "_upm": {
-    "changelog": "### Added\n\n- Added support for Image Stabilization, which helps stabilize shaky video from the camera.\n\n### Changed\n\n- Upgraded ARCore version to 1.37 from 1.31.\n\n### Deprecated\n\n- `ARCoreXRPointCloudSubsystem` has been deprecated and renamed to `ARCorePointCloudSubsystem` for consistency with other subsystems. Unity's API Updater should automatically convert any deprecated APIs references to the new APIs when the project is loaded into the Editor again.\n\n### Removed\n\n- Removed the following deprecated APIs:\n  - `ArCameraConfig.Null` property\n  - `ArCameraConfig.IsNull` property\n  - `ArCameraConfigFilter.Null` property\n  - `ArCameraConfigFilter.IsNull` property\n  - `ArConfig.Null` property\n  - `ArConfig.IsNull` property\n  - `ARCoreBeforeSetConfigurationEventArgs.session` property\n  - `ARCoreBeforeSetConfigurationEventArgs.config` property\n  - `ARCoreBeforeSetConfigurationEventArgs(IntPtr session, IntPtr config)` constructor\n  - `ARCoreSettingsProvider` class\n  - `ArSession.Null` property\n  - `ArSession.IsNull` property"
+    "changelog": "### Added\n\n- Added support for `XRCameraSubsystem.GetShaderKeywords` to `ARCoreCameraSubsystem` and `ARCoreOcclusionSubsystem`.\n- Added support for [EXIF data](xref:arcore-camera#exif-data).\n\n### Changed\n\n- Static library is rebuilt using Android NDK v23.1."
   },
   "upmCi": {
-    "footprint": "ffbc80d33213ec90a6e5e7b7d64d026535abf26b"
+    "footprint": "fd0e22a11a2f773d6e85d6fc5b1b43b5798ced6e"
   },
   "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.xr.arcore@6.0/manual/index.html",
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/arfoundation.git",
     "type": "git",
-    "revision": "a042bebcd46c7ff6c9b11fbb803c8def4eea81e3"
+    "revision": "e423e473bfabfe8cbc6c60b3f9a029a6fdfdd144"
   }
 }

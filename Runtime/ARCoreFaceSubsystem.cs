@@ -282,37 +282,37 @@ namespace UnityEngine.XR.ARCore
             }
         }
 
-        [DllImport("UnityARCore")]
+        [DllImport(Constants.k_LibraryName)]
         static extern void UnityARCore_faceTracking_Start();
 
-        [DllImport("UnityARCore")]
+        [DllImport(Constants.k_LibraryName)]
         static extern void UnityARCore_faceTracking_Stop();
 
-        [DllImport("UnityARCore")]
+        [DllImport(Constants.k_LibraryName)]
         static extern void UnityARCore_faceTracking_Destroy();
 
-        [DllImport("UnityARCore")]
+        [DllImport(Constants.k_LibraryName)]
         static extern unsafe bool UnityARCore_faceTracking_TryGetFaceData(
             TrackableId faceId,
             out void* vertexPtr, out void* normalPtr, out void* uvPtr, out int vertexCount,
             out void* indexPtr, out int triangleCount);
 
-        [DllImport("UnityARCore")]
+        [DllImport(Constants.k_LibraryName)]
        static extern unsafe void* UnityARCore_faceTracking_AcquireChanges(
            out void* addedPtr, out int addedCount,
            out void* updatedPtr, out int updatedCount,
            out void* removedPtr, out int removedCount,
            out int elementSize);
 
-        [DllImport("UnityARCore")]
+        [DllImport(Constants.k_LibraryName)]
         static extern unsafe void UnityARCore_faceTracking_ReleaseChanges(void* changes);
 
-        [DllImport("UnityARCore")]
+        [DllImport(Constants.k_LibraryName)]
         static extern unsafe void* UnityARCore_faceTracking_acquireRegions(
             TrackableId trackableId,
             out int count);
 
-        [DllImport("UnityARCore")]
+        [DllImport(Constants.k_LibraryName)]
         static extern unsafe void UnityARCore_faceTracking_deallocateTemp(void* regions);
 
         // this method is run on startup of the app to register this provider with XR Subsystem Manager

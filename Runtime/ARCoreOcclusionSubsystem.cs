@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
 using Unity.Collections;
 using UnityEngine.Scripting;
@@ -77,7 +78,11 @@ namespace UnityEngine.XR.ARCore
             /// <value>
             /// The shader keywords for enabling environment depth rendering.
             /// </value>
-            static readonly List<string> m_EnvironmentDepthEnabledMaterialKeywords = new List<string>() {k_EnvironmentDepthEnabledMaterialKeyword};
+            static readonly List<string> k_EnvironmentDepthEnabledMaterialKeywords = new List<string>() {k_EnvironmentDepthEnabledMaterialKeyword};
+
+            static readonly ShaderKeywords k_DepthEnabledShaderKeywords = new ShaderKeywords(k_EnvironmentDepthEnabledMaterialKeywords?.AsReadOnly(), null);
+
+            static readonly ShaderKeywords k_DepthDisabledShaderKeywords = new ShaderKeywords(null, k_EnvironmentDepthEnabledMaterialKeywords?.AsReadOnly());
 
             /// <summary>
             /// The occlusion preference mode for when rendering the background.
@@ -259,20 +264,31 @@ namespace UnityEngine.XR.ARCore
             /// </summary>
             /// <param name="enabledKeywords">The keywords to enable for the material.</param>
             /// <param name="disabledKeywords">The keywords to disable for the material.</param>
+#pragma warning disable CS0672 // This internal method intentionally overrides a publicly deprecated method
             public override void GetMaterialKeywords(out List<string> enabledKeywords, out List<string> disabledKeywords)
+#pragma warning restore CS0672
             {
                 bool isEnvDepthEnabled = NativeApi.UnityARCore_OcclusionProvider_IsEnvironmentDepthEnabled();
 
                 if ((m_OcclusionPreferenceMode == OcclusionPreferenceMode.NoOcclusion) || !isEnvDepthEnabled)
                 {
                     enabledKeywords = null;
-                    disabledKeywords = m_EnvironmentDepthEnabledMaterialKeywords;
+                    disabledKeywords = k_EnvironmentDepthEnabledMaterialKeywords;
                 }
                 else
                 {
-                    enabledKeywords = m_EnvironmentDepthEnabledMaterialKeywords;
+                    enabledKeywords = k_EnvironmentDepthEnabledMaterialKeywords;
                     disabledKeywords = null;
                 }
+            }
+
+            public override ShaderKeywords GetShaderKeywords()
+            {
+                bool isEnvDepthEnabled = NativeApi.UnityARCore_OcclusionProvider_IsEnvironmentDepthEnabled();
+
+                return ((m_OcclusionPreferenceMode == OcclusionPreferenceMode.NoOcclusion) || !isEnvDepthEnabled)
+                    ? k_DepthDisabledShaderKeywords
+                    : k_DepthEnabledShaderKeywords;
             }
         }
 
@@ -281,46 +297,46 @@ namespace UnityEngine.XR.ARCore
         /// </summary>
         static class NativeApi
         {
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern Supported UnityARCore_OcclusionProvider_DoesSupportEnvironmentDepth();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern void UnityARCore_OcclusionProvider_Construct(int textureEnvDepthPropertyId, bool useAdvancedRendering);
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern void UnityARCore_OcclusionProvider_Start();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern void UnityARCore_OcclusionProvider_Stop();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern void UnityARCore_OcclusionProvider_Destruct();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern EnvironmentDepthMode UnityARCore_OcclusionProvider_GetRequestedEnvironmentDepthMode();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern void UnityARCore_OcclusionProvider_SetRequestedEnvironmentDepthMode(EnvironmentDepthMode environmentDepthMode);
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern EnvironmentDepthMode UnityARCore_OcclusionProvider_GetCurrentEnvironmentDepthMode();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static unsafe extern bool UnityARCore_OcclusionProvider_TryGetEnvironmentDepth(out XRTextureDescriptor envDepthDescriptor);
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static unsafe extern void* UnityARCore_OcclusionProvider_AcquireTextureDescriptors(out int length, out int elementSize);
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern unsafe void UnityARCore_OcclusionProvider_ReleaseTextureDescriptors(void* descriptors);
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern bool UnityARCore_OcclusionProvider_IsEnvironmentDepthEnabled();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern bool UnityARCore_OcclusionProvider_GetEnvironmentDepthTemporalSmoothingEnabled();
 
-            [DllImport("UnityARCore")]
+            [DllImport(Constants.k_LibraryName)]
             public static extern bool UnityARCore_OcclusionProvider_TryGetEnvironmentDepthConfidence(out XRTextureDescriptor environmentDepthConfidenceDescriptor);
         }
     }

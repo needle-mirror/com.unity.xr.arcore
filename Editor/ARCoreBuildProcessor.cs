@@ -177,7 +177,7 @@ namespace UnityEditor.XR.ARCore
 
         static readonly string[] k_RuntimePluginNames =
         {
-            "UnityARCore.aar",
+            $"{Constants.k_LibraryName}.aar",
             "ARPresto.aar",
             "arcore_client.aar"
         };

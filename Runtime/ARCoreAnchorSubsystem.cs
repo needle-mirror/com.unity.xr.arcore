@@ -17,11 +17,11 @@ namespace UnityEngine.XR.ARCore
     {
         class ARCoreProvider : Provider
         {
-            public override void Start() => UnityARCore_refPoints_start();
+            public override void Start() => UnityARCore_anchors_start();
 
-            public override void Stop() => UnityARCore_refPoints_stop();
+            public override void Stop() => UnityARCore_anchors_stop();
 
-            public override void Destroy() => UnityARCore_refPoints_onDestroy();
+            public override void Destroy() => UnityARCore_anchors_onDestroy();
 
             public override unsafe TrackableChanges<XRAnchor> GetChanges(
                 XRAnchor defaultAnchor,
@@ -29,7 +29,7 @@ namespace UnityEngine.XR.ARCore
             {
                 int addedCount, updatedCount, removedCount, elementSize;
                 void* addedPtr, updatedPtr, removedPtr;
-                var context = UnityARCore_refPoints_acquireChanges(
+                var context = UnityARCore_anchors_acquireChanges(
                     out addedPtr, out addedCount,
                     out updatedPtr, out updatedCount,
                     out removedPtr, out removedCount,
@@ -46,7 +46,7 @@ namespace UnityEngine.XR.ARCore
                 }
                 finally
                 {
-                    UnityARCore_refPoints_releaseChanges(context);
+                    UnityARCore_anchors_releaseChanges(context);
                 }
 
             }
@@ -55,7 +55,7 @@ namespace UnityEngine.XR.ARCore
                 Pose pose,
                 out XRAnchor anchor)
             {
-                return UnityARCore_refPoints_tryAdd(pose, out anchor);
+                return UnityARCore_anchors_tryAdd(pose, out anchor);
             }
 
             public override bool TryAttachAnchor(
@@ -63,47 +63,47 @@ namespace UnityEngine.XR.ARCore
                 Pose pose,
                 out XRAnchor anchor)
             {
-                return UnityARCore_refPoints_tryAttach(attachedToId, pose, out anchor);
+                return UnityARCore_anchors_tryAttach(attachedToId, pose, out anchor);
             }
 
             public override bool TryRemoveAnchor(TrackableId anchorId)
             {
-                return UnityARCore_refPoints_tryRemove(anchorId);
+                return UnityARCore_anchors_tryRemove(anchorId);
             }
 
-            [DllImport("UnityARCore")]
-            static extern void UnityARCore_refPoints_start();
+            [DllImport(Constants.k_LibraryName)]
+            static extern void UnityARCore_anchors_start();
 
-            [DllImport("UnityARCore")]
-            static extern void UnityARCore_refPoints_stop();
+            [DllImport(Constants.k_LibraryName)]
+            static extern void UnityARCore_anchors_stop();
 
-            [DllImport("UnityARCore")]
-            static extern void UnityARCore_refPoints_onDestroy();
+            [DllImport(Constants.k_LibraryName)]
+            static extern void UnityARCore_anchors_onDestroy();
 
-            [DllImport("UnityARCore")]
-            static extern unsafe void* UnityARCore_refPoints_acquireChanges(
+            [DllImport(Constants.k_LibraryName)]
+            static extern unsafe void* UnityARCore_anchors_acquireChanges(
                 out void* addedPtr, out int addedCount,
                 out void* updatedPtr, out int updatedCount,
                 out void* removedPtr, out int removedCount,
                 out int elementSize);
 
-            [DllImport("UnityARCore")]
-            static extern unsafe void UnityARCore_refPoints_releaseChanges(
+            [DllImport(Constants.k_LibraryName)]
+            static extern unsafe void UnityARCore_anchors_releaseChanges(
                 void* changes);
 
-            [DllImport("UnityARCore")]
-            static extern bool UnityARCore_refPoints_tryAdd(
+            [DllImport(Constants.k_LibraryName)]
+            static extern bool UnityARCore_anchors_tryAdd(
                 Pose pose,
                 out XRAnchor anchor);
 
-            [DllImport("UnityARCore")]
-            static extern bool UnityARCore_refPoints_tryAttach(
+            [DllImport(Constants.k_LibraryName)]
+            static extern bool UnityARCore_anchors_tryAttach(
                 TrackableId trackableToAffix,
                 Pose pose,
                 out XRAnchor anchor);
 
-            [DllImport("UnityARCore")]
-            static extern bool UnityARCore_refPoints_tryRemove(TrackableId anchorId);
+            [DllImport(Constants.k_LibraryName)]
+            static extern bool UnityARCore_anchors_tryRemove(TrackableId anchorId);
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]

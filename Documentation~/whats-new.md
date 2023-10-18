@@ -8,6 +8,7 @@ The most significant updates in this release include:
 ## Added
 
 - Added support for Image Stabilization, which helps stabilize shaky video from the camera.
+- Added support for `XRCameraSubsystem.GetShaderKeywords` to `ARCoreCameraSubsystem` and `ARCoreOcclusionSubsystem`.
 
 ## Changed
 

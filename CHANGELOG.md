@@ -8,6 +8,17 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [6.0.0-pre.4] - 2023-10-18
+
+### Added
+
+- Added support for `XRCameraSubsystem.GetShaderKeywords` to `ARCoreCameraSubsystem` and `ARCoreOcclusionSubsystem`.
+- Added support for [EXIF data](xref:arcore-camera#exif-data).
+
+### Changed
+
+- Static library is rebuilt using Android NDK v23.1.
+
 ## [6.0.0-pre.3] - 2023-09-11
 
 ### Added

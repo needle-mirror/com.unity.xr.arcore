@@ -133,25 +133,25 @@ namespace UnityEngine.XR.ARCore
     /// </summary>
     static class NativeApi
     {
-        [DllImport("UnityARCore")]
+        [DllImport(Constants.k_LibraryName)]
         internal static extern void UnityARCore_EnvironmentProbeProvider_Construct(ColorSpace activeColorSpace);
 
-        [DllImport("UnityARCore")]
+        [DllImport(Constants.k_LibraryName)]
         internal static extern void UnityARCore_EnvironmentProbeProvider_Start();
 
-        [DllImport("UnityARCore")]
+        [DllImport(Constants.k_LibraryName)]
         internal static extern void UnityARCore_EnvironmentProbeProvider_Stop();
 
-        [DllImport("UnityARCore")]
+        [DllImport(Constants.k_LibraryName)]
         internal static extern void UnityARCore_EnvironmentProbeProvider_Destroy();
 
-        [DllImport("UnityARCore")]
+        [DllImport(Constants.k_LibraryName)]
         internal static extern void UnityARCore_EnvironmentProbeProvider_SetAutomaticPlacementEnabled();
 
-        [DllImport("UnityARCore")]
+        [DllImport(Constants.k_LibraryName)]
         internal static extern void UnityARCore_EnvironmentProbeProvider_TrySetEnvironmentTextureHDREnabled();
 
-        [DllImport("UnityARCore")]
+        [DllImport(Constants.k_LibraryName)]
         internal static extern void UnityARCore_EnvironmentProbeProvider_GetChanges(out int numAdded, out int numUpdated, out int numRemoved, ref XREnvironmentProbe outProbe);
     }
 }
