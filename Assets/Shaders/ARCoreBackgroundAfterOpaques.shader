@@ -68,7 +68,11 @@ Shader "Unlit/ARCoreBackground/AfterOpaques"
                 textureCoordQuad = gl_MultiTexCoord0;
 
                 // Remap the texture coordinates based on the device rotation.
-                textureCoord = (_UnityDisplayTransform * vec4(gl_MultiTexCoord0.x, 1.0f - gl_MultiTexCoord0.y, 1.0f, 0.0f)).xy;
+                // _UnityDisplayTransform is provided as "Row Major" for all mobile platforms, so use the
+                // 'Row Vector * Matrix' operator. The GLSL '*' operator is overloaded to use a row vector
+                // when a matrix is left-multiplied by a vector. Refer to this doc for more information:
+                // https://en.wikibooks.org/wiki/GLSL_Programming/Vector_and_Matrix_Operations#Operators
+                textureCoord = (vec4(gl_MultiTexCoord0.x, gl_MultiTexCoord0.y, 1.0f, 0.0f) * _UnityDisplayTransform).xy;
 
 #else // ARCORE_IMAGE_STABILIZATION_ENABLED
                 textureCoordQuad = ComputeScreenPos(gl_Position);
@@ -196,7 +200,11 @@ Shader "Unlit/ARCoreBackground/AfterOpaques"
                 textureCoord = gl_MultiTexCoord0.xyz;
 #else
                 // Remap the texture coordinates based on the device rotation.
-                textureCoord.xy = (_UnityDisplayTransform * vec4(gl_MultiTexCoord0.x, 1.0f - gl_MultiTexCoord0.y, 1.0f, 0.0f)).xy;
+                // _UnityDisplayTransform is provided as "Row Major" for all mobile platforms, so use the
+                // 'Row Vector * Matrix' operator. The GLSL '*' operator is overloaded to use a row vector
+                // when a matrix is left-multiplied by a vector. Refer to this doc for more information:
+                // https://en.wikibooks.org/wiki/GLSL_Programming/Vector_and_Matrix_Operations#Operators
+                textureCoord.xy = (vec4(gl_MultiTexCoord0.x, gl_MultiTexCoord0.y, 1.0f, 0.0f) * _UnityDisplayTransform).xy;
 #endif
 #endif // SHADER_API_GLES3
             }

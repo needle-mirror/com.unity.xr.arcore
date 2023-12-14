@@ -1,7 +1,6 @@
 * [Introduction](xref:arcore-manual)
-  * [What's new](xref:arcore-whats-new)
-  * [Upgrade guide](xref:arcore-upgrade-guide)
-  * [Project configuration](xref:arcore-project-config)
+* [What's new](xref:arcore-whats-new)
+* [Project configuration](xref:arcore-project-config)
 * Subsystems
   * [Session](xref:arcore-session)
   * [Camera](xref:arcore-camera)

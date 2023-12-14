@@ -13,6 +13,10 @@ When you export a  `Texture2D` to .png, it can fail if the Texture's [Texture Im
 
 To use the Texture at runtime (not as a source Asset for the reference image), create a separate .jpg or .png copy for the source Asset. This reduces the performance impact of the Texture Import Settings at runtime.
 
+## AssetBundles
+
+Reference image libraries can be stored in AssetBundles and loaded at runtime, but setting up your project to build the AssetBundles correctly requires special instructions. Refer to [Use reference image libraries with AssetBundles](xref:arfoundation-image-tracking#use-reference-image-libraries-with-assetbundles) in AR Foundation for more information.
+
 ## Reference image dimensions
 
 To improve image detection in ARCore you can specify the image dimensions. When you specify the dimensions for a reference image, ARCore receives the image's width, and then determines the height from the image's aspect ratio.

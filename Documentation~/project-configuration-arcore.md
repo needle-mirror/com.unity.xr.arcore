@@ -35,7 +35,7 @@ You must install the **Android Module** using the Unity Hub before you can enabl
 
 To enable ARCore:
 
-1. Open the **Player Settings** window (menu: **Edit &gt; Player Settings**).
+1. Open the **Project Settings** window (menu: **Edit &gt; Project Settings**).
 2. Select **XR Plug-in Management** to view the plug-in management settings.
 3. Select the **Android** tab to view the Android settings. (This tab is only shown when you have installed the Editor Android Module.)
 4. Enable the **ARCore** option in the **Plug-in Providers** list.
@@ -50,7 +50,7 @@ The minimum version of Android that supports ARCore varies with which versions o
 
 To check the API level:
 
-1. Open the **Player Settings** window (menu: **Edit &gt; Player Settings**).
+1. Open the **Project Settings** window (menu: **Edit &gt; Project Settings**).
 2. Click **XR Plug-in Management** on the left to open the plug-in provider list.
 3. Select **Project Validation** in the list to view the validation page.
 4. Select the **Android** tab to view the status of the validation checks for Android XR plug-ins, including ARCore.
@@ -63,7 +63,7 @@ To check the API level:
 
 You can also change the setting manually in the Player settings. To find the minimum API level setting:
 
-1. Open the **Player Settings** window (menu: **Edit &gt; Player Settings**).
+1. Open the **Project Settings** window (menu: **Edit &gt; Project Settings**).
 2. Select **Player** on the left to view the **Player Settings** page.
 3. Select the **Android** tab to view the Android settings.
 4. Open the **Other Settings** group (if necessary).
@@ -76,7 +76,7 @@ The ARCore plugin is not compatible with the Vulkan graphics API.
 
 To set the OpenGL ES Graphics API:
 
-1. Open the **Player Settings** window (menu: **Edit &gt; Player Settings**).
+1. Open the **Project Settings** window (menu: **Edit &gt; Project Settings**).
 2. Select **Player** on the left to view the **Player Settings** page.
 3. Select the **Android** tab to view the Android settings.
 4. Open the **Other Settings** group (if necessary).
@@ -93,7 +93,7 @@ Unity recommends that you always enable the ARM64 target architecture for ARCore
 
 To set the Android target architecture:
 
-1. Open the **Player Settings** window (menu: **Edit &gt; Player Settings**).
+1. Open the **Project Settings** window (menu: **Edit &gt; Project Settings**).
 2. Select **Player** on the left to view the **Player Settings** page.
 3. Select the **Android** tab to view the Android settings.
 4. Open the **Other Settings** group (if necessary).
@@ -110,7 +110,7 @@ To use the recommended ARM64 architecture, you must also use the IL2CPP scriptin
 
 To set the IL2CPP scripting backend:
 
-1. Open the **Player Settings** window (menu: **Edit &gt; Player Settings**).
+1. Open the **Project Settings** window (menu: **Edit &gt; Project Settings**).
 2. Select **Player** on the left to view the **Player Settings** page.
 3. Select the **Android** tab to view the Android settings.
 4. Open the **Other Settings** group (if necessary).
@@ -128,7 +128,7 @@ You must install the ARCore package before you can change the ARCore **Requireme
 
 To change this setting:
 
-1. Open the **Player Settings** window (menu: **Edit &gt; Player Settings**).
+1. Open the **Project Settings** window (menu: **Edit &gt; Project Settings**).
 2. Click **XR Plug-in Management** on the left to open the plug-in provider list.
 3. Select **ARCore** in the list to view the ARCore plug-in settings page.
 
@@ -146,7 +146,7 @@ If your app cannot function without ARCore depth support, you can prevent preven
 
 To change this setting:
 
-1. Open the **Player Settings** window (menu: **Edit &gt; Player Settings**).
+1. Open the **Project Settings** window (menu: **Edit &gt; Project Settings**).
 2. Click **XR Plug-in Management** on the left to open the plug-in provider list.
 3. Select **ARCore** in the list to view the ARCore plug-in settings page.
 4. For **Depth**, choose either **Optional** or **Required**.
@@ -159,7 +159,7 @@ When you build an Android Player with ARCore enabled, the ARCore package checks 
 
 To change this setting:
 
-1. Open the **Player Settings** window (menu: **Edit &gt; Player Settings**).
+1. Open the **Project Settings** window (menu: **Edit &gt; Project Settings**).
 2. Click **XR Plug-in Management** on the left to open the plug-in provider list.
 3. Select **ARCore** in the list to view the ARCore plug-in settings page.
 4. Click the checkbox for **Ignore Gradle Version**, to enable or disable the option.
@@ -175,7 +175,7 @@ Some of the rules serve as warnings for possible configuration problems; you are
 
 To review the ARCore project validation results:
 
-1. Open the **Player Settings** window (menu: **Edit &gt; Player Settings**).
+1. Open the **Project Settings** window (menu: **Edit &gt; Project Settings**).
 2. Click **XR Plug-in Management** on the left to open the plug-in provider list.
 3. Select **Project Validation** in the list to view the validation page.
 4. Select the **Android** tab to view the status of the validation checks for Android XR plug-ins, including ARCore.

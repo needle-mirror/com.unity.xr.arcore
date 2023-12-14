@@ -8,6 +8,24 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [6.0.0-pre.5] - 2023-12-14
+
+### Added
+
+- During builds, reference image libraries with images that score lower than 75 with the 'arcoreimg' tool will produce a report as a console warning. Refer to Google's [arcoreimg tool](https://developers.google.com/ar/develop/augmented-images/arcoreimg) documentation for more details.
+
+### Changed
+
+- Changed AR Foundation dependency version from 6.0.0-pre.4 to 6.0.0-pre.5.
+- Changed the format of the ARCore display matrix returned by `XRCameraFrame.TryGetDisplayMatrix` to be row-major and to match the format of ARKit's display matrix. The ARCore display matrix also now incorporates flipping the y-axis of the image before rendering, which was previously handled by the ARCoreBackground shaders.
+- Changed ARCoreBackground.shader and ARCoreBackgroundAfterOpaques.shader to correctly render the background using the new display matrix.
+- Changed the image tracking documentation to reference the newly updated [Use reference image libraries with AssetBundles](xref:arfoundation-image-tracking#use-reference-image-libraries-with-assetbundles) manual in AR Foundation.
+- Changed the project validation rules to remove a warning if this plug-in was not enabled for the Android build target. There are legitimate reasons to build for Android without enabling the ARCore plug-in, so this warning was not helpful.
+
+### Fixed
+
+- Fixed issue [ARFB-322](https://issuetracker.unity3d.com/issues/android-crash-on-android-when-artrackedimagemanager-component-is-added-to-the-ar-session-origin-game-object) where an image library that had an image(s) score too low with the [arcoreimg](https://developers.google.com/ar/develop/augmented-images/arcoreimg) tool, or fail to score at all, would cause a crash at runtime.
+
 ## [6.0.0-pre.4] - 2023-10-18
 
 ### Added
