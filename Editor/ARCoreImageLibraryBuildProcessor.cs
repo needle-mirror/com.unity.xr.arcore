@@ -53,6 +53,7 @@ namespace UnityEditor.XR.ARCore
                     Rethrow(library, $"The arcoreimg command line tool ran successfully but did not produce an image database. This is likely a bug. Please provide these details to Unity:\n=== begin arcoreimg output ===\nstdout:\n{e.stdOut}\nstderr:\n{e.stdErr}\n=== end arcoreimg output===\n", e);
                 }
             }
+            EditorUtility.ClearProgressBar();
         }
 
         void ARBuildProcessor.IPreprocessBuild.OnPreprocessBuild(PreprocessBuildEventArgs buildEventArgs)

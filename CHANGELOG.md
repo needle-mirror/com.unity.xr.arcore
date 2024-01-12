@@ -8,6 +8,17 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [4.2.10] - 2024-01-12
+
+### Changed
+
+- Changed the AR Subsystems dependency version from 4.2.9 to 4.2.10.
+
+### Fixed
+
+- Fixed issue [ARFB-322](https://issuetracker.unity3d.com/issues/android-crash-on-android-when-artrackedimagemanager-component-is-added-to-the-ar-session-origin-game-object) where an image library that had an image(s) score too low with the [arcoreimg](https://developers.google.com/ar/develop/augmented-images/arcoreimg) tool, or fail to score at all, would cause a crash at runtime.
+- Fixed issue [ARFB-283](https://issuetracker.unity3d.com/issues/autofocusrequested-can-not-automatically-focus-after-configuring-camera-settings-on-a-device) where changing [ARCameraManager.currentConfiguration](xref:UnityEngine.XR.ARFoundation.ARCameraManager.currentConfiguration) could disable some ARCore features, including autofocus.
+
 ## [4.2.9] - 2023-10-02
 
 ### Changed

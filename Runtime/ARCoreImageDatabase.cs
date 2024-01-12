@@ -86,7 +86,9 @@ namespace UnityEngine.XR.ARCore
                 var libraryBlob = GetLibraryData(serializedLibrary);
                 if (libraryBlob == null || libraryBlob.Length == 0)
                 {
-                    throw new InvalidOperationException($"Failed to load {nameof(XRReferenceImageLibrary)} '{serializedLibrary.name}': library does not contain any ARCore data.");
+                    m_Self = Deserialize(default, default);
+                    Debug.LogError($"Failed to load {nameof(XRReferenceImageLibrary)} '{serializedLibrary.name}': library does not contain any ARCore data.");
+                    return;
                 }
 
                 using var managedReferenceImages = serializedLibrary.ToNativeArray(Allocator.Temp);
