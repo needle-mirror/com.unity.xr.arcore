@@ -11,7 +11,6 @@ namespace UnityEditor.XR.ARCore
 {
     static class ARCoreProjectValidationRules
     {
-        const string k_ProjectXRPlugInManagement = "Project/XR Plug-in Management";
         const string k_PreferencesExternalTools = "Preferences/External Tools";
         const string k_Catergory = "Google ARCore";
         const string k_GradleVersionUnknown = "cannot be determined";
@@ -139,25 +138,7 @@ namespace UnityEditor.XR.ARCore
                 }
             };
 
-            var androidARFoundationRules = new[]
-            {
-                new BuildValidationRule
-                {
-                    Category = k_Catergory,
-                    Message = "If targeting ARCore, enable the 'Google ARCore' plug-in in 'XR Plug-in Management'.",
-                    CheckPredicate = IsARCorePluginEnabled,
-                    FixItMessage = "Open Project Setting > XR Plug-in Management > Android tab and enable `Google ARCore`.",
-                    FixIt = () =>
-                    {
-                        SettingsService.OpenProjectSettings(k_ProjectXRPlugInManagement);
-                    },
-                    Error = false,
-                    FixItAutomatic = false
-                },
-            };
-
             BuildValidator.AddRules(BuildTargetGroup.Android, androidGlobalRules);
-            BuildValidator.AddRules(BuildTargetGroup.Android, androidARFoundationRules);
         }
 
         static bool IsARCorePluginEnabled()

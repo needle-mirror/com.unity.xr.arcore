@@ -8,6 +8,18 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [5.1.2] - 2024-01-22
+
+### Changed
+
+- Changed the image tracking documentation to reference the newly updated [Use reference image libraries with AssetBundles](xref:arfoundation-image-tracking#use-reference-image-libraries-with-assetbundles) manual in AR Foundation.
+- Changed the project validation rules to remove a warning if this plug-in was not enabled for the Android build target. There are legitimate reasons to build for Android without enabling the ARCore plug-in, so this warning was not helpful.
+- Changed AR Foundation dependency version to 5.1.2.
+
+### Fixed
+
+- Fixed issue [ARFB-322](https://issuetracker.unity3d.com/issues/android-crash-on-android-when-artrackedimagemanager-component-is-added-to-the-ar-session-origin-game-object) where an image library that had an image(s) score too low with the [arcoreimg](https://developers.google.com/ar/develop/augmented-images/arcoreimg) tool, or fail to score at all, would cause a crash at runtime.
+
 ## [5.1.1] - 2023-11-14
 
 ### Changed
