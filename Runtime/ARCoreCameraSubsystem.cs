@@ -98,7 +98,7 @@ namespace UnityEngine.XR.ARCore
         /// 1. Before Opaque Shader Name
         /// 2. After Opaque Shader Name
         /// </remarks>
-        public static readonly string[] backgroundShaderNames = new[]
+        public static readonly string[] backgroundShaderNames =
         {
             k_BeforeOpaquesBackgroundShaderName,
             k_AfterOpaquesBackgroundShaderName
@@ -210,9 +210,11 @@ namespace UnityEngine.XR.ARCore
             /// </value>
             static readonly List<string> k_EnabledMaterialKeywords = new() { k_ImageStabilizationEnabledMaterialKeyword };
 
-            static readonly ShaderKeywords k_ImageStabilizationEnabledShaderKeywords = new ShaderKeywords(k_EnabledMaterialKeywords?.AsReadOnly(), null);
+            static readonly ShaderKeywords k_ImageStabilizationEnabledShaderKeywords =
+                new(k_EnabledMaterialKeywords?.AsReadOnly(), null);
 
-            static readonly ShaderKeywords k_ImageStabilizationDisabledShaderKeywords = new ShaderKeywords(null, k_EnabledMaterialKeywords?.AsReadOnly());
+            static readonly ShaderKeywords k_ImageStabilizationDisabledShaderKeywords =
+                new(null, k_EnabledMaterialKeywords?.AsReadOnly());
 
             Material GetOrCreateCameraMaterial()
             {
@@ -505,19 +507,22 @@ namespace UnityEngine.XR.ARCore
             /// <returns>
             /// The supported camera configurations.
             /// </returns>
-            public override NativeArray<XRCameraConfiguration> GetConfigurations(XRCameraConfiguration defaultCameraConfiguration,
-                                                                                 Allocator allocator)
+            public override NativeArray<XRCameraConfiguration> GetConfigurations(
+                XRCameraConfiguration defaultCameraConfiguration,
+                Allocator allocator)
             {
-                IntPtr configurations = NativeApi.UnityARCore_Camera_AcquireConfigurations(out int configurationsCount,
-                                                                                           out int configurationSize);
+                IntPtr configurations = NativeApi.UnityARCore_Camera_AcquireConfigurations(
+                    out int configurationsCount, out int configurationSize);
                 try
                 {
                     unsafe
                     {
-                        return NativeCopyUtility.PtrToNativeArrayWithDefault(defaultCameraConfiguration,
-                                                                             (void*)configurations,
-                                                                             configurationSize, configurationsCount,
-                                                                             allocator);
+                        return NativeCopyUtility.PtrToNativeArrayWithDefault(
+                            defaultCameraConfiguration,
+                            (void*)configurations,
+                            configurationSize,
+                            configurationsCount,
+                            allocator);
                     }
                 }
                 finally
@@ -564,17 +569,17 @@ namespace UnityEngine.XR.ARCore
                         case CameraConfigurationResult.Success:
                             break;
                         case CameraConfigurationResult.InvalidCameraConfiguration:
-                            throw new ArgumentException("Camera configuration does not exist in the available "
-                                                        + "configurations", nameof(value));
+                            throw new ArgumentException(
+                                "Camera configuration does not exist in the available configurations", nameof(value));
                         case CameraConfigurationResult.InvalidSession:
-                            throw new InvalidOperationException("Cannot set camera configuration because the ARCore "
-                                                                + "session is not valid");
+                            throw new InvalidOperationException(
+                                "Cannot set camera configuration because the ARCore session is not valid");
                         case CameraConfigurationResult.ErrorImagesNotDisposed:
-                            throw new InvalidOperationException("Cannot set camera configuration because you have not "
-                                                                + "disposed of all XRCpuImage and allowed all "
-                                                                + "asynchronous conversion jobs to complete");
+                            throw new InvalidOperationException(
+                                "Cannot set camera configuration because you have not disposed of all XRCpuImage" + 
+                                " and allowed all asynchronous conversion jobs to complete");
                         default:
-                            throw new InvalidOperationException("cannot set camera configuration for ARCore");
+                            throw new InvalidOperationException("Cannot set camera configuration for ARCore");
                     }
                 }
             }
@@ -672,8 +677,8 @@ namespace UnityEngine.XR.ARCore
             public static extern void UnityARCore_Camera_Stop();
 
             [DllImport(Constants.k_LibraryName)]
-            public static extern bool UnityARCore_Camera_TryGetFrame(XRCameraParams cameraParams,
-                                                                    out XRCameraFrame cameraFrame);
+            public static extern bool UnityARCore_Camera_TryGetFrame(
+                XRCameraParams cameraParams, out XRCameraFrame cameraFrame);
 
             [DllImport(Constants.k_LibraryName, EntryPoint="UnityARCore_Camera_GetAutoFocusEnabled")]
             public static extern bool GetAutoFocusEnabled();
@@ -691,17 +696,19 @@ namespace UnityEngine.XR.ARCore
             public static extern bool UnityARCore_Camera_TryGetIntrinsics(out XRCameraIntrinsics cameraIntrinsics);
 
             [DllImport(Constants.k_LibraryName)]
-            public static extern IntPtr UnityARCore_Camera_AcquireConfigurations(out int configurationsCount,
-                                                                                 out int configurationSize);
+            public static extern IntPtr UnityARCore_Camera_AcquireConfigurations(
+                out int configurationsCount, out int configurationSize);
 
             [DllImport(Constants.k_LibraryName)]
             public static extern void UnityARCore_Camera_ReleaseConfigurations(IntPtr configurations);
 
             [DllImport(Constants.k_LibraryName)]
-            public static extern bool UnityARCore_Camera_TryGetCurrentConfiguration(out XRCameraConfiguration cameraConfiguration);
+            public static extern bool UnityARCore_Camera_TryGetCurrentConfiguration(
+                out XRCameraConfiguration cameraConfiguration);
 
             [DllImport(Constants.k_LibraryName)]
-            public static extern CameraConfigurationResult UnityARCore_Camera_TrySetCurrentConfiguration(XRCameraConfiguration cameraConfiguration);
+            public static extern CameraConfigurationResult UnityARCore_Camera_TrySetCurrentConfiguration(
+                XRCameraConfiguration cameraConfiguration);
 
             [DllImport(Constants.k_LibraryName)]
             public static extern unsafe void* UnityARCore_Camera_AcquireTextureDescriptors(

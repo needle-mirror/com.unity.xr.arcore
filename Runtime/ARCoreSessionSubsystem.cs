@@ -133,6 +133,7 @@ namespace UnityEngine.XR.ARCore
         {
             GCHandle m_ProviderHandle;
             Action<ArSession, ArConfig, IntPtr> m_SetConfigurationCallback = SetConfigurationCallback;
+            Guid m_SessionId;
 
             public ArStatus SetPlaybackDataset(string playbackDataset)
             {
@@ -177,11 +178,11 @@ namespace UnityEngine.XR.ARCore
             {
                 // Texture *must* be created before ARCore session resume is called
                 CreateTexture();
-                NativeApi.UnityARCore_session_resume(Guid.NewGuid());
+                m_SessionId = Guid.NewGuid();
+                NativeApi.UnityARCore_session_resume(m_SessionId);
             }
 
-            public override void Stop()
-                => NativeApi.UnityARCore_session_pause();
+            public override void Stop() => NativeApi.UnityARCore_session_pause();
 
             public override void Update(XRSessionUpdateParams updateParams, Configuration configuration)
             {
@@ -270,6 +271,7 @@ namespace UnityEngine.XR.ARCore
 
             public override void Reset()
             {
+                m_SessionId = Guid.NewGuid();
                 NativeApi.UnityARCore_session_reset();
                 if (running)
                     Start();
@@ -300,6 +302,8 @@ namespace UnityEngine.XR.ARCore
             public override TrackingState trackingState => NativeApi.UnityARCore_session_getTrackingState();
 
             public override NotTrackingReason notTrackingReason => NativeApi.UnityARCore_session_getNotTrackingReason();
+
+            public override Guid sessionId => m_SessionId;
 
             public override Feature requestedFeatures => Api.GetRequestedFeatures();
 

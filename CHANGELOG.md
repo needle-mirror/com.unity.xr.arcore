@@ -8,6 +8,18 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [6.0.0-pre.6] - 2024-02-08
+
+### Changed
+
+- Changed minimum Unity Editor version to `2023.3`.
+- Changed AR Foundation dependency version from 6.0.0-pre.5 to 6.0.0-pre.6.
+
+### Fixed
+
+- Fixed issue [ARCB-21](https://issuetracker.unity3d.com/issues/google-arcore-error-isnt-fixed-when-pressing-the-fix-button-in-project-validation) where 'Fix' button on Project Validation rule requiring OpenGLES3 would not fix the issue if Auto Graphics API was enabled.
+- Fixed issue where portions of `ARCoreBuildProcessor` were incorrectly being run when building an Android Player with ARCore disabled.
+
 ## [6.0.0-pre.5] - 2023-12-14
 
 ### Added

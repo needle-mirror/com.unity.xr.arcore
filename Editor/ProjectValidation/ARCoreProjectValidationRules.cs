@@ -90,6 +90,7 @@ namespace UnityEditor.XR.ARCore
                             correctGraphicsApis = graphicApis.ToArray();
                         }
 
+                        PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.Android, false);
                         PlayerSettings.SetGraphicsAPIs(BuildTarget.Android, correctGraphicsApis);
                     },
                     Error = true

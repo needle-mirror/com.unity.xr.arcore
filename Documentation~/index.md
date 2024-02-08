@@ -62,7 +62,6 @@ Use the Google ARCore XR Plug-in APIs when you need access to Android ARCore-spe
 
 This version of Google ARCore XR Plug-in is compatible with the following versions of the Unity Editor:
 
-* 2023.2
 * 2023.3
 
 ## Known limitations

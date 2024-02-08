@@ -25,7 +25,9 @@ namespace UnityEditor.XR.ARCore
 
         void IPreprocessBuildWithReport.OnPreprocessBuild(BuildReport report)
         {
-            if (report.summary.platform != BuildTarget.Android)
+            SetRuntimePluginCopyDelegate();
+
+            if (report.summary.platform != BuildTarget.Android || !isARCoreLoaderEnabled)
             {
                 // Sometimes (e.g., build failure), the shader can get "stuck" in the Preloaded Assets array.
                 // Make sure that if we are not building for Android, we remove that shader.
@@ -35,34 +37,20 @@ namespace UnityEditor.XR.ARCore
                 return;
             }
 
-            SetRuntimePluginCopyDelegate();
+            EnsureGoogleARCoreIsNotPresent();
+            EnsureMinSdkVersion();
+            EnsureOnlyOpenGLES3IsUsed();
+            EnsureGradleIsUsed();
+            EnsureGradleVersionIsSupported();
+            Check64BitArch();
 
-            var androidXrSettings = XRGeneralSettingsPerBuildTarget.XRGeneralSettingsForBuildTarget(BuildPipeline.GetBuildTargetGroup(BuildTarget.Android));
-            if (androidXrSettings == null)
-                return;
-
-            foreach (var loader in androidXrSettings.Manager.activeLoaders)
-            {
-                if (loader is ARCoreLoader)
-                {
-                    EnsureGoogleARCoreIsNotPresent();
-                    EnsureMinSdkVersion();
-                    EnsureOnlyOpenGLES3IsUsed();
-                    EnsureGradleIsUsed();
-                    EnsureGradleVersionIsSupported();
-                    Check64BitArch();
-
-                    foreach (var backgroundShaderName in ARCoreCameraSubsystem.backgroundShaderNames)
-                        BuildHelper.AddBackgroundShaderToProject(backgroundShaderName);
-
-                    break;
-                }
-            }
+            foreach (var backgroundShaderName in ARCoreCameraSubsystem.backgroundShaderNames)
+                BuildHelper.AddBackgroundShaderToProject(backgroundShaderName);
         }
 
         void IPostprocessBuildWithReport.OnPostprocessBuild(BuildReport report)
         {
-            if (report.summary.platform != BuildTarget.Android)
+            if (report.summary.platform != BuildTarget.Android || !isARCoreLoaderEnabled)
                 return;
 
             foreach (var backgroundShaderName in ARCoreCameraSubsystem.backgroundShaderNames)
@@ -214,6 +202,7 @@ namespace UnityEditor.XR.ARCore
         }
     }
 
+#pragma warning disable 0618
     class ARCoreManifest : IPostGenerateGradleAndroidProject
     {
         const string k_AndroidUri = "http://schemas.android.com/apk/res/android";
@@ -353,4 +342,5 @@ namespace UnityEditor.XR.ARCore
             manifestDoc.Save(manifestPath);
         }
     }
+#pragma warning restore 0618
 }
