@@ -1,7 +1,7 @@
 {
   "name": "com.unity.xr.arcore",
   "displayName": "Google ARCore XR Plugin",
-  "version": "6.0.0-pre.6",
+  "version": "6.0.0-pre.7",
   "unity": "2023.3",
   "description": "Provides native Google ARCore integration for use with Unity's multi-platform XR API.\nSupports the following features:\n-Efficient Background Rendering\n-Horizontal Planes\n-Depth Data\n-Anchors\n-Hit Testing\n-Occlusion",
   "keywords": [
@@ -13,22 +13,22 @@
     "core"
   ],
   "dependencies": {
-    "com.unity.xr.arfoundation": "6.0.0-pre.6",
+    "com.unity.xr.arfoundation": "6.0.0-pre.7",
     "com.unity.xr.core-utils": "2.2.2",
     "com.unity.xr.management": "4.4.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.unitywebrequest": "1.0.0"
   },
   "_upm": {
-    "changelog": "### Changed\n\n- Changed minimum Unity Editor version to `2023.3`.\n- Changed AR Foundation dependency version from 6.0.0-pre.5 to 6.0.0-pre.6.\n\n### Fixed\n\n- Fixed issue [ARCB-21](https://issuetracker.unity3d.com/issues/google-arcore-error-isnt-fixed-when-pressing-the-fix-button-in-project-validation) where 'Fix' button on Project Validation rule requiring OpenGLES3 would not fix the issue if Auto Graphics API was enabled.\n- Fixed issue where portions of `ARCoreBuildProcessor` were incorrectly being run when building an Android Player with ARCore disabled."
+    "changelog": "- Changed AR Foundation dependency version from 6.0.0-pre.6 to 6.0.0-pre.7."
   },
   "upmCi": {
-    "footprint": "eb4a9e17f1015b781d1097d2e384127394367583"
+    "footprint": "e6e682855a14ba5211efbd6a700084c34ecf705d"
   },
   "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.xr.arcore@6.0/manual/index.html",
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/arfoundation.git",
     "type": "git",
-    "revision": "0722154ddda749e748b2afe75edeaf21515c3808"
+    "revision": "1e2168bb454e00d591e973a00d9a6559eb77590e"
   }
 }

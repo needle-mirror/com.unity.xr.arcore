@@ -1,26 +1,4 @@
 ---
-uid: arcore-camera
+redirect_url: features/camera.html
 ---
-# Camera
-
-## Camera configuration
-
-[XRCameraConfiguration](xref:UnityEngine.XR.ARSubsystems.XRCameraConfiguration) contains an `IntPtr` field `nativeConfigurationHandle`, which is a platform-specific handle. For ARCore, this handle is the pointer to the `ArCameraConfiguration`. The native object is managed by Unity. Do not manually destroy it.
-
-## EXIF data
-
-This package implements AR Foundation's [EXIF data](xref:arfoundation-exif-data) API using ARCore's [ArImageMetadata](https://developers.google.com/ar/reference/c/group/ar-image-metadata#arimagemetadata). Refer to the following table to understand which tags ARCore supports:
-
-| EXIF tag             | Supported |
-|-------------------------|--------|
-| ApertureValue           | Yes    |
-| BrightnessValue         |        |
-| ColorSpace              |        |
-| ExposureBiasValue       |        |
-| ExposureTime            | Yes    |
-| FNumber                 | Yes    |
-| Flash                   | Yes    |
-| FocalLength             | Yes    |
-| PhotographicSensitivity | Yes    |
-| MeteringMode            |        |
-| ShutterSpeedValue       | Yes    |
+This file is no longer used. Refer to the link above for the current documentation.

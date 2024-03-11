@@ -1,7 +1,7 @@
 * [Introduction](xref:arcore-manual)
 * [What's new](xref:arcore-whats-new)
 * [Project configuration](xref:arcore-project-config)
-* Subsystems
+* [Features](xref:arcore-features)
   * [Session](xref:arcore-session)
   * [Camera](xref:arcore-camera)
   * [Plane detection](xref:arcore-plane-detection)
