@@ -8,6 +8,16 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [5.1.3] - 2024-03-12
+
+### Changed
+
+- Changed the AR Foundation dependency version from 5.1.2 to 5.1.3
+
+### Fixed
+
+- Fixed issue [ARCB-21](https://issuetracker.unity3d.com/issues/google-arcore-error-isnt-fixed-when-pressing-the-fix-button-in-project-validation) where 'Fix' button on Project Validation rule requiring OpenGLES3 would not fix the issue if Auto Graphics API was enabled.
+
 ## [5.1.2] - 2024-01-22
 
 ### Changed

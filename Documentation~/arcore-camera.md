@@ -1,8 +1,4 @@
 ---
-uid: arcore-camera
+redirect_url: features/camera.html
 ---
-# Camera
-
-## Camera configuration
-
-[XRCameraConfiguration](xref:UnityEngine.XR.ARSubsystems.XRCameraConfiguration) contains an `IntPtr` field `nativeConfigurationHandle`, which is a platform-specific handle. For ARCore, this handle is the pointer to the `ArCameraConfiguration`. The native object is managed by Unity. Do not manually destroy it.
+This file is no longer used. Refer to the link above for the current documentation.
