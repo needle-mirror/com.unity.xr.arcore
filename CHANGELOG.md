@@ -8,7 +8,20 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [6.0.0-pre.8] - 2024-03-19
+
+### Changed
+
+- Upgraded ARCore SDK version to 1.42 from 1.37.
+- Changed AR Foundation dependency version from 6.0.0-pre.7 to 6.0.0-pre.8.
+
+### Fixed
+
+- Fixed an issue where the AR background was rendered with incorrect rotation on Pixel Fold devices when the device was in unfolded mode.
+
 ## [6.0.0-pre.7] - 2024-03-11
+
+### Changed
 
 - Changed AR Foundation dependency version from 6.0.0-pre.6 to 6.0.0-pre.7.
 
