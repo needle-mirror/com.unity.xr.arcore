@@ -52,7 +52,6 @@ Shader "Unlit/ARCoreBackground/AfterOpaques"
             uniform mat4 _UnityDisplayTransform;
 
 #ifdef VERTEX
-
             varying ARCORE_TEXCOORD_TYPE textureCoord;
             varying vec2 textureCoordQuad;
 

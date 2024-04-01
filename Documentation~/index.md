@@ -41,4 +41,7 @@ You can also install and uninstall this package using the [Package Manager](http
 
 Version 6.0 of the Google ARCore XR Plug-in is compatible with the following versions of the Unity Editor:
 
-* 2023.3
+* Unity 6 (6000.0).
+
+> [!NOTE]
+> You can visit the Unity Forum for more information on the [Unity 6 New Naming Convention](https://forum.unity.com/threads/unity-6-new-naming-convention.1558592/).
