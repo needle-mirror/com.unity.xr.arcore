@@ -11,7 +11,23 @@ This page is a supplement to the AR Foundation [Occlusion](xref:arfoundation-occ
 
 ## Check if occlusion is supported
 
-* The [XROcclusionSubsystemDescriptor](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystemDescriptor) properties [supportsEnvironmentDepthImage](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystemDescriptor.supportsEnvironmentDepthImage) and [supportsEnvironmentDepthConfidenceImage](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystemDescriptor.supportsEnvironmentDepthConfidenceImage) require that you start an AR session before support can be determined. If there is no AR session, these properties return `false`. They might return `true` later when a session has been started.
+The [XROcclusionSubsystemDescriptor](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystemDescriptor) properties [environmentDepthImageSupported](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystemDescriptor.environmentDepthImageSupported) and [environmentDepthConfidenceImageSupported](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystemDescriptor.environmentDepthConfidenceImageSupported) require that you start an AR session before support can be determined. If there is no AR session, these properties return `false`. They might return `true` later when a session has been started.
+  
+## Optional feature support
+
+ARCore implements the following optional features of AR Foundation's [XROcclusionSubsystem](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystem). The availability of features depends on device hardware and software. Refer to [Requirements](#occlusion-requirements) for more information.
+
+| Feature | Descriptor Property | Supported |
+| :------ | :--------------- | :----------: |
+| **Environment Depth Image** | [environonmentDepthImageSupported](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystemDescriptor.environmentDepthImageSupported) | Yes |
+| **Environment Depth Confidence Image** | [environmentDepthConfidenceImageSupported](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystemDescriptor.environmentDepthConfidenceImageSupported) | Yes |
+| **Environment Depth Temporal Smoothing** | [environmentDepthImageSupported](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystemDescriptor.environmentDepthImageSupported) | Yes |
+| **Human Segmentation Stencil Image** | [humanSegmentationStencilImageSupported](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystemDescriptor.humanSegmentationStencilImageSupported) | |
+| **Human Segmentation Depth Image** | [humanSegmentationDepthImageSupported](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystemDescriptor.humanSegmentationDepthImageSupported) | |
+
+> [!NOTE]
+> Refer to AR Foundation [Occlusion platform support](xref:arfoundation-occlusion-platform-support) for more information 
+> on the optional features of the occlusion subsystem.
 
 ## Supported textures
 
@@ -26,6 +42,8 @@ The [XROcclusionSubsystem](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystem
 
 > [!NOTE]
 > Both raw and smoothed are always available if depth is supported, regardless of the value of [environmentDepthTemporalSmoothingEnabled](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystem.environmentDepthTemporalSmoothingEnabled).
+
+<a id="occlusion-requirements"></a>
 
 ## Requirements
 
