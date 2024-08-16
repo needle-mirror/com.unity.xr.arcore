@@ -10,13 +10,13 @@ namespace UnityEngine.XR.ARCore
     /// A recording configuration struct that contains the configuration for session recording.
     /// See <see cref="ArSession.StartRecording(ArRecordingConfig)"/>.
     /// </summary>
+    /// <example>
+    /// <code source="../Tests/Runtime/CodeExamples.cs" region="ArRecordingConfig_example"/>
+    /// </example>
     /// <remarks>
     /// A <see cref="ArRecordingConfig"/> represents a native object that must be disposed (by calling
     /// <see cref="ArRecordingConfig.Dispose"/>) to prevent memory leaks. Consider using a `using` statement for
-    /// convenience:
-    /// <example>
-    /// <code source="../Tests/Runtime/CodeExamples.cs" language="csharp" region="ArRecordingConfig_example"/>
-    /// </example>
+    /// convenience.
     ///
     /// This is a C# wrapper for ARCore's
     /// [native ArRecordingConfig](https://developers.google.com/ar/reference/c/group/ar-recording-config)
@@ -28,75 +28,74 @@ namespace UnityEngine.XR.ARCore
         ArRecordingConfig(IntPtr value) => m_Self = value;
 
         /// <summary>
-        /// Create a <see cref="ArRecordingConfig"/> from an existing native pointer. The native pointer must point
-        /// to an existing <see cref="ArRecordingConfig"/>.
+        /// Create an instance from a native pointer. The native pointer must point to an existing <see cref="ArRecordingConfig"/>.
         /// </summary>
         /// <param name="value">A pointer to an existing native <see cref="ArRecordingConfig"/>.</param>
-        /// <returns>Returns an <see cref="ArRecordingConfig"/> whose underlying native pointer is
-        ///     <paramref name="value"/>.</returns>
+        /// <returns>An instance whose native pointer is <paramref name="value"/>.</returns>
         public static ArRecordingConfig FromIntPtr(IntPtr value) => new ArRecordingConfig(value);
 
         /// <summary>
-        /// Gets the underlying native pointer for this <see cref="ArRecordingConfig"/>.
+        /// Gets the native pointer for this instance.
         /// </summary>
-        /// <returns>Returns the underlying native pointer for this <see cref="ArRecordingConfig"/>.</returns>
+        /// <returns>The native pointer.</returns>
         public IntPtr AsIntPtr() => m_Self;
 
         /// <summary>
-        /// Casts an <see cref="ArRecordingConfig"/> to its underlying native pointer.
+        /// Casts an instance to its native pointer.
         /// </summary>
-        /// <param name="config">The <see cref="ArRecordingConfig"/> to cast.</param>
-        /// <returns>Returns the underlying native pointer for <paramref name="config"/></returns>
+        /// <param name="config">The instance to cast.</param>
+        /// <returns>The native pointer.</returns>
         public static explicit operator IntPtr(ArRecordingConfig config) => config.AsIntPtr();
 
         /// <summary>
         /// Tests for equality.
         /// </summary>
         /// <remarks>
-        /// Two <see cref="ArRecordingConfig"/>s are considered equal if their underlying pointers are equal.
+        /// Two instances are considered equal if their native pointers are equal.
         /// </remarks>
-        /// <param name="other">The <see cref="ArRecordingConfig"/> to compare against.</param>
-        /// <returns>Returns `true` if the underlying native pointers are the same. Returns `false` otherwise.</returns>
+        /// <param name="other">The instance to compare against.</param>
+        /// <returns><see langword="true"/> if the native pointers are equal. Otherwise, returns <see langword="false"/>.</returns>
         public bool Equals(ArRecordingConfig other) => m_Self == other.m_Self;
 
         /// <summary>
         /// Tests for equality.
         /// </summary>
-        /// <param name="obj">An <see cref="object"/> to compare against.</param>
-        /// <returns>Returns `true` if <paramref name="obj"/> is an <see cref="ArRecordingConfig"/> and it compares
-        ///     equal to this one using <see cref="Equals(UnityEngine.XR.ARCore.ArRecordingConfig)"/>.</returns>
+        /// <param name="obj">An `object` to compare against.</param>
+        /// <returns><see langword="true"/> if <paramref name="obj"/> is an `ArRecordingConfig` and it compares
+        /// equal to this instance using <see cref="Equals(UnityEngine.XR.ARCore.ArRecordingConfig)"/>.</returns>
         public override bool Equals(object obj) => obj is ArRecordingConfig other && Equals(other);
 
         /// <summary>
         /// Generates a hash code suitable for use with a `HashSet` or `Dictionary`
         /// </summary>
-        /// <returns>Returns a hash code for this <see cref="ArRecordingConfig"/>.</returns>
+        /// <returns>Returns a hash code for this instance.</returns>
         public override int GetHashCode() => m_Self.GetHashCode();
 
         /// <summary>
-        /// Tests for equality. Same as <see cref="Equals(UnityEngine.XR.ARCore.ArRecordingConfig)"/>.
+        /// Tests for equality. Equivalent to <see cref="Equals(UnityEngine.XR.ARCore.ArRecordingConfig)"/>.
         /// </summary>
-        /// <param name="lhs">The <see cref="ArRecordingConfig"/> to compare with <paramref name="rhs"/>.</param>
-        /// <param name="rhs">The <see cref="ArRecordingConfig"/> to compare with <paramref name="lhs"/>.</param>
-        /// <returns>Returns `true` if <paramref name="lhs"/> is equal to <paramref name="rhs"/> using
-        ///     <see cref="Equals(UnityEngine.XR.ARCore.ArRecordingConfig)"/>. Returns `false` otherwise.</returns>
+        /// <param name="lhs">The instance to compare with <paramref name="rhs"/>.</param>
+        /// <param name="rhs">The instance to compare with <paramref name="lhs"/>.</param>
+        /// <returns><see langword="true"/> if <paramref name="lhs"/> is equal to <paramref name="rhs"/> using
+        /// <see cref="Equals(UnityEngine.XR.ARCore.ArRecordingConfig)"/>. Otherwise, returns <see langword="false"/>.</returns>
         public static bool operator ==(ArRecordingConfig lhs, ArRecordingConfig rhs) => lhs.Equals(rhs);
 
         /// <summary>
-        /// Tests for inequality. Same as the negation of <see cref="Equals(UnityEngine.XR.ARCore.ArRecordingConfig)"/>.
+        /// Tests for inequality. Equivalent to the negation of <see cref="Equals(UnityEngine.XR.ARCore.ArRecordingConfig)"/>.
         /// </summary>
-        /// <param name="lhs">The <see cref="ArRecordingConfig"/> to compare with <paramref name="rhs"/>.</param>
-        /// <param name="rhs">The <see cref="ArRecordingConfig"/> to compare with <paramref name="lhs"/>.</param>
-        /// <returns>Returns `false` if <paramref name="lhs"/> is equal to <paramref name="rhs"/> using
-        ///     <see cref="Equals(UnityEngine.XR.ARCore.ArRecordingConfig)"/>. Returns `true` otherwise.</returns>
+        /// <param name="lhs">The instance to compare with <paramref name="rhs"/>.</param>
+        /// <param name="rhs">The instance to compare with <paramref name="lhs"/>.</param>
+        /// <returns><see langword="false"/> if <paramref name="lhs"/> is equal to <paramref name="rhs"/> using
+        /// <see cref="Equals(UnityEngine.XR.ARCore.ArRecordingConfig)"/>. Otherwise, returns <see langword="true"/>.</returns>
         public static bool operator !=(ArRecordingConfig lhs, ArRecordingConfig rhs) => !lhs.Equals(rhs);
 
         /// <summary>
         /// Tests for equality.
         /// </summary>
         /// <remarks>
-        /// This equality operator lets you to compare an <see cref="ArRecordingConfig"/> with `null` to determine whether its
-        /// underlying pointer is null. This allows for a more natural comparison with the native ARCore object:
+        /// This equality operator lets you compare an instance with <see langword="null"/> to determine whether its
+        /// native pointer is null.
+        /// </remarks>
         /// <example>
         /// <code>
         /// bool TestForNull(ArRecordingConfig obj)
@@ -108,16 +107,15 @@ namespace UnityEngine.XR.ARCore
         /// }
         /// </code>
         /// </example>
-        /// </remarks>
-        /// <param name="lhs">The nullable <see cref="ArRecordingConfig"/> to compare with <paramref name="rhs"/>.</param>
-        /// <param name="rhs">The nullable <see cref="ArRecordingConfig"/> to compare with <paramref name="lhs"/>.</param>
-        /// <returns>Returns true if any of these conditions are met:
-        /// - <paramref name="lhs"/> and <paramref name="rhs"/> are both not null and their underlying pointers are equal.
-        /// - <paramref name="lhs"/> is null and <paramref name="rhs"/>'s underlying pointer is null.
-        /// - <paramref name="rhs"/> is null and <paramref name="lhs"/>'s underlying pointer is null.
-        /// - Both <paramref name="lhs"/> and <paramref name="rhs"/> are null.
+        /// <param name="lhs">The nullable `ArRecordingConfig` to compare with <paramref name="rhs"/>.</param>
+        /// <param name="rhs">The nullable `ArRecordingConfig` to compare with <paramref name="lhs"/>.</param>
+        /// <returns><see langword="true"/> if any of these conditions are met:
+        /// - <paramref name="lhs"/> and <paramref name="rhs"/> are both not `null` and their native pointers are equal.
+        /// - <paramref name="lhs"/> is `null` and <paramref name="rhs"/>'s native pointer is `null`.
+        /// - <paramref name="rhs"/> is `null` and <paramref name="lhs"/>'s native pointer is `null`.
+        /// - Both <paramref name="lhs"/> and <paramref name="rhs"/> are `null`.
         ///
-        /// Returns false otherwise.
+        /// Otherwise, returns <see langword="false"/>
         /// </returns>
         public static bool operator ==(ArRecordingConfig? lhs, ArRecordingConfig? rhs) => NativeObject.ArePointersEqual(lhs?.m_Self, rhs?.m_Self);
 
@@ -125,8 +123,9 @@ namespace UnityEngine.XR.ARCore
         /// Tests for inequality.
         /// </summary>
         /// <remarks>
-        /// This inequality operator lets you to compare an <see cref="ArRecordingConfig"/> with `null` to determine whether its
-        /// underlying pointer is null. This allows for a more natural comparison with the native ARCore object:
+        /// This inequality operator lets you compare an instance with <see langword="null"/> to determine whether its
+        /// native pointer is `null`.
+        /// </remarks>
         /// <example>
         /// <code>
         /// bool TestForNull(ArRecordingConfig obj)
@@ -138,16 +137,15 @@ namespace UnityEngine.XR.ARCore
         /// }
         /// </code>
         /// </example>
-        /// </remarks>
-        /// <param name="lhs">The native object to compare with <paramref name="rhs"/>.</param>
-        /// <param name="rhs">The native object to compare with <paramref name="lhs"/>.</param>
-        /// <returns>Returns false if any of these conditions are met:
-        /// - <paramref name="lhs"/> and <paramref name="rhs"/> are both not null and their underlying pointers are equal.
-        /// - <paramref name="lhs"/> is null and <paramref name="rhs"/>'s underlying pointer is null.
-        /// - <paramref name="rhs"/> is null and <paramref name="lhs"/>'s underlying pointer is null.
-        /// - Both <paramref name="lhs"/> and <paramref name="rhs"/> are null.
+        /// <param name="lhs">The nullable `ArRecordingConfig` to compare with <paramref name="rhs"/>.</param>
+        /// <param name="rhs">The nullable `ArRecordingConfig` to compare with <paramref name="lhs"/>.</param>
+        /// <returns><see langword="false"/> if any of these conditions are met:
+        /// - <paramref name="lhs"/> and <paramref name="rhs"/> are both not `null` and their native pointers are equal.
+        /// - <paramref name="lhs"/> is `null` and <paramref name="rhs"/>'s native pointer is `null`.
+        /// - <paramref name="rhs"/> is `null` and <paramref name="lhs"/>'s native pointer is `null`.
+        /// - Both <paramref name="lhs"/> and <paramref name="rhs"/> are `null`.
         ///
-        /// Returns true otherwise.
+        /// Otherwise, returns <see langword="true"/>.
         /// </returns>
         public static bool operator !=(ArRecordingConfig? lhs, ArRecordingConfig? rhs) => !(lhs == rhs);
 

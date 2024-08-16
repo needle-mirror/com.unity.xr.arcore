@@ -1,4 +1,4 @@
-﻿using AOT;
+using AOT;
 using System;
 using System.Runtime.InteropServices;
 using Unity.Collections;

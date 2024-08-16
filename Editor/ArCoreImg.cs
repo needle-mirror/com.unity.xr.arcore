@@ -68,7 +68,7 @@ namespace UnityEditor.XR.ARCore
                     : string.Join("|", guidStr, destinationPath);
             }
         }
-        
+
         readonly struct LowScoringImageData
         {
             internal readonly ImageDatabaseEntry entry;

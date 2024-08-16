@@ -3,7 +3,7 @@ uid: arcore-project-config
 ---
 # Project configuration
 
-Use the **XR Plug-in Management** settings to configure the Google ARCore plug-in for your project. 
+Use the **XR Plug-in Management** settings to configure the Google ARCore plug-in for your project.
 
 To get started, follow the instructions in [Enable the ARCore plug-in](#enable-the-google-arcore-plug-in). This also installs the ARCore package, if needed. Once installed and enabled, you can configure your project settings as described in the [ARCore Project settings](#arcore-project-settings) section.
 
@@ -16,7 +16,7 @@ Some ARCore features require specific Unity Project settings to function properl
 
 * **[Google ARCore XR plug-in enabled](#enable-arcore)**: must be enabled to use ARCore features.
 * **[Android API level](#api-level)**: the minimum Android varies with the version of the ARCore plug-in and Unity Editor. Checked by the project validation system.
-* **[OpenGLES Graphics API](#graphics-api)**: the ARCore plug-in only supports the OpenGLES graphics API. 
+* **[OpenGLES Graphics API](#graphics-api)**: the ARCore plug-in only supports the OpenGLES graphics API.
 * **[Scripting Backend](#scripting-backend)**: you must use IL2CPP to use ARM64, which is the recommended target architecture.
 * **[Target Architectures](#target-architecture)**: ARM64 is recommended so that your app can run on all 64-bit devices.
 * **[ARCore support Requirement](#arcore-required)**: can be set to **optional** or **required** depending on whether your app can be used without ARCore support.
@@ -46,7 +46,7 @@ To enable ARCore:
 <a name="api-level"></a>
 ### Set the Android API Level
 
-The minimum version of Android that supports ARCore varies with which versions of the ARCore plug-in and Unity Editor you are using. Use the [Project Validation](#project-validation) system to check this setting and, if necessary, change it to a supported level. 
+The minimum version of Android that supports ARCore varies with which versions of the ARCore plug-in and Unity Editor you are using. Use the [Project Validation](#project-validation) system to check this setting and, if necessary, change it to a supported level.
 
 To check the API level:
 
@@ -72,7 +72,7 @@ You can also change the setting manually in the Player settings. To find the min
 <a name="graphics-api"></a>
 ### Set the OpenGL ES Graphics API
 
-The ARCore plugin is not compatible with the Vulkan graphics API. 
+The ARCore plugin is not compatible with the Vulkan graphics API.
 
 To set the OpenGL ES Graphics API:
 
@@ -155,7 +155,7 @@ To change this setting:
 <a name="gradle-version"></a>
 ### Ignore Gradle Version
 
-When you build an Android Player with ARCore enabled, the ARCore package checks the Gradle version and warns you if it determines the Gradle version to be too low. The version of Gradle required depends on the version of the Unity Editor you are using. Normally, the required version of Gradle is installed when you add Android Build support using the Unity Hub. However, if you use a custom Android SDK or Gradle setup, a version mismatch could occur. If you have verified that your installed version of Gradle works for your purposes, you can silence this warning by enabling the **Ignore Gradle Version** option. 
+When you build an Android Player with ARCore enabled, the ARCore package checks the Gradle version and warns you if it determines the Gradle version to be too low. The version of Gradle required depends on the version of the Unity Editor you are using. Normally, the required version of Gradle is installed when you add Android Build support using the Unity Hub. However, if you use a custom Android SDK or Gradle setup, a version mismatch could occur. If you have verified that your installed version of Gradle works for your purposes, you can silence this warning by enabling the **Ignore Gradle Version** option.
 
 To change this setting:
 
@@ -180,7 +180,7 @@ To review the ARCore project validation results:
 3. Select **Project Validation** in the list to view the validation page.
 4. Select the **Android** tab to view the status of the validation checks for Android XR plug-ins, including ARCore.
 
-Rules that pass validation are not shown unless you enable **Show all**. 
+Rules that pass validation are not shown unless you enable **Show all**.
 
 Some rules provide a **Fix** button that updates the configuration so that the rule passes validation. Other rules provide an **Edit** button that takes you to the relevant setting so that you can make the necessary adjustments yourself.
 

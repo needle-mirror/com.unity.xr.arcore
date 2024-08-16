@@ -576,7 +576,7 @@ namespace UnityEngine.XR.ARCore
                                 "Cannot set camera configuration because the ARCore session is not valid");
                         case CameraConfigurationResult.ErrorImagesNotDisposed:
                             throw new InvalidOperationException(
-                                "Cannot set camera configuration because you have not disposed of all XRCpuImage" + 
+                                "Cannot set camera configuration because you have not disposed of all XRCpuImage" +
                                 " and allowed all asynchronous conversion jobs to complete");
                         default:
                             throw new InvalidOperationException("Cannot set camera configuration for ARCore");
@@ -680,7 +680,7 @@ namespace UnityEngine.XR.ARCore
             public static extern bool UnityARCore_Camera_TryGetFrame(
                 XRCameraParams cameraParams, out XRCameraFrame cameraFrame);
 
-            [DllImport(Constants.k_LibraryName, EntryPoint="UnityARCore_Camera_GetAutoFocusEnabled")]
+            [DllImport(Constants.k_LibraryName, EntryPoint = "UnityARCore_Camera_GetAutoFocusEnabled")]
             public static extern bool GetAutoFocusEnabled();
 
             [DllImport(Constants.k_LibraryName)]
@@ -689,7 +689,7 @@ namespace UnityEngine.XR.ARCore
             [DllImport(Constants.k_LibraryName)]
             public static extern Supported UnityARCore_Camera_GetImageStabilizationSupported();
 
-            [DllImport(Constants.k_LibraryName, EntryPoint="UnityARCore_Camera_GetCurrentLightEstimation")]
+            [DllImport(Constants.k_LibraryName, EntryPoint = "UnityARCore_Camera_GetCurrentLightEstimation")]
             public static extern Feature GetCurrentLightEstimation();
 
             [DllImport(Constants.k_LibraryName)]
@@ -721,7 +721,7 @@ namespace UnityEngine.XR.ARCore
             [DllImport(Constants.k_LibraryName)]
             public static extern bool UnityARCore_Camera_ShouldInvertCulling();
 
-            [DllImport(Constants.k_LibraryName, EntryPoint="UnityARCore_Camera_GetCurrentFacingDirection")]
+            [DllImport(Constants.k_LibraryName, EntryPoint = "UnityARCore_Camera_GetCurrentFacingDirection")]
             public static extern Feature GetCurrentFacingDirection();
 
             [DllImport(Constants.k_LibraryName)]

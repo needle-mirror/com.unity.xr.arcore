@@ -9,21 +9,23 @@ namespace UnityEngine.XR.ARCore
     [StructLayout(LayoutKind.Sequential)]
     public struct ARCoreBeforeSetConfigurationEventArgs : IEquatable<ARCoreBeforeSetConfigurationEventArgs>
     {
+        ArSession m_Session;
+        ArConfig m_Config;
+
         /// <summary>
-        /// (Read Only) The native ARCore session whose corresponding configuration object will be set.
+        /// Gets the native ARCore session whose corresponding configuration object will be set.
         /// </summary>
         /// <value>The current session object.</value>
         public ArSession arSession => m_Session;
 
         /// <summary>
-        /// (Read Only) The native ARCore configuration which will be set.
+        /// Gets the native ARCore configuration that will be set.
         /// </summary>
         /// <remarks>
-        /// See the
-        /// [ARCore Configuration documentation](https://developers.google.com/ar/reference/c/group/config#arconfig) for
-        /// more details.
+        /// Refer to Google's [ArConfig](https://developers.google.com/ar/reference/c/group/config#arconfig) documentation
+        /// for more information.
         /// </remarks>
-        /// <value></value>
+        /// <value>The native ARCore configuration</value>
         public ArConfig arConfig => m_Config;
 
         /// <summary>
@@ -40,9 +42,9 @@ namespace UnityEngine.XR.ARCore
         /// <summary>
         /// Tests for equality.
         /// </summary>
-        /// <param name="other">The other <see cref="ARCoreBeforeSetConfigurationEventArgs"/> to compare against.</param>
-        /// <returns>`True` if every field in <paramref name="other"/> is equal to this
-        ///     <see cref="ARCoreBeforeSetConfigurationEventArgs"/>, otherwise false.</returns>
+        /// <param name="other">The other instance to compare against.</param>
+        /// <returns><see langword="true"/> if every field in <paramref name="other"/> is equal to this
+        /// instance. Otherwise, returns <see langword="false"/>.</returns>
         public bool Equals(ARCoreBeforeSetConfigurationEventArgs other) =>
             m_Session.Equals(other.m_Session) &&
             m_Config.Equals(other.m_Config);
@@ -57,28 +59,27 @@ namespace UnityEngine.XR.ARCore
         /// Tests for equality.
         /// </summary>
         /// <param name="obj">The `object` to compare against.</param>
-        /// <returns>`True` if <paramref name="obj"/> is of type <see cref="ARCoreBeforeSetConfigurationEventArgs"/> and
-        /// <see cref="Equals(ARCoreBeforeSetConfigurationEventArgs)"/> also returns `true`; otherwise `false`.</returns>
+        /// <returns><see langword="true"/> if <paramref name="obj"/> is of type `ARCoreBeforeSetConfigurationEventArgs` and
+        /// <see cref="Equals(ARCoreBeforeSetConfigurationEventArgs)"/> also returns <see langword="true"/>.
+        /// Otherwise, returns <see langword="false"/>.</returns>
         public override bool Equals(object obj) => obj is ARCoreBeforeSetConfigurationEventArgs other && Equals(other);
 
         /// <summary>
-        /// Tests for equality. Same as <see cref="Equals(ARCoreBeforeSetConfigurationEventArgs)"/>.
+        /// Tests for equality. Equivalent to <see cref="Equals(ARCoreBeforeSetConfigurationEventArgs)"/>.
         /// </summary>
         /// <param name="lhs">The left-hand side of the comparison.</param>
         /// <param name="rhs">The right-hand side of the comparison.</param>
-        /// <returns>`True` if <paramref name="lhs"/> is equal to <paramref name="rhs"/>, otherwise `false`.</returns>
+        /// <returns><see langword="true"/> if <paramref name="lhs"/> is equal to <paramref name="rhs"/>.
+        /// Otherwise, returns <see langword="false"/>.</returns>
         public static bool operator ==(ARCoreBeforeSetConfigurationEventArgs lhs, ARCoreBeforeSetConfigurationEventArgs rhs) => lhs.Equals(rhs);
 
          /// <summary>
-         /// Tests for inequality. Same as `!`<see cref="Equals(ARCoreBeforeSetConfigurationEventArgs)"/>.
+         /// Tests for inequality. Equivalent to `!`<see cref="Equals(ARCoreBeforeSetConfigurationEventArgs)"/>.
          /// </summary>
          /// <param name="lhs">The left-hand side of the comparison.</param>
          /// <param name="rhs">The right-hand side of the comparison.</param>
-         /// <returns>`True` if <paramref name="lhs"/> is not equal to <paramref name="rhs"/>, otherwise `false`.</returns>
+         /// <returns><see langword="true"/> if <paramref name="lhs"/> is not equal to <paramref name="rhs"/>.
+         /// Otherwise, returns <see langword="false"/>.</returns>
         public static bool operator !=(ARCoreBeforeSetConfigurationEventArgs lhs, ARCoreBeforeSetConfigurationEventArgs rhs) => !lhs.Equals(rhs);
-
-        ArSession m_Session;
-
-        ArConfig m_Config;
     }
 }

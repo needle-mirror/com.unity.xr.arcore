@@ -34,7 +34,7 @@ namespace UnityEngine.XR.ARCore
         {
             if (Application.isEditor)
                 return true;
-            
+
 #if UNITY_2022_2_OR_NEWER
             if (s_IsPermissionGrantedMethodId == IntPtr.Zero)
             {

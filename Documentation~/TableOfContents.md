@@ -8,5 +8,7 @@
   * [Image tracking](xref:arcore-image-tracking)
   * [Face tracking](xref:arcore-face-tracking)
   * [Point clouds](xref:arcore-point-clouds)
+  * [Anchors](xref:arcore-anchors)
   * [Occlusion](xref:arcore-occlusion)
+  * [Ray casts](xref:arcore-raycasts)
 * [ARCore Session Recording](xref:arcore-session-recording)
