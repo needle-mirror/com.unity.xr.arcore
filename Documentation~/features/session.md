@@ -14,3 +14,27 @@ ARCore implements [XRSessionSubsystem.GetAvailabilityAsync](xref:UnityEngine.XR.
 If ARCore isn't already installed on a device, your app needs to check with the Google Play store to see if there's a version of ARCore that supports that device. To do this, use `GetAvailabilityAsync` to return a `Promise` that you can use in a coroutine. For ARCore, this check can take some time.
 
 If the device is supported, but ARCore is not installed or requires an update, call [XRSessionSubsystem.InstallAsync](UnityEngine.XR.ARSubsystems.XRSessionSubsystem.InstallAsync), which also returns a `Promise`.
+
+## Native pointer
+
+[XRSessionSubsystem.nativePtr](xref:UnityEngine.XR.ARSubsystems.XRSessionSubsystem.nativePtr) values returned by this package contain a pointer to the following struct:
+
+```c
+typedef struct UnityXRNativeSession
+{
+    int version;
+    void* sessionPtr;
+} UnityXRNativeSession;
+```
+
+This package also provides a header file containing the definitions of various native data structs including `UnityXRNativeSession`. It can be found in the package directory under `Includes~/UnityXRNativePtrs.h`.
+
+Cast `void* sessionPtr` to an [ArSession](https://developers.google.com/ar/reference/c/group/ar-session) handle in C++ using the following example code:
+
+```cpp
+// Marhshal the native session data from the XRSessionSubsystem.nativePtr in C#
+UnityXRNativeSession nativeSessionData;
+ArSession* session = static_cast<ArSession*>(nativeSessionData.sessionPtr);
+```
+
+To learn more about native pointers and their usage, refer to [Extending AR Foundation](xref:arfoundation-extensions).

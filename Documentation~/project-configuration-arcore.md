@@ -16,7 +16,7 @@ Some ARCore features require specific Unity Project settings to function properl
 
 * **[Google ARCore XR plug-in enabled](#enable-arcore)**: must be enabled to use ARCore features.
 * **[Android API level](#api-level)**: the minimum Android varies with the version of the ARCore plug-in and Unity Editor. Checked by the project validation system.
-* **[OpenGLES Graphics API](#graphics-api)**: the ARCore plug-in only supports the OpenGLES graphics API.
+* **[Graphics API](#graphics-api)**: while the ARCore plug-in supports both OpenGLES and Vulkan Graphics APIs, currently only OpenGLES has full feature support. Background rendering supports Vulkan, but Occlusion, Environment Probes, and camera images currently only support OpenGLES.
 * **[Scripting Backend](#scripting-backend)**: you must use IL2CPP to use ARM64, which is the recommended target architecture.
 * **[Target Architectures](#target-architecture)**: ARM64 is recommended so that your app can run on all 64-bit devices.
 * **[ARCore support Requirement](#arcore-required)**: can be set to **optional** or **required** depending on whether your app can be used without ARCore support.
@@ -70,21 +70,27 @@ You can also change the setting manually in the Player settings. To find the min
 5. Scroll down to the **Configuration** section.
 
 <a name="graphics-api"></a>
-### Set the OpenGL ES Graphics API
+### Set the Graphics API
 
-The ARCore plugin is not compatible with the Vulkan graphics API.
+The ARCore plugin is compatible with both OpenGL ES and Vulkan Graphics APIs. All ARCore features support OpenGL. Camera background rendering supports Vulkan, while Occlusion, Environment Probes, and camera images do not currently support Vulkan.
 
-To set the OpenGL ES Graphics API:
+To set the Graphics API:
 
 1. Open the **Project Settings** window (menu: **Edit &gt; Project Settings**).
 2. Select **Player** on the left to view the **Player Settings** page.
 3. Select the **Android** tab to view the Android settings.
 4. Open the **Other Settings** group (if necessary).
 5. In the **Rendering** section, uncheck the **Auto Graphics API** option (if enabled).
-5. In the **Graphics APIs** list:
-   * Remove **Vulkan** if it appears in the list.
+6. To use the OpenGL ES Graphics API - In the **Graphics APIs** list:
    * Add **OpenGLES3** if it does not appear in the list.
+   * Drag **OpenGLES3** to the top of the list if it is not the first API in the list.
+7. To use the Vulkan Graphics API - In the **Graphics APIs** list:
+   * Add **Vulkan** if it does not appear in the list.
+   * Drag **Vulkan** to the top of the list if it is not the first API in the list.
+8. In addition, to use the Vulkan Graphics API with the Universal Render Pipeline: Locate your active `Universal Renderer` asset. In its **Inspector**, add an `ARCommandBufferSupportRendererFeature` to the list of **Renderer Features**.
 
+> [!NOTE]
+> It is recommended to use OpenGLES3 as the second Graphics API when using Vulkan as the first Graphics API and AR is 'Required', so that devices that do not support the needed Vulkan extension fall back to a working renderer.
 
 <a name="target-architecture"></a>
 ### Set the Target Architecture

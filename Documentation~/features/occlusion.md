@@ -19,7 +19,7 @@ ARCore implements the following optional features of AR Foundation's [XROcclusio
 
 | Feature | Descriptor Property | Supported |
 | :------ | :--------------- | :----------: |
-| **Environment Depth Image** | [environonmentDepthImageSupported](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystemDescriptor.environmentDepthImageSupported) | Yes |
+| **Environment Depth Image** | [environmentDepthImageSupported](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystemDescriptor.environmentDepthImageSupported) | Yes |
 | **Environment Depth Confidence Image** | [environmentDepthConfidenceImageSupported](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystemDescriptor.environmentDepthConfidenceImageSupported) | Yes |
 | **Environment Depth Temporal Smoothing** | [environmentDepthImageSupported](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystemDescriptor.environmentDepthImageSupported) | Yes |
 | **Human Segmentation Stencil Image** | [humanSegmentationStencilImageSupported](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystemDescriptor.humanSegmentationStencilImageSupported) | |
@@ -29,9 +29,9 @@ ARCore implements the following optional features of AR Foundation's [XROcclusio
 > Refer to AR Foundation [Occlusion platform support](xref:arfoundation-occlusion-platform-support) for more information
 > on the optional features of the occlusion subsystem.
 
-## Supported textures
+### Supported textures
 
-The ARCore implementation of AR Foundation [Occlusion](xref:arfoundation-occlusion) supports [AROcclusionManager.environmentDepthTexture](xref:UnityEngine.XR.ARFoundation.AROcclusionManager.environmentDepthTexture) but does not support the other Textures related to human segmentation.
+The ARCore implementation of AR Foundation [Occlusion](xref:arfoundation-occlusion) supports [AROcclusionManager.environmentDepthTexture](xref:UnityEngine.XR.ARFoundation.AROcclusionManager.environmentDepthTexture) but does not support the other textures related to human segmentation.
 
 ## Environment depth
 

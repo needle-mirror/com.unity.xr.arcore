@@ -36,3 +36,29 @@ ARCore supports ray casting against the following trackable types:
 
 > [!NOTE]
 > Refer to AR Foundation [Ray cast platform support](xref:arfoundation-raycasts-platform-support) for more information on the optional features of the Raycast subsystem.
+
+## Native pointer
+
+[XRRaycast.nativePtr](xref:UnityEngine.XR.ARSubsystems.XRRaycast.nativePtr) values returned by this package contain a pointer to the following struct:
+
+```c
+typedef struct UnityXRNativeRaycast
+{
+    int version;
+    void* instantPoint;
+    void* anchor;
+} UnityXRNativeRaycast;
+```
+
+This package also provides a header file containing the definitions of various native data structs including `UnityXRNativeRaycast`. It can be found in the package directory under `Includes~/UnityXRNativePtrs.h`.
+
+Cast `void* instantPoint` to an [ArTrackable](https://developers.google.com/ar/reference/c/group/ar-trackable) and `void* anchor` to an [ArAnchor](https://developers.google.com/ar/reference/c/group/ar-anchor) handle in C++ using the following example code:
+
+```cpp
+// Marhshal the native ray cast data from XRRaycast.nativePtr in C#
+UnityXRNativeRaycast nativeRaycastData;
+ArTrackable* pointTrackableHandle = static_cast<ArTrackable*>(nativeRaycastData.instantPoint);
+ArAnchor* anchorHandle = static_cast<ArAnchor*>(nativeRaycastData.anchor);
+```
+
+To learn more about native pointers and their usage, refer to [Extending AR Foundation](xref:arfoundation-extensions).

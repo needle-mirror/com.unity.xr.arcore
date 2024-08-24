@@ -5,6 +5,7 @@ using System.Threading;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine.Assertions;
+using UnityEngine.Rendering;
 using UnityEngine.Scripting;
 using UnityEngine.XR.ARSubsystems;
 
@@ -26,6 +27,7 @@ namespace UnityEngine.XR.ARCore
         protected override void OnCreate()
         {
             ((ARCoreProvider)provider).beforeSetConfiguration += ConfigurationChangedFromProvider;
+            s_VulkanTaskHandlerEventFunc = NativeApi.UnityARCore_session_getVulkanTaskHandlerEventFunc();
         }
 
         void ConfigurationChangedFromProvider(ARCoreBeforeSetConfigurationEventArgs eventArgs) => beforeSetConfiguration?.Invoke(eventArgs);
@@ -129,6 +131,36 @@ namespace UnityEngine.XR.ARCore
         /// <value>An Action delegate that provides access to the new session config before it is applied.</value>
         public event Action<ARCoreBeforeSetConfigurationEventArgs> beforeSetConfiguration;
 
+        /// <summary>
+        /// An event callback to handle the native Vulkan command buffer recording and submitting for various subsystems.
+        /// </summary>
+        internal static IntPtr s_VulkanTaskHandlerEventFunc = IntPtr.Zero;
+
+        /// <summary>
+        /// A boolean flag to check whether necessary renderer feature is enabled when Vulkan is used.
+        /// </summary>
+        internal static bool s_VulkanSupportRendererFeatureEnabled = false;
+
+        // For built-in render pipeline Vulkan plugin event callback injection.
+#if !URP_7_OR_NEWER
+        /// <summary>
+        /// The camera to add the Vulkan callback event.
+        /// We cache a reference to the main camera so that in case main camera changed (e.g. scene changed)
+        /// we will know to add the command buffer to the new camera.
+        /// </summary>
+        private static Camera m_CameraWithPluginCallback = null;
+
+        /// <summary>
+        /// Command buffer for the render event injection.
+        /// </summary>
+        private static CommandBuffer m_PluginCallbackCommandBuffer = null;
+
+        /// <summary>
+        /// Name of the command buffer.
+        /// </summary>
+        private static readonly string k_PluginCallbackCommandBufferName = "Vulkan Support Event Injection Pass (Built-in Render Pipeline)";
+#endif // !URP_7_OR_NEWER
+
         class ARCoreProvider : Provider
         {
             GCHandle m_ProviderHandle;
@@ -164,7 +196,15 @@ namespace UnityEngine.XR.ARCore
 
             public ARCoreProvider()
             {
-                NativeApi.UnityARCore_session_construct(CameraPermissionRequestProvider);
+                var textureUpdateMode = NativeApi.TextureUpdateMode.DefaultOpenGLES;
+                switch (SystemInfo.graphicsDeviceType)
+                {
+                    case GraphicsDeviceType.Vulkan:
+                        textureUpdateMode = NativeApi.TextureUpdateMode.HardwareBufferVulkan;
+                        break;
+                }
+
+                NativeApi.UnityARCore_session_construct(CameraPermissionRequestProvider, textureUpdateMode, SystemInfo.graphicsMultiThreaded);
                 if (SystemInfo.graphicsMultiThreaded)
                 {
                     m_RenderEventFunc = NativeApi.UnityARCore_session_getRenderEventFunc();
@@ -176,8 +216,12 @@ namespace UnityEngine.XR.ARCore
 
             public override void Start()
             {
-                // Texture *must* be created before ARCore session resume is called
-                CreateTexture();
+                if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES3)
+                {
+                    // Texture *must* be created before ARCore session resume is called
+                    CreateTexture();
+                }
+
                 m_SessionId = Guid.NewGuid();
                 NativeApi.UnityARCore_session_resume(m_SessionId);
             }
@@ -186,11 +230,34 @@ namespace UnityEngine.XR.ARCore
 
             public override void Update(XRSessionUpdateParams updateParams, Configuration configuration)
             {
+                // For built-in render pipeline only. Check or configure Vulkan camera event callback.
+#if !URP_7_OR_NEWER
+                if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Vulkan)
+                {
+                    // Check per frame in case main camera changed due to user script or scene change.
+                    bool cameraEventAdded = TryAddCameraEventCallbackForVulkanSupport();
+
+                    if (cameraEventAdded && !s_VulkanSupportRendererFeatureEnabled)
+                    {
+                        OnVulkanSupportRendererFeatureEnabled();
+                    }
+                    else if (!cameraEventAdded && s_VulkanSupportRendererFeatureEnabled)
+                    {
+                        OnVulkanSupportRendererFeatureDisabled();
+                    }
+                }
+#endif // !URP_7_OR_NEWER
+
                 NativeApi.UnityARCore_session_update(
                     updateParams.screenOrientation,
                     updateParams.screenDimensions,
                     configuration.descriptor.identifier,
                     configuration.features);
+
+                if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Vulkan && !s_VulkanSupportRendererFeatureEnabled)
+                    throw new InvalidOperationException("If Vulkan is the Graphics API: "
+                        + "1. When using URP, ARCommandBufferSupportRendererFeature must be added to the current renderer. "
+                        + "2. When using built-in render pipeline, there must be an active main camera in the scene.");
             }
 
             public ArStatus StartRecording(ArRecordingConfig recordingConfig)
@@ -265,7 +332,12 @@ namespace UnityEngine.XR.ARCore
             public override void Destroy()
             {
                 m_ProviderHandle.Free();
-                DeleteTexture();
+
+                if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES3)
+                {
+                    DeleteTexture();
+                }
+
                 NativeApi.UnityARCore_session_destroy();
             }
 
@@ -338,6 +410,43 @@ namespace UnityEngine.XR.ARCore
 
                     return 30;
                 }
+            }
+
+            public override void OnCommandBufferSupportEnabled()
+            {
+                OnVulkanSupportRendererFeatureEnabled();
+            }
+
+            public override void OnCommandBufferExecute(CommandBuffer commandBuffer)
+            {
+                AddVulkanRenderSupportHandler(commandBuffer);
+            }
+
+            public override bool requiresCommandBuffer => SystemInfo.graphicsDeviceType == GraphicsDeviceType.Vulkan;
+
+            static ushort GetApiLevel()
+            {
+                // Set this to minimal allowed SDK version in 2023.2 for AR Foundation 6.0
+                ushort apiLevel = 23;
+
+                // returns a string similar to "Android OS 13 / API-33 (TQ3A.230901.001/10750268)"
+                var osInfo = SystemInfo.operatingSystem;
+
+                const string api = "API-";
+                var apiIndex = osInfo.IndexOf(api, StringComparison.Ordinal);
+                if (apiIndex < 0)
+                    return apiLevel;
+
+                var startIndex = apiIndex + api.Length;
+                var endIndex = osInfo.IndexOf(" ", startIndex, StringComparison.Ordinal);
+                if (endIndex <= startIndex)
+                    return apiLevel;
+
+                var apiString = osInfo.Substring(startIndex, endIndex - startIndex);
+                if (short.TryParse(apiString, out var sdkVersion))
+                    apiLevel = (ushort)sdkVersion;
+
+                return apiLevel;
             }
 
             static Promise<T> ExecuteAsync<T>(Action<IntPtr> apiMethod)
@@ -481,6 +590,92 @@ namespace UnityEngine.XR.ARCore
             });
         }
 
+        /// <summary>
+        /// An internal callback to set the flag when Vulkan plugin render thread callback is registered.
+        /// Used for both URP and built-in render pipeline.
+        /// </summary>
+        internal static void OnVulkanSupportRendererFeatureEnabled()
+        {
+            if (s_VulkanTaskHandlerEventFunc != IntPtr.Zero)
+            {
+                s_VulkanSupportRendererFeatureEnabled = true;
+                NativeApi.UnityARCore_session_onVulkanSupportRendererFeatureEnabled();
+            }
+        }
+
+        /// <summary>
+        /// An internal callback to set the flag when main camera changed and camera event command buffer needs to be re-added.
+        /// Useful only for built-in render pipeline.
+        /// </summary>
+        internal static void OnVulkanSupportRendererFeatureDisabled()
+        {
+            if (s_VulkanTaskHandlerEventFunc != IntPtr.Zero)
+            {
+                s_VulkanSupportRendererFeatureEnabled = false;
+                NativeApi.UnityARCore_session_onVulkanSupportRendererFeatureDisabled();
+            }
+        }
+
+        /// <summary>
+        /// This adds a command to the <paramref name="commandBuffer"/> to make call from the render thread
+        /// to a callback on the `SessionProvider` implementation. The callback handles the native Vulkan
+        /// command buffer recording and submitting for various subsystems.
+        /// </summary>
+        /// <param name="commandBuffer">The CommandBuffer object that allows us to enqueue plugin event for the render thread.</param>
+        internal static void AddVulkanRenderSupportHandler(CommandBuffer commandBuffer)
+        {
+            if (s_VulkanTaskHandlerEventFunc != IntPtr.Zero)
+            {
+                commandBuffer.IssuePluginEvent(s_VulkanTaskHandlerEventFunc, 0);
+            }
+        }
+
+#if !URP_7_OR_NEWER
+        /// <summary>
+        /// Support ARCore Vulkan rendering by injecting necessary plugin event callback to the main camera.
+        /// Implemenation required for built-in render pipeline only.
+        /// </summary>
+        /// <remarks>
+        /// If using URP 7 or newer then the event injection will be handled by ARCommandBufferSupportRendererFeature,
+        /// in which case this path will be disabled.
+        /// </remarks>
+        /// <returns>Returns true if the callback is successfully added. Returns false if main camera is empty.</returns>
+        internal static bool TryAddCameraEventCallbackForVulkanSupport()
+        {
+            var mainCamera = Camera.main;
+            if (mainCamera == null)
+            {
+                return false;
+            }
+
+            // Return success if the event command buffer is already added.
+            if (mainCamera == m_CameraWithPluginCallback)
+            {
+                return true;
+            }
+
+            // Create a new command buffer and queue commands if first time.
+            if (m_PluginCallbackCommandBuffer == null)
+            {
+                m_PluginCallbackCommandBuffer = new CommandBuffer();
+                m_PluginCallbackCommandBuffer.name = k_PluginCallbackCommandBufferName;
+                AddVulkanRenderSupportHandler(m_PluginCallbackCommandBuffer);
+            }
+
+            // Remove the old command buffer in case it is a camera that has been used before.
+            mainCamera.RemoveCommandBuffer(CameraEvent.BeforeForwardOpaque, m_PluginCallbackCommandBuffer);
+            mainCamera.RemoveCommandBuffer(CameraEvent.BeforeGBuffer, m_PluginCallbackCommandBuffer);
+
+            // Attach the command buffer to the camera.
+            mainCamera.AddCommandBuffer(CameraEvent.BeforeForwardOpaque, m_PluginCallbackCommandBuffer);
+            mainCamera.AddCommandBuffer(CameraEvent.BeforeGBuffer, m_PluginCallbackCommandBuffer);
+
+            m_CameraWithPluginCallback = mainCamera;
+
+            return true;
+        }
+#endif // !URP_7_OR_NEWER
+
         internal static class NativeApi
         {
             public enum ArPrestoApkInstallStatus
@@ -504,10 +699,17 @@ namespace UnityEngine.XR.ARCore
                 SupportedInstalled = 203
             }
 
+            public enum TextureUpdateMode : short
+            {
+                DefaultOpenGLES = 0,
+                HardwareBufferOpenGLES = 1,
+                HardwareBufferVulkan = 2,
+            }
+
             public enum RenderEvent
             {
-                CreateTexture,
-                DeleteTexture
+                CreateTexture = 0,
+                DeleteTexture = 1,
             }
 
             public delegate void CameraPermissionRequestProviderDelegate(
@@ -542,7 +744,9 @@ namespace UnityEngine.XR.ARCore
 
             [DllImport(Constants.k_LibraryName)]
             public static extern void UnityARCore_session_construct(
-                CameraPermissionRequestProviderDelegate cameraPermissionRequestProvider);
+                CameraPermissionRequestProviderDelegate cameraPermissionRequestProvider,
+                TextureUpdateMode textureUpdateMode,
+                bool multiThreadedRendering);
 
             [DllImport(Constants.k_LibraryName)]
             public static extern void UnityARCore_session_destroy();
@@ -573,6 +777,15 @@ namespace UnityEngine.XR.ARCore
 
             [DllImport(Constants.k_LibraryName)]
             public static extern IntPtr UnityARCore_session_getRenderEventFunc();
+
+            [DllImport(Constants.k_LibraryName)]
+            public static extern IntPtr UnityARCore_session_getVulkanTaskHandlerEventFunc();
+
+            [DllImport(Constants.k_LibraryName)]
+            public static extern void UnityARCore_session_onVulkanSupportRendererFeatureEnabled();
+
+            [DllImport(Constants.k_LibraryName)]
+            public static extern void UnityARCore_session_onVulkanSupportRendererFeatureDisabled();
 
             [DllImport(Constants.k_LibraryName)]
             public static extern void UnityARCore_session_setRenderEventPending();

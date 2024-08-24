@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using AOT;
 using Unity.Collections;
+using UnityEngine.Rendering;
 using UnityEngine.Scripting;
 using UnityEngine.XR.ARSubsystems;
 
@@ -126,7 +127,8 @@ namespace UnityEngine.XR.ARCore
                 supportsProjectionMatrix = true,
                 supportsTimestamp = true,
                 supportsCameraConfigurations = true,
-                supportsCameraImage = true,
+                // NOTE: camera images are not yet supported for the Vulkan graphics API
+                supportsCameraImage = SystemInfo.graphicsDeviceType != GraphicsDeviceType.Vulkan,
                 supportsAverageIntensityInLumens = false,
                 supportsFocusModes = true,
                 supportsFaceTrackingAmbientIntensityLightEstimation = true,

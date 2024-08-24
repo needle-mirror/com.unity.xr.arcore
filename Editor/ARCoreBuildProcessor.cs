@@ -39,7 +39,7 @@ namespace UnityEditor.XR.ARCore
 
             EnsureGoogleARCoreIsNotPresent();
             EnsureMinSdkVersion();
-            EnsureOnlyOpenGLES3IsUsed();
+            EnsureOpenGLES3OrVulkanIsUsed();
             EnsureGradleIsUsed();
             EnsureGradleVersionIsSupported();
             Check64BitArch();
@@ -104,17 +104,34 @@ namespace UnityEditor.XR.ARCore
 
         static void EnsureMinSdkVersion()
         {
-#if UNITY_2023_2_OR_NEWER
-            const int minSdkVersionInEditor = 23;
-#else
-            const int minSdkVersionInEditor = 22;
-#endif
-
             var arcoreSettings = ARCoreSettings.GetOrCreateSettings();
-            var minSdkVersion = arcoreSettings.requirement == ARCoreSettings.Requirement.Optional ? minSdkVersionInEditor : 24;
+            var graphicsApis = PlayerSettings.GetGraphicsAPIs(BuildTarget.Android);
+            if (graphicsApis.Length == 0)
+            {
+                throw new BuildFailedException("Enable at least one graphics API in player settings.");
+            }
 
-            if ((int)PlayerSettings.Android.minSdkVersion < minSdkVersion)
-                throw new BuildFailedException($"ARCore {arcoreSettings.requirement} apps require a minimum SDK version of {minSdkVersion}. Currently set to {PlayerSettings.Android.minSdkVersion}");
+            var graphicsApi = graphicsApis[0];
+            var minSdkVersion = GetMinimumSdkForCurrentGraphicsApi(arcoreSettings, graphicsApi);
+
+            if (PlayerSettings.Android.minSdkVersion < minSdkVersion)
+                throw new BuildFailedException($"ARCore {arcoreSettings.requirement} apps using {graphicsApi} require a minimum SDK version of {minSdkVersion}. Currently set to {PlayerSettings.Android.minSdkVersion}");
+        }
+
+        static AndroidSdkVersions GetMinimumSdkForCurrentGraphicsApi(ARCoreSettings arcoreSettings, GraphicsDeviceType graphicsApi)
+        {
+            const AndroidSdkVersions minSupportedSdkVersion = AndroidSdkVersions.AndroidApiLevel23;
+
+            // Minimum required is ApiLevel 14, however Unity's minimum is always higher than 14
+            const AndroidSdkVersions minSdkVersionOptional = minSupportedSdkVersion;
+
+            if (arcoreSettings.requirement == ARCoreSettings.Requirement.Optional)
+                return minSdkVersionOptional;
+
+            const AndroidSdkVersions minSdkVersionWithVulkan = AndroidSdkVersions.AndroidApiLevel29;
+            const AndroidSdkVersions minSdkVersionWithOpenGLES3 = AndroidSdkVersions.AndroidApiLevel24;
+
+            return graphicsApi == GraphicsDeviceType.Vulkan ? minSdkVersionWithVulkan : minSdkVersionWithOpenGLES3;
         }
 
         static void EnsureGoogleARCoreIsNotPresent()
@@ -126,16 +143,18 @@ namespace UnityEditor.XR.ARCore
             }
         }
 
-        static void EnsureOnlyOpenGLES3IsUsed()
+        static void EnsureOpenGLES3OrVulkanIsUsed()
         {
             var graphicsApis = PlayerSettings.GetGraphicsAPIs(BuildTarget.Android);
-            if (graphicsApis.Length > 0)
-            {
-                var graphicsApi = graphicsApis[0];
-                if (graphicsApi != GraphicsDeviceType.OpenGLES3)
-                    throw new BuildFailedException(
-                        string.Format("You have enabled the {0} graphics API, which is not supported by ARCore.", graphicsApi));
-            }
+            if (graphicsApis.Length == 0)
+                throw new BuildFailedException(
+                    $"No graphics API is specified for Android build.");
+
+            var graphicsApi = graphicsApis[0];
+            if (graphicsApi != GraphicsDeviceType.OpenGLES3 &&
+                graphicsApi != GraphicsDeviceType.Vulkan)
+                throw new BuildFailedException(
+                    $"You have enabled the {graphicsApi} graphics API, which is not supported by ARCore.");
         }
 
         static void RemoveDirectoryWithMetafile(string directory)

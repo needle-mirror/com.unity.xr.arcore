@@ -16,9 +16,9 @@ This package implements the following AR features:
 | [Image tracking](xref:arcore-image-tracking) | Detect and track 2D images. |
 | [Face tracking](xref:arcore-face-tracking) | Detect and track human faces. |
 | [Point clouds](xref:arcore-point-clouds) | Detect and track feature points. |
-| Raycasts | Cast rays against tracked items. |
-| Anchors | Track arbitrary points in space. |
-| Environment probes | Generate cubemaps of the environment. |
+| [Ray casts](xref:arcore-raycasts) | Cast rays against tracked items. |
+| [Anchors](xref:arcore-anchors) | Track arbitrary points in space. |
+| [Environment probes](xref:arcore-environment-probes) | Generate cubemaps of the environment. |
 | [Occlusion](xref:arcore-occlusion) | Occlude AR content with physical objects and perform human segmentation. |
 
 > [!TIP]

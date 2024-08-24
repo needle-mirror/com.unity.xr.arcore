@@ -1,5 +1,9 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine.Rendering;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using UnityEngine.XR.ARSubsystems;
 using UnityEngine.XR.Management;
 
@@ -9,6 +13,9 @@ namespace UnityEngine.XR.ARCore
     /// Manages the lifecycle of ARCore subsystems.
     /// </summary>
     public class ARCoreLoader : XRLoaderHelper
+#if UNITY_EDITOR
+        , IXRLoaderPreInit
+#endif
     {
         static List<XRSessionSubsystemDescriptor> s_SessionSubsystemDescriptors = new List<XRSessionSubsystemDescriptor>();
         static List<XRCameraSubsystemDescriptor> s_CameraSubsystemDescriptors = new List<XRCameraSubsystemDescriptor>();
@@ -112,8 +119,14 @@ namespace UnityEngine.XR.ARCore
             CreateSubsystem<XRImageTrackingSubsystemDescriptor, XRImageTrackingSubsystem>(s_ImageTrackingSubsystemDescriptors, "ARCore-ImageTracking");
             CreateSubsystem<XRInputSubsystemDescriptor, XRInputSubsystem>(s_InputSubsystemDescriptors, "ARCore-Input");
             CreateSubsystem<XRFaceSubsystemDescriptor, XRFaceSubsystem>(s_FaceSubsystemDescriptors, "ARCore-Face");
-            CreateSubsystem<XREnvironmentProbeSubsystemDescriptor, XREnvironmentProbeSubsystem>(s_EnvironmentProbeSubsystemDescriptors, "ARCore-EnvironmentProbe");
-            CreateSubsystem<XROcclusionSubsystemDescriptor, XROcclusionSubsystem>(s_OcclusionSubsystemDescriptors, "ARCore-Occlusion");
+
+            // NOTE: we include only those subsystems that do not have Vulkan support
+            // if the graphics API is not Vulkan
+            if (SystemInfo.graphicsDeviceType != GraphicsDeviceType.Vulkan)
+            {
+                CreateSubsystem<XROcclusionSubsystemDescriptor, XROcclusionSubsystem>(s_OcclusionSubsystemDescriptors, "ARCore-Occlusion");
+                CreateSubsystem<XREnvironmentProbeSubsystemDescriptor, XREnvironmentProbeSubsystem>(s_EnvironmentProbeSubsystemDescriptors, "ARCore-EnvironmentProbe");
+            }
 
             if (sessionSubsystem == null)
             {
@@ -165,5 +178,19 @@ namespace UnityEngine.XR.ARCore
 #endif
             return true;
         }
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// Register the plug-in library to load during XR pre-initialization. This executes `XRSDKPreInit`
+        /// callback defined in the plug-in library.
+        /// </summary>
+        /// <param name="buildTarget">An enum specifying which platform this build is for.</param>
+        /// <param name="buildTargetGroup">An enum specifying which platform group this build is for.</param>
+        /// <returns>The name of the library which need to be loaded during XR pre-initialization.</returns>
+        public string GetPreInitLibraryName(BuildTarget buildTarget, BuildTargetGroup buildTargetGroup)
+        {
+            return buildTarget == BuildTarget.Android ? "UnityARCore" : null;
+        }
+#endif
     }
 }

@@ -9,6 +9,7 @@
   * [Face tracking](xref:arcore-face-tracking)
   * [Point clouds](xref:arcore-point-clouds)
   * [Anchors](xref:arcore-anchors)
+  * [Environment Probes](xref:arcore-environment-probes)
   * [Occlusion](xref:arcore-occlusion)
   * [Ray casts](xref:arcore-raycasts)
 * [ARCore Session Recording](xref:arcore-session-recording)

@@ -3,7 +3,7 @@ uid: arcore-manual
 ---
 # Google ARCore XR Plug-in
 
-Use the Google ARCore XR Plug-in package to enable ARCore support in your [AR Foundation](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@latest) project. This package implements the following AR features using ARCore 1.42:
+Use the Google ARCore XR Plug-in package to enable ARCore support in your [AR Foundation](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@latest) project. This package implements the following AR features using ARCore 1.45:
 
 | Feature | Description |
 | :------ | :---------- |
@@ -16,12 +16,12 @@ Use the Google ARCore XR Plug-in package to enable ARCore support in your [AR Fo
 | [Point clouds](xref:arcore-point-clouds) | Detect and track feature points. |
 | [Ray casts](xref:arcore-raycasts) | Cast rays against tracked items. |
 | [Anchors](xref:arcore-anchors) | Track arbitrary points in space. |
-| Environment probes | Generate cubemaps of the environment. |
+| [Environment probes](xref:arcore-environment-probes) | Generate cubemaps of the environment. |
 | [Occlusion](xref:arcore-occlusion) | Occlude AR content with physical objects and perform human segmentation. |
 
 ## Unsupported features
 
-This package does not implement the following AR features, as they are not supported by ARCore 1.42:
+This package does not implement the following AR features, as they are not supported by ARCore 1.45:
 
 | Feature | Description |
 | :------ | :---------- |

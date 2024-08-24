@@ -1,7 +1,6 @@
 using System.Runtime.InteropServices;
 using System;
 using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine.Scripting;
 using UnityEngine.XR.ARSubsystems;
 
@@ -15,7 +14,7 @@ namespace UnityEngine.XR.ARCore
     /// instead.
     /// </summary>
     [Preserve]
-    class ARCoreEnvironmentProbeSubsystem : XREnvironmentProbeSubsystem
+    public sealed class ARCoreEnvironmentProbeSubsystem : XREnvironmentProbeSubsystem
     {
         /// <summary>
         /// Creates and registers the environment probe subsystem descriptor to advertise a providing implementation for

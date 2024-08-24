@@ -26,3 +26,27 @@ Reference image libraries can be stored in AssetBundles and loaded at runtime, b
 ## Reference image dimensions
 
 To improve image detection in ARCore you can specify the image dimensions. When you specify the dimensions for a reference image, ARCore receives the image's width, and then determines the height from the image's aspect ratio.
+
+## Native pointer
+
+[XRTrackedImage.nativePtr](xref:UnityEngine.XR.ARSubsystems.XRTrackedImage.nativePtr) values returned by this package contain a pointer to the following struct:
+
+```c
+typedef struct UnityXRNativeImage
+{
+    int version;
+    void* imageTrackable;
+} UnityXRNativeImage;
+```
+
+This package also provides a header file containing the definitions of various native data structs including `UnityXRNativeImage`. It can be found in the package directory under `Includes~/UnityXRNativePtrs.h`.
+
+Cast `void* imageTrackable` to an [ArAugmentedImage](https://developers.google.com/ar/reference/c/group/ar-augmented-image) handle in C++ using the following example code:
+
+```cpp
+// Marhshal the native image data from the XRTrackedImage.nativePtr in C#
+UnityXRNativeImage nativeImageData;
+ArAugmentedImage* augmentedImageHandle = static_cast<ArAugmentedImage*>(nativeImageData.imageTrackable);
+```
+
+To learn more about native pointers and their usage, refer to [Extending AR Foundation](xref:arfoundation-extensions).

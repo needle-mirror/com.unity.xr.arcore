@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
 using Unity.Collections;
 using UnityEngine.Scripting;
@@ -16,7 +15,7 @@ namespace UnityEngine.XR.ARCore
     /// instead.
     /// </summary>
     [Preserve]
-    class ARCoreOcclusionSubsystem : XROcclusionSubsystem
+    public sealed class ARCoreOcclusionSubsystem : XROcclusionSubsystem
     {
         /// <summary>
         /// Registers the ARCore occlusion subsystem if iOS and not the editor.
@@ -242,16 +241,22 @@ namespace UnityEngine.XR.ARCore
             /// <param name="defaultDescriptor">The default descriptor value.</param>
             /// <param name="allocator">The allocator to use when creating the returned <c>NativeArray</c>.</param>
             /// <returns>The occlusion texture descriptors.</returns>
-            public override unsafe NativeArray<XRTextureDescriptor> GetTextureDescriptors(XRTextureDescriptor defaultDescriptor,
-                                                                                          Allocator allocator)
+            public override unsafe NativeArray<XRTextureDescriptor> GetTextureDescriptors(
+                XRTextureDescriptor defaultDescriptor,
+                Allocator allocator)
             {
-                var textureDescriptors = NativeApi.UnityARCore_OcclusionProvider_AcquireTextureDescriptors(out int length,
-                                                                                                           out int elementSize);
+                var textureDescriptors = NativeApi.UnityARCore_OcclusionProvider_AcquireTextureDescriptors(
+                    out var length,
+                    out var elementSize);
 
                 try
                 {
-                    return NativeCopyUtility.PtrToNativeArrayWithDefault(defaultDescriptor, textureDescriptors,
-                                                                         elementSize, length, allocator);
+                    return NativeCopyUtility.PtrToNativeArrayWithDefault(
+                        defaultDescriptor,
+                        textureDescriptors,
+                        elementSize,
+                        length,
+                        allocator);
                 }
                 finally
                 {
@@ -284,7 +289,7 @@ namespace UnityEngine.XR.ARCore
 
             public override ShaderKeywords GetShaderKeywords()
             {
-                bool isEnvDepthEnabled = NativeApi.UnityARCore_OcclusionProvider_IsEnvironmentDepthEnabled();
+                var isEnvDepthEnabled = NativeApi.UnityARCore_OcclusionProvider_IsEnvironmentDepthEnabled();
 
                 return ((m_OcclusionPreferenceMode == OcclusionPreferenceMode.NoOcclusion) || !isEnvDepthEnabled)
                     ? k_DepthDisabledShaderKeywords
@@ -322,10 +327,10 @@ namespace UnityEngine.XR.ARCore
             public static extern EnvironmentDepthMode UnityARCore_OcclusionProvider_GetCurrentEnvironmentDepthMode();
 
             [DllImport(Constants.k_LibraryName)]
-            public static unsafe extern bool UnityARCore_OcclusionProvider_TryGetEnvironmentDepth(out XRTextureDescriptor envDepthDescriptor);
+            public static extern bool UnityARCore_OcclusionProvider_TryGetEnvironmentDepth(out XRTextureDescriptor envDepthDescriptor);
 
             [DllImport(Constants.k_LibraryName)]
-            public static unsafe extern void* UnityARCore_OcclusionProvider_AcquireTextureDescriptors(out int length, out int elementSize);
+            public static extern unsafe void* UnityARCore_OcclusionProvider_AcquireTextureDescriptors(out int length, out int elementSize);
 
             [DllImport(Constants.k_LibraryName)]
             public static extern unsafe void UnityARCore_OcclusionProvider_ReleaseTextureDescriptors(void* descriptors);

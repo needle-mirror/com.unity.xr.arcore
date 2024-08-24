@@ -39,8 +39,7 @@ namespace UnityEngine.XR.ARCore
             if (allocator == Allocator.None)
                 throw new InvalidOperationException("Allocator.None is not a valid allocator.");
 
-            int count;
-            var regionPtr = UnityARCore_faceTracking_acquireRegions(trackableId, out count);
+            var regionPtr = UnityARCore_faceTracking_acquireRegions(trackableId, out var count);
 
             if (regionPtr == null)
             {
@@ -136,7 +135,7 @@ namespace UnityEngine.XR.ARCore
 
             public override void Destroy() => UnityARCore_faceTracking_Destroy();
 
-            public unsafe override void GetFaceMesh(
+            public override unsafe void GetFaceMesh(
                 TrackableId faceId,
                 Allocator allocator,
                 ref XRFaceMesh faceMesh)
@@ -254,7 +253,7 @@ namespace UnityEngine.XR.ARCore
                 }
             }
 
-            public unsafe override TrackableChanges<XRFace> GetChanges(
+            public override unsafe TrackableChanges<XRFace> GetChanges(
                 XRFace defaultFace,
                 Allocator allocator)
             {

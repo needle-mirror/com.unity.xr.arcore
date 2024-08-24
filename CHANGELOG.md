@@ -8,25 +8,30 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [6.0.3] - 2024-08-16
+## [6.1.0-pre.1] - 2024-08-24
+
+### Added
+
+- Added documentation to feature manual pages that demonstrates how to extend AR Foundation by marshaling native pointers to your custom C++ plug-ins.
+- Added [ARCoreEnvironmentProbeSubsystem](xref:UnityEngine.XR.ARCore.ARCoreEnvironmentProbeSubsystem) and [ARCoreOcclusionSubsystem](xref:UnityEngine.XR.ARCore.ARCoreOcclusionSubsystem). These classes were previously internal, and are now public.
+- Added support for camera background rendering with Vulkan Graphics API.
+- Added three new session subsystem API override methods to the `ARCoreSessionSubsystem` provider class to handle Universal Render Pipeline
+rendering events signaled by the `ARCommandBufferSupportRendererFeature` in order to support rendering through the Vulkan Graphics API.
+  - `ARCoreSessionSubsystem.requiresCommandBuffer`
+  - `ARCoreSessionSubsystem.OnCommandBufferSupportEnabled`
+  - `ARCoreSessionSubsystem.OnCommandBufferExecute`
 
 ### Changed
 
-- Changed AR Foundation dependency version from 6.0.2 to 6.0.3
-
-### Fixed
-
-- Fixed the `ARCoreSessionSubsystem` so that your app no longer quits unexpectedly if you call `ARSession.Reset` on the same frame that you create a session. ([ARFB-461](https://issuetracker.unity3d.com/issues/xr-android-player-crashes-when-arsession-dot-reset-is-called-after-arsession-is-instantiated-on-the-device))
-
-## [6.0.2] - 2024-05-22
-
-### Changed
-
-- Changed AR Foundation dependency version from 6.0.1 to 6.0.2.
+- Upgraded ARCore version from 1.42 to 1.45.
+- Removed the `XROcclusionSubsystem` and the `XREnvironmentProbeSubsystem` from the `ARCoreLoader` when the chosen graphics API is Vulkan, as those subsystems do not have Vulkan rendering support yet.
+- The `XRCameraSubsystemDescriptor.supportsCameraImage` field is set to **false** when the chosen graphics API is Vulkan, as that feature does not have Vulkan rendering support yet.
+- Changed documentation for Project Configuration to indicate that the `ARCommandBufferSupportRendererFeature` is required for projects using the Universal Render Pipeline with the Vulkan Graphics API.
 
 ### Fixed
 
 - Fixed the native input provider so that it now explicitly sets **Device** mode as its only supported [Tracking Origin Mode](xref:Unity.XR.CoreUtils.XROrigin.TrackingOriginMode). The [XR Origin component](xref:xr-core-utils-xr-origin-reference) will always use **Device** mode as its Tracking Origin Mode. You should set the XR Origin component's **Camera Y Offset** value to `0` to avoid adding a height offset to your camera and trackables.
+- Fixed the `ARCoreSessionSubsystem` so that your app no longer quits unexpectedly if you call `ARSession.Reset` on the same frame that you create a session. ([ARFB-461](https://issuetracker.unity3d.com/issues/xr-android-player-crashes-when-arsession-dot-reset-is-called-after-arsession-is-instantiated-on-the-device))
 
 ## [6.0.1] - 2024-04-01
 
