@@ -7,8 +7,10 @@ uid: arcore-whats-new
 
 ### Vulkan Graphics API rendering support
 
-- Added support within camera background rendering for the Vulkan Graphics API.  Refer to [Project Configuration](xref:arcore-project-config) for more information.
+- Added support for camera background rendering when using the Vulkan Graphics API. Refer to [Project Configuration](xref:arcore-project-config) for more information.
 - Added three new session subsystem API override methods to the `ARCoreSessionSubsystem` provider class to handle Universal Render Pipeline
 rendering events signaled by the `ARCommandBufferSupportRendererFeature` in order to support rendering through the Vulkan Graphics API: `ARCoreSessionSubsystem.requiresCommandBuffer`, `ARCoreSessionSubsystem.OnCommandBufferSupportEnabled`, and `ARCoreSessionSubsystem.OnCommandBufferExecute`.
+- Added support for occlusion, environment probes, and CPU images when using the Vulkan Graphics API. Refer to [Project Configuration](xref:arcore-project-config) for more information.
+- `Session Recording`, through the `ARCoreSessionSubsystem`, is not supported when the graphics rendering API is set to `Vulkan`.
 
 For a full list of changes in this version including backwards-compatible bugfixes, refer to the package [changelog](xref:arcore-changelog).

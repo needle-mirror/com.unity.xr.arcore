@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine.Rendering;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -119,14 +118,8 @@ namespace UnityEngine.XR.ARCore
             CreateSubsystem<XRImageTrackingSubsystemDescriptor, XRImageTrackingSubsystem>(s_ImageTrackingSubsystemDescriptors, "ARCore-ImageTracking");
             CreateSubsystem<XRInputSubsystemDescriptor, XRInputSubsystem>(s_InputSubsystemDescriptors, "ARCore-Input");
             CreateSubsystem<XRFaceSubsystemDescriptor, XRFaceSubsystem>(s_FaceSubsystemDescriptors, "ARCore-Face");
-
-            // NOTE: we include only those subsystems that do not have Vulkan support
-            // if the graphics API is not Vulkan
-            if (SystemInfo.graphicsDeviceType != GraphicsDeviceType.Vulkan)
-            {
-                CreateSubsystem<XROcclusionSubsystemDescriptor, XROcclusionSubsystem>(s_OcclusionSubsystemDescriptors, "ARCore-Occlusion");
-                CreateSubsystem<XREnvironmentProbeSubsystemDescriptor, XREnvironmentProbeSubsystem>(s_EnvironmentProbeSubsystemDescriptors, "ARCore-EnvironmentProbe");
-            }
+            CreateSubsystem<XROcclusionSubsystemDescriptor, XROcclusionSubsystem>(s_OcclusionSubsystemDescriptors, "ARCore-Occlusion");
+            CreateSubsystem<XREnvironmentProbeSubsystemDescriptor, XREnvironmentProbeSubsystem>(s_EnvironmentProbeSubsystemDescriptors, "ARCore-EnvironmentProbe");
 
             if (sessionSubsystem == null)
             {

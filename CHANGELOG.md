@@ -8,6 +8,24 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [6.1.0-pre.2] - 2024-10-09
+
+### Added
+
+- Added support for occlusion and environment probes when using the Vulkan Graphics API.
+
+### Changed
+
+- Removed bilinear upscaling for depth and confidence textures, so that in `AROcclusionManager`'s **Environment Depth Mode** setting `Medium` and `Best` now behave the same as `Fastest`. Previously the bilinearly upscaled textures used excess memory without adding meaningful information. This change affects `AROcclusionManager.requestedEnvironmentDepthMode`.
+- Included `XROcclusionSubsystem` and `XREnvironmentProbeSubsystem` in the ARCoreLoader when the graphics API is Vulkan.
+- The `XRCameraSubsystemDescriptor.supportsCameraImage` now returns **true** when the chosen graphics API is Vulkan.
+- Changed AR Foundation dependency version from 6.1.0-pre.1 to 6.1.0-pre.2.
+
+### Fixed
+
+- Fixed the Occlusion subsystem provider implementation to use the correct texture settings for the confidence texture when using the GLES rendering APIs. Confidence texture values will now correctly propagate to the exposed `environmentDepthConfidenceTexture` **Texture2D** provided by the `AROcclusionManager`.
+- Fixed validation rule checking that OpenGLES3 is present when Vulkan is the primary graphics API.
+
 ## [6.1.0-pre.1] - 2024-08-24
 
 ### Added

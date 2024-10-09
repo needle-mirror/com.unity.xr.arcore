@@ -16,7 +16,7 @@ Some ARCore features require specific Unity Project settings to function properl
 
 * **[Google ARCore XR plug-in enabled](#enable-arcore)**: must be enabled to use ARCore features.
 * **[Android API level](#api-level)**: the minimum Android varies with the version of the ARCore plug-in and Unity Editor. Checked by the project validation system.
-* **[Graphics API](#graphics-api)**: while the ARCore plug-in supports both OpenGLES and Vulkan Graphics APIs, currently only OpenGLES has full feature support. Background rendering supports Vulkan, but Occlusion, Environment Probes, and camera images currently only support OpenGLES.
+* **[Graphics API](#graphics-api)**: the ARCore plug-in supports both OpenGLES and Vulkan Graphics APIs.
 * **[Scripting Backend](#scripting-backend)**: you must use IL2CPP to use ARM64, which is the recommended target architecture.
 * **[Target Architectures](#target-architecture)**: ARM64 is recommended so that your app can run on all 64-bit devices.
 * **[ARCore support Requirement](#arcore-required)**: can be set to **optional** or **required** depending on whether your app can be used without ARCore support.
@@ -72,7 +72,7 @@ You can also change the setting manually in the Player settings. To find the min
 <a name="graphics-api"></a>
 ### Set the Graphics API
 
-The ARCore plugin is compatible with both OpenGL ES and Vulkan Graphics APIs. All ARCore features support OpenGL. Camera background rendering supports Vulkan, while Occlusion, Environment Probes, and camera images do not currently support Vulkan.
+The ARCore plugin is compatible with both OpenGL ES and Vulkan Graphics APIs.
 
 To set the Graphics API:
 

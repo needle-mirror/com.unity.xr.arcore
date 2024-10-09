@@ -1,7 +1,7 @@
 {
   "name": "com.unity.xr.arcore",
   "displayName": "Google ARCore XR Plugin",
-  "version": "6.1.0-pre.1",
+  "version": "6.1.0-pre.2",
   "unity": "6000.0",
   "description": "Provides native Google ARCore integration for use with Unity's multi-platform XR API.\nSupports the following features:\n-Efficient Background Rendering\n-Horizontal Planes\n-Depth Data\n-Anchors\n-Hit Testing\n-Occlusion",
   "keywords": [
@@ -13,22 +13,22 @@
     "core"
   ],
   "dependencies": {
-    "com.unity.xr.arfoundation": "6.1.0-pre.1",
+    "com.unity.xr.arfoundation": "6.1.0-pre.2",
     "com.unity.xr.core-utils": "2.2.2",
     "com.unity.xr.management": "4.4.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.unitywebrequest": "1.0.0"
   },
   "_upm": {
-    "changelog": "### Added\n\n- Added documentation to feature manual pages that demonstrates how to extend AR Foundation by marshaling native pointers to your custom C++ plug-ins.\n- Added [ARCoreEnvironmentProbeSubsystem](xref:UnityEngine.XR.ARCore.ARCoreEnvironmentProbeSubsystem) and [ARCoreOcclusionSubsystem](xref:UnityEngine.XR.ARCore.ARCoreOcclusionSubsystem). These classes were previously internal, and are now public.\n- Added support for camera background rendering with Vulkan Graphics API.\n- Added three new session subsystem API override methods to the `ARCoreSessionSubsystem` provider class to handle Universal Render Pipeline\nrendering events signaled by the `ARCommandBufferSupportRendererFeature` in order to support rendering through the Vulkan Graphics API.\n  - `ARCoreSessionSubsystem.requiresCommandBuffer`\n  - `ARCoreSessionSubsystem.OnCommandBufferSupportEnabled`\n  - `ARCoreSessionSubsystem.OnCommandBufferExecute`\n\n### Changed\n\n- Upgraded ARCore version from 1.42 to 1.45.\n- Removed the `XROcclusionSubsystem` and the `XREnvironmentProbeSubsystem` from the `ARCoreLoader` when the chosen graphics API is Vulkan, as those subsystems do not have Vulkan rendering support yet.\n- The `XRCameraSubsystemDescriptor.supportsCameraImage` field is set to **false** when the chosen graphics API is Vulkan, as that feature does not have Vulkan rendering support yet.\n- Changed documentation for Project Configuration to indicate that the `ARCommandBufferSupportRendererFeature` is required for projects using the Universal Render Pipeline with the Vulkan Graphics API.\n\n### Fixed\n\n- Fixed the native input provider so that it now explicitly sets **Device** mode as its only supported [Tracking Origin Mode](xref:Unity.XR.CoreUtils.XROrigin.TrackingOriginMode). The [XR Origin component](xref:xr-core-utils-xr-origin-reference) will always use **Device** mode as its Tracking Origin Mode. You should set the XR Origin component's **Camera Y Offset** value to `0` to avoid adding a height offset to your camera and trackables.\n- Fixed the `ARCoreSessionSubsystem` so that your app no longer quits unexpectedly if you call `ARSession.Reset` on the same frame that you create a session. ([ARFB-461](https://issuetracker.unity3d.com/issues/xr-android-player-crashes-when-arsession-dot-reset-is-called-after-arsession-is-instantiated-on-the-device))"
+    "changelog": "### Added\n\n- Added support for occlusion and environment probes when using the Vulkan Graphics API.\n\n### Changed\n\n- Removed bilinear upscaling for depth and confidence textures, so that in `AROcclusionManager`'s **Environment Depth Mode** setting `Medium` and `Best` now behave the same as `Fastest`. Previously the bilinearly upscaled textures used excess memory without adding meaningful information. This change affects `AROcclusionManager.requestedEnvironmentDepthMode`.\n- Included `XROcclusionSubsystem` and `XREnvironmentProbeSubsystem` in the ARCoreLoader when the graphics API is Vulkan.\n- The `XRCameraSubsystemDescriptor.supportsCameraImage` now returns **true** when the chosen graphics API is Vulkan.\n- Changed AR Foundation dependency version from 6.1.0-pre.1 to 6.1.0-pre.2.\n\n### Fixed\n\n- Fixed the Occlusion subsystem provider implementation to use the correct texture settings for the confidence texture when using the GLES rendering APIs. Confidence texture values will now correctly propagate to the exposed `environmentDepthConfidenceTexture` **Texture2D** provided by the `AROcclusionManager`.\n- Fixed validation rule checking that OpenGLES3 is present when Vulkan is the primary graphics API."
   },
   "upmCi": {
-    "footprint": "a3d5f4458247969ca353b5c29ac5fb9523f5f77d"
+    "footprint": "3bbab244b37625e5b5413ed7514dc33f08ac5b7b"
   },
   "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.xr.arcore@6.1/manual/index.html",
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/arfoundation.git",
     "type": "git",
-    "revision": "6f49d475983b017bc6429dbd543280afd64d1509"
+    "revision": "6d848aff38f014c5bc9a0c5755663734a40bcf96"
   }
 }

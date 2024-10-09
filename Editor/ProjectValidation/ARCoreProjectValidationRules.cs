@@ -36,9 +36,7 @@ namespace UnityEditor.XR.ARCore
                     CheckPredicate = () =>
                     {
                         var graphicsApis = PlayerSettings.GetGraphicsAPIs(BuildTarget.Android);
-                        return graphicsApis.Length > 1 &&
-                               graphicsApis[0] == GraphicsDeviceType.Vulkan &&
-                               !graphicsApis.Contains(GraphicsDeviceType.OpenGLES3);
+                        return graphicsApis[0] == GraphicsDeviceType.Vulkan ? graphicsApis.Contains(GraphicsDeviceType.OpenGLES3) : true;
                     },
                     FixItMessage = "Open Project Settings > Player Settings > Android tab. In the list of 'Graphics APIs', make sure that " +
                                    "'Vulkan' is listed as the first API, and 'OpenGLES3' as the second one.",
