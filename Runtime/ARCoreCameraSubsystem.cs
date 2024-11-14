@@ -135,6 +135,7 @@ namespace UnityEngine.XR.ARCore
                 supportsWorldTrackingHDRLightEstimation = true,
                 supportsCameraGrain = false,
                 supportsExifData = true,
+                supportsCameraTorchMode = true,
                 // uses delegate because support query need ARSession and cannot be determined on load
                 supportsImageStabilizationDelegate = NativeApi.UnityARCore_Camera_GetImageStabilizationSupported,
             };
@@ -173,41 +174,26 @@ namespace UnityEngine.XR.ARCore
             /// <summary>
             /// The shader property name for the main texture of the camera video frame.
             /// </summary>
-            /// <value>
-            /// The shader property name for the main texture of the camera video frame.
-            /// </value>
             const string k_MainTexPropertyName = "_MainTex";
 
             /// <summary>
             /// The name of the camera permission for Android.
             /// </summary>
-            /// <value>
-            /// The name of the camera permission for Android.
-            /// </value>
             const string k_CameraPermissionName = "android.permission.CAMERA";
 
             /// <summary>
             /// The shader property name identifier for the main texture of the camera video frame.
             /// </summary>
-            /// <value>
-            /// The shader property name identifier for the main texture of the camera video frame.
-            /// </value>
             static readonly int k_MainTexPropertyNameId = Shader.PropertyToID(k_MainTexPropertyName);
 
             /// <summary>
             /// The shader keyword for enabling image stabilization mode when rendering the camera background.
             /// </summary>
-            /// <value>
-            /// The shader keyword for enabling image stabilization mode when rendering the camera background.
-            /// </value>
             const string k_ImageStabilizationEnabledMaterialKeyword = "ARCORE_IMAGE_STABILIZATION_ENABLED";
 
             /// <summary>
             /// The shader keywords for enabling image stabilization rendering.
             /// </summary>
-            /// <value>
-            /// The shader keywords for enabling image stabilization rendering.
-            /// </value>
             static readonly List<string> k_EnabledMaterialKeywords = new() { k_ImageStabilizationEnabledMaterialKeyword };
 
             static readonly ShaderKeywords k_ImageStabilizationEnabledShaderKeywords =
@@ -329,10 +315,8 @@ namespace UnityEngine.XR.ARCore
 
             XRSupportedCameraBackgroundRenderingMode m_RequestedCameraRenderingMode = XRSupportedCameraBackgroundRenderingMode.Any;
 
-            /// <inheritdoc />
             public override XRSupportedCameraBackgroundRenderingMode supportedBackgroundRenderingMode
                 => XRSupportedCameraBackgroundRenderingMode.Any;
-
 
             static Action<IntPtr, ArSession, ArCameraConfigFilter> s_OnBeforeGetCameraConfigurationDelegate = OnBeforeGetCameraConfiguration;
 
@@ -436,6 +420,36 @@ namespace UnityEngine.XR.ARCore
             /// Get the actual Image Stabilization state
             /// </summary>
             public override bool imageStabilizationEnabled => NativeApi.UnityARCore_Camera_GetImageStabilizationEnabled();
+
+            /// <summary>
+            /// Get or set the requested camera torch mode.
+            /// </summary>
+            /// <returns>The requested <see cref="XRCameraTorchMode"/>.</returns>
+            public override XRCameraTorchMode requestedCameraTorchMode
+            {
+                get => Api.GetRequestedFeatures().All(Feature.CameraTorch) ? XRCameraTorchMode.On : XRCameraTorchMode.Off;
+                set => Api.SetFeatureRequested(Feature.CameraTorch, (value == XRCameraTorchMode.On ? true : false));
+            }
+
+            /// <summary>
+            /// Gets the current camera torch mode
+            /// </summary>
+            /// <returns>The current <see cref="XRCameraTorchMode"/>.</returns>
+            public override XRCameraTorchMode currentCameraTorchMode
+            {
+                get {
+                    return NativeApi.UnityARCore_Camera_GetCameraTorchMode();
+                }
+            }
+
+            /// <summary>
+            /// Get whether the current session configuration allows the camera torch to be turned on or off.
+            /// </summary>
+            /// <returns> true if supported. </returns>
+            public override bool DoesCurrentCameraSupportTorch()
+            {
+                return NativeApi.UnityARCore_Camera_GetSupportsCameraTorchMode() == Supported.Supported;
+            }
 
             /// <summary>
             /// Called on the render thread by background rendering code immediately before the background
@@ -682,6 +696,12 @@ namespace UnityEngine.XR.ARCore
 
             [DllImport(Constants.k_LibraryName, EntryPoint = "UnityARCore_Camera_GetAutoFocusEnabled")]
             public static extern bool GetAutoFocusEnabled();
+
+            [DllImport(Constants.k_LibraryName)]
+            public static extern XRCameraTorchMode UnityARCore_Camera_GetCameraTorchMode();
+
+            [DllImport(Constants.k_LibraryName)]
+            public static extern Supported UnityARCore_Camera_GetSupportsCameraTorchMode();
 
             [DllImport(Constants.k_LibraryName)]
             public static extern bool UnityARCore_Camera_GetImageStabilizationEnabled();

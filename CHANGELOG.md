@@ -8,6 +8,16 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [6.1.0-pre.3] - 2024-11-14
+
+### Added
+
+- Added the ability to turn the camera torch light on and off. Refer to the AR Foundation [Camera torch mode (flash)](xref:arfoundation-camera-torch-mode) documentation for more information
+
+### Changed
+
+- Changed AR Foundation dependency version from 6.1.0-pre.2 to 6.1.0-pre.3.
+
 ## [6.1.0-pre.2] - 2024-10-09
 
 ### Added
