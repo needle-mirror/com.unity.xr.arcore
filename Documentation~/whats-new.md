@@ -14,7 +14,7 @@ This release includes the following significant changes:
 
 ## Changed
 
-- Upgraded ARCore version from 1.31 to 1.37.
+- Upgraded ARCore version from 1.31 to 1.42.
 - Upgraded minimum Unity version from 2021.2 to 2023.3.
 - In previous versions of ARCore, the display matrix was column-major and did not include flipping the y-axis before rendering the image onto the device. This y-axis flipping was previously handled by the ARCoreBackground shaders. In order to make the ARCore display matrix consistent with that of ARKit, it is now row-major and flips the y-axis. This matrix is returned by `XRCameraFrame.TryGetDisplayMatrix`. Reference this manual page to understand the [display matrix format and derivation](xref:arfoundation-display-matrix-format-and-derivation).
 - ARCoreBackground.shader and ARCoreBackgroundAfterOpaques.shader were changed to correctly render the background using the newly formatted display matrix. Reference this manual page to learn how to write [custom background shaders](xref:arfoundation-custom-background-shaders).
