@@ -1,4 +1,4 @@
-﻿Shader "Unlit/ARCoreBackground"
+Shader "Unlit/ARCoreBackground"
 {
     Properties
     {

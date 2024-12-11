@@ -20,7 +20,7 @@ ARCore implements the following optional features of AR Foundation's [XRFaceSubs
 | **Eye tracking** |  [supportsEyeTracking](xref:UnityEngine.XR.ARSubsystems.XRFaceSubsystemDescriptor.supportsEyeTracking) | |
 
 > [!NOTE]
-> Refer to AR Foundation [Face tracking platform support](xref:arfoundation-face-tracking-platform-support) for more information 
+> Refer to AR Foundation [Face tracking platform support](xref:arfoundation-face-tracking-platform-support) for more information
 > on the optional features of the face subsystem.
 
 ## Session configuration

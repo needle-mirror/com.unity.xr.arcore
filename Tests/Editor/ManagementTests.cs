@@ -1,4 +1,4 @@
-﻿namespace UnityEditor.XR.ARCore.Editor.Tests
+namespace UnityEditor.XR.ARCore.Editor.Tests
 {
     static class ManagementTests
     {

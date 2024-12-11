@@ -11,7 +11,7 @@ This page is a supplement to the AR Foundation [Occlusion](xref:arfoundation-occ
 
 ## Check if occlusion is supported
 
-* The [XROcclusionSubsystemDescriptor](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystemDescriptor) properties [supportsEnvironmentDepthImage](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystemDescriptor.supportsEnvironmentDepthImage) and [supportsEnvironmentDepthConfidenceImage](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystemDescriptor.supportsEnvironmentDepthConfidenceImage) require that you start an AR session before support can be determined. If there is no AR session, these properties return `false`. They might return `true` later when a session has been started.
+The [XROcclusionSubsystemDescriptor](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystemDescriptor) properties [supportsEnvironmentDepthImage](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystemDescriptor.supportsEnvironmentDepthImage) and [supportsEnvironmentDepthConfidenceImage](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystemDescriptor.supportsEnvironmentDepthConfidenceImage) require that you start an AR session before support can be determined. If there is no AR session, these properties return `false`. They might return `true` later when a session has been started.
 
 ## Optional feature support
 
@@ -26,7 +26,7 @@ ARCore implements the following optional features of AR Foundation's [XROcclusio
 | **Human Segmentation Depth Image** | [humanSegmentationDepthImageSupported](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystemDescriptor.humanSegmentationDepthImageSupported) | |
 
 > [!NOTE]
-> Refer to AR Foundation [Occlusion platform support](xref:arfoundation-occlusion-platform-support) for more information 
+> Refer to AR Foundation [Occlusion platform support](xref:arfoundation-occlusion-platform-support) for more information
 > on the optional features of the occlusion subsystem.
 
 ## Supported textures

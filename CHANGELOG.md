@@ -8,6 +8,16 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [5.1.6] - 2024-12-11
+
+### Changed
+
+- Changed the AR Foundation dependency version from 5.1.5 to 5.1.6.
+
+### Fixed
+
+- Fixed the `ARCoreSessionSubsystem` so that your app no longer quits unexpectedly if you call `ARSession.Reset` on the same frame that you create a session. ([ARFB-461](https://issuetracker.unity3d.com/issues/xr-android-player-crashes-when-arsession-dot-reset-is-called-after-arsession-is-instantiated-on-the-device))
+
 ## [5.1.5] - 2024-05-31
 
 ### Changed
@@ -74,7 +84,7 @@ No changes
 
 ### Changed
 
-- Changed the project validation rule to update the minimum Android SDK version to 23 in Unity 2023.2 or newer. 
+- Changed the project validation rule to update the minimum Android SDK version to 23 in Unity 2023.2 or newer.
 
 ### Fixed
 
