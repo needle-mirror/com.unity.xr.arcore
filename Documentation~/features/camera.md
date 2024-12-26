@@ -57,3 +57,6 @@ This package implements AR Foundation's [EXIF data](xref:arfoundation-exif-data)
 | PhotographicSensitivity | Yes |
 | MeteringMode            |     |
 | ShutterSpeedValue       | Yes |
+
+> [!NOTE]
+> EXIF data is based on physical camera specifications and real-world capture conditions. You can check from a real physical camera for realistic EXIF information.

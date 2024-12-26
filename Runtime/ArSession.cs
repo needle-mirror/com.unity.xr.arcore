@@ -169,6 +169,7 @@ namespace UnityEngine.XR.ARCore
         /// - Returns <see cref="ArStatus.ErrorSessionUnsupported"/> if playback is incompatible with selected features.
         /// - Returns <see cref="ArStatus.ErrorPlaybackFailed"/> if an error occurred with the MP4 dataset file such as not being able to open the file or the file is unable to be decoded.
         /// </returns>
+        [Obsolete("SetPlaybackDataset is deprecated in AR Foundation 6.1. Use SetPlaybackDatasetUri(string uri) instead")]
         public ArStatus SetPlaybackDataset(string path)
         {
             unsafe
@@ -187,6 +188,49 @@ namespace UnityEngine.XR.ARCore
 
         [DllImport("arcore_sdk_c", EntryPoint = "ArSession_setPlaybackDataset")]
         static extern unsafe ArStatus SetPlaybackDataset(ArSession session, byte* mp4DatasetFilePath);
+
+        /// <summary>
+        /// Sets an MP4 dataset URI to playback instead of live camera feed.
+        /// </summary>
+        /// <remarks>
+        /// Restrictions:
+        /// - Can only be called while the session is paused. Playback of the MP4
+        /// dataset URI starts once the session is resumed.
+        /// - The MP4 dataset URI must use the same camera facing direction as is
+        /// configured in the session.
+        ///
+        /// When an MP4 dataset file is set:
+        /// - All existing trackables (i.e., anchors and trackables) immediately enter tracking state [TrackingState.None](xref:UnityEngine.XR.ARSubsystems.TrackingState.None).
+        /// - The desired focus mode is ignored, and does not affect the previously recorded camera images.
+        /// - The current camera configuration is immediately set to the default for the device the MP4 dataset file was recorded on.
+        /// - Calls to retrieve the supported camera configurations return camera configs supported by the device the MP4 dataset file was recorded on.
+        /// - Setting a previously obtained camera config has no effect.
+        /// </remarks>
+        /// <param name="uri">A URI to a MP4 dataset file or `null` to use the live camera feed.</param>
+        /// <returns>
+        /// - Returns <see cref="ArStatus.Success"/> if successful.
+        /// - Returns <see cref="ArStatus.ErrorSessionNotPaused"/> if called when session is not paused.
+        /// - Returns <see cref="ArStatus.ErrorSessionUnsupported"/> if playback is incompatible with selected features.
+        /// - Returns <see cref="ArStatus.ErrorPlaybackFailed"/> if an error occurred with the MP4 dataset file such as not being able to open the file or the file is unable to be decoded.
+        /// </returns>
+        public ArStatus SetPlaybackDatasetUri(string uri)
+        {
+            unsafe
+            {
+                if (string.IsNullOrEmpty(uri))
+                {
+                    return SetPlaybackDatasetUri(this, null);
+                }
+
+                using (var bytes = uri.ToBytes(Encoding.UTF8, Allocator.Temp))
+                {
+                    return SetPlaybackDatasetUri(this, (byte*)bytes.GetUnsafePtr());
+                }
+            }
+        }
+
+        [DllImport("arcore_sdk_c", EntryPoint = "ArSession_setPlaybackDatasetUri")]
+        static extern unsafe ArStatus SetPlaybackDatasetUri(ArSession session, byte* mp4DatasetUri);
 
         /// <summary>
         /// Gets the playback status.

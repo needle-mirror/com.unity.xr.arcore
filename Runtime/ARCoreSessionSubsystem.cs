@@ -67,8 +67,8 @@ namespace UnityEngine.XR.ARCore
         /// - <see cref="ArStatus.ErrorRecordingFailed"/>
         /// </returns>
         /// <seealso cref="StopRecording"/>
-        /// <seealso cref="StartPlayback"/>
-        /// <seealso cref="StopPlayback"/>
+        /// <seealso cref="StartPlaybackUri"/>
+        /// <seealso cref="StopPlaybackUri"/>
         public ArStatus StartRecording(ArRecordingConfig recordingConfig) =>
             ((ARCoreProvider)provider).StartRecording(recordingConfig);
 
@@ -78,15 +78,15 @@ namespace UnityEngine.XR.ARCore
         /// <returns>Returns <see cref="ArStatus.Success"/> if successful. Returns
         ///     <see cref="ArStatus.ErrorRecordingFailed"/> otherwise.</returns>
         /// <seealso cref="StartRecording"/>
-        /// <seealso cref="StartPlayback"/>
-        /// <seealso cref="StopPlayback"/>
+        /// <seealso cref="StartPlaybackUri"/>
+        /// <seealso cref="StopPlaybackUri"/>
         public ArStatus StopRecording() => ((ARCoreProvider)provider).StopRecording();
 
         /// <summary>
-        /// Starts playing back a previously recorded session. (see <see cref="StartRecording"/>)
+        /// Starts playing back a previously recorded session. (refer to <see cref="StartRecording"/>)
         /// </summary>
         /// <remarks>
-        /// The begin playback, the session must first be paused, the playback dataset set, then resumed.
+        /// To begin playback, the session must first be paused, the playback dataset set, then resumed.
         /// This method does all of those things for you, but can take significant time (.5 - 1 seconds) to do so.
         /// </remarks>
         /// <param name="playbackDataset">The path to an mp4 file previously recorded using
@@ -98,7 +98,26 @@ namespace UnityEngine.XR.ARCore
         /// <seealso cref="StartRecording"/>
         /// <seealso cref="StopRecording"/>
         /// <seealso cref="StopPlayback"/>
+        [Obsolete("StartPlayback is deprecated in AR Foundation 6.1. Use StartPlaybackUri(string playbackDatasetUri) instead.")]
         public ArStatus StartPlayback(string playbackDataset) => ((ARCoreProvider)provider).SetPlaybackDataset(playbackDataset);
+
+        /// <summary>
+        /// Starts playing back a previously recorded session. (refer to <see cref="StartRecording"/>)
+        /// </summary>
+        /// <remarks>
+        /// To begin playback, the session must first be paused, the playback dataset set, then resumed.
+        /// This method does all of those things for you, but can take significant time (.5 - 1 seconds) to do so.
+        /// </remarks>
+        /// <param name="playbackDatasetUri">The uri to an mp4 file previously recorded using
+        ///     <see cref="StartRecording"/>.</param>
+        /// <returns>Returns <see cref="ArStatus.Success"/> if successful. Returns one of the following otherwise:
+        /// - Returns <see cref="ArStatus.ErrorSessionUnsupported"/> if playback is incompatible with selected features.
+        /// - Returns <see cref="ArStatus.ErrorPlaybackFailed"/> if an error occurred with the MP4 dataset file such as not being able to open the file or the file is unable to be decoded.
+        /// </returns>
+        /// <seealso cref="StartRecording"/>
+        /// <seealso cref="StopRecording"/>
+        /// <seealso cref="StopPlaybackUri"/>
+        public ArStatus StartPlaybackUri(string playbackDatasetUri) => ((ARCoreProvider)provider).SetPlaybackDatasetUri(playbackDatasetUri);
 
         /// <summary>
         /// Stops playing back a session recording.
@@ -110,7 +129,20 @@ namespace UnityEngine.XR.ARCore
         /// <seealso cref="StartPlayback"/>
         /// <seealso cref="StartRecording"/>
         /// <seealso cref="StopRecording"/>
+        [Obsolete("StopPlayback is deprecated in AR Foundation 6.1. Use StopPlaybackUri(ArRecordingConfig recordingConfig) instead.")]
         public ArStatus StopPlayback() => ((ARCoreProvider)provider).SetPlaybackDataset(null);
+
+        /// <summary>
+        /// Stops playing back a session recording.
+        /// </summary>
+        /// <returns>Returns <see cref="ArStatus.Success"/> if successful. Returns one of the following otherwise:
+        /// - <see cref="ArStatus.ErrorSessionUnsupported"/> if playback is incompatible with selected features.
+        /// - <see cref="ArStatus.ErrorPlaybackFailed"/> if an error occurred with the MP4 dataset file such as not being able to open the file or the file is unable to be decoded.
+        /// </returns>
+        /// <seealso cref="StartPlaybackUri"/>
+        /// <seealso cref="StartRecording"/>
+        /// <seealso cref="StopRecording"/>
+        public ArStatus StopPlaybackUri() => ((ARCoreProvider)provider).SetPlaybackDatasetUri(null);
 
         /// <summary>
         /// (Read Only) The current recording status.
@@ -167,6 +199,7 @@ namespace UnityEngine.XR.ARCore
             Action<ArSession, ArConfig, IntPtr> m_SetConfigurationCallback = SetConfigurationCallback;
             Guid m_SessionId;
 
+            [Obsolete("Use SetPlaybackDatasetUri(string uri) instead")]
             public ArStatus SetPlaybackDataset(string playbackDataset)
             {
                 var session = this.session;
@@ -174,24 +207,17 @@ namespace UnityEngine.XR.ARCore
                 if (session == null)
                     throw new InvalidOperationException($"{nameof(SetPlaybackDataset)} requires a valid {nameof(ArSession)}");
 
-                var shouldResume = !NativeApi.IsPauseDesired();
+                return SetPlaybackDatasetInternal(session, playbackDataset, session.SetPlaybackDataset);
+            }
 
-                Stop();
+            public ArStatus SetPlaybackDatasetUri(string playbackDatasetUri)
+            {
+                var session = this.session;
 
-                // Spin-wait for the session to pause
-                var status = session.SetPlaybackDataset(playbackDataset);
-                while (status == ArStatus.ErrorSessionNotPaused)
-                {
-                    Thread.Yield();
-                    status = session.SetPlaybackDataset(playbackDataset);
-                }
+                if (session == null)
+                    throw new InvalidOperationException($"{nameof(SetPlaybackDatasetUri)} requires a valid {nameof(ArSession)}");
 
-                if (shouldResume)
-                {
-                    Start();
-                }
-
-                return status;
+                return SetPlaybackDatasetInternal(session, playbackDatasetUri, session.SetPlaybackDatasetUri);
             }
 
             public ARCoreProvider()
@@ -423,6 +449,28 @@ namespace UnityEngine.XR.ARCore
             }
 
             public override bool requiresCommandBuffer => SystemInfo.graphicsDeviceType == GraphicsDeviceType.Vulkan;
+
+            ArStatus SetPlaybackDatasetInternal(ArSession session, string datasetLocation, Func<string, ArStatus> setPlaybackFunction)
+            {
+                var shouldResume = !NativeApi.IsPauseDesired();
+
+                Stop();
+
+                // Spin-wait for the session to pause
+                var status = setPlaybackFunction.Invoke(datasetLocation);
+                while (status == ArStatus.ErrorSessionNotPaused)
+                {
+                    Thread.Yield();
+                    status = setPlaybackFunction.Invoke(datasetLocation);
+                }
+
+                if (shouldResume)
+                {
+                    Start();
+                }
+
+                return status;
+            }
 
             static ushort GetApiLevel()
             {

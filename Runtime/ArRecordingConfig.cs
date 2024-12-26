@@ -179,6 +179,7 @@ namespace UnityEngine.XR.ARCore
         /// </summary>
         /// <param name="session">The ARCore session.</param>
         /// <returns>Returns the path to the MP4 dataset file to which the recording should be saved.</returns>
+        [Obsolete("GetMp4DatasetFilePath is deprecated in AR Foundation 6.1. Use GetMp4DatasetUri(ArSession session) instead")]
         public string GetMp4DatasetFilePath(ArSession session)
         {
             GetMp4DatasetFilePath(session, this, out var value);
@@ -192,11 +193,29 @@ namespace UnityEngine.XR.ARCore
         static extern void GetMp4DatasetFilePath(ArSession session, ArRecordingConfig config, out ArString outMp4DatasetFilePath);
 
         /// <summary>
+        /// Gets the URI to save an MP4 dataset file for this recording.
+        /// </summary>
+        /// <param name="session">The ARCore session.</param>
+        /// <returns>Returns the URI to the MP4 dataset to which the recording should be saved.</returns>
+        public string GetMp4DatasetUri(ArSession session)
+        {
+            GetMp4DatasetUri(session, this, out var value);
+            using (value)
+            {
+                return value.ToString(Encoding.UTF8);
+            }
+        }
+
+        [DllImport("arcore_sdk_c", EntryPoint = "ArRecordingConfig_getMp4DatasetUri")]
+        static extern void GetMp4DatasetUri(ArSession session, ArRecordingConfig config, out ArString outMp4DatasetUri);
+
+        /// <summary>
         /// Sets the file path to save an MP4 dataset file for the recording.
         /// </summary>
         /// <param name="session">The ARCore session.</param>
         /// <param name="path">The file path to which an MP4 dataset should be written.</param>
         /// <exception cref="System.ArgumentNullException">Thrown if <paramref name="path"/> is `null`.</exception>
+        [Obsolete("SetMp4DatasetFilePath is deprecated in AR Foundation 6.1. Use SetMp4DatasetUri(ArSession session, string uri) instead")]
         public void SetMp4DatasetFilePath(ArSession session, string path)
         {
             if (path == null)
@@ -213,6 +232,29 @@ namespace UnityEngine.XR.ARCore
 
         [DllImport("arcore_sdk_c", EntryPoint = "ArRecordingConfig_setMp4DatasetFilePath")]
         static extern unsafe void SetMp4DatasetFilePath(ArSession session, ArRecordingConfig config, byte* mp4DatasetFilePath);
+
+        /// <summary>
+        /// Sets the URI to save an MP4 dataset file for the recording.
+        /// </summary>
+        /// <param name="session">The ARCore session.</param>
+        /// <param name="uri">The URI to which an MP4 dataset should be written.</param>
+        /// <exception cref="System.ArgumentNullException">Thrown if <paramref name="uri"/> is `null`.</exception>
+        public void SetMp4DatasetUri(ArSession session, string uri)
+        {
+            if (uri == null)
+                throw new ArgumentNullException(nameof(uri));
+
+            unsafe
+            {
+                using (var bytes = uri.ToBytes(Encoding.UTF8, Allocator.Temp))
+                {
+                    SetMp4DatasetUri(session, this, (byte*)bytes.GetUnsafePtr());
+                }
+            }
+        }
+
+        [DllImport("arcore_sdk_c", EntryPoint = "ArRecordingConfig_setMp4DatasetUri")]
+        static extern unsafe void SetMp4DatasetUri(ArSession session, ArRecordingConfig config, byte* mp4DatasetUri);
 
         /// <summary>
         /// Gets the setting that indicates whether this recording should stop automatically when the ARCore session is paused.

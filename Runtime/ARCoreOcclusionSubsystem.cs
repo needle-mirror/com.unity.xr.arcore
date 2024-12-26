@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Unity.Collections;
+using Unity.XR.CoreUtils.Collections;
 using UnityEngine.Scripting;
 using UnityEngine.XR.ARSubsystems;
 
@@ -42,55 +43,20 @@ namespace UnityEngine.XR.ARCore
             XROcclusionSubsystemDescriptor.Register(occlusionSubsystemCinfo);
         }
 
-        /// <summary>
-        /// The implementation provider class.
-        /// </summary>
         class ARCoreProvider : Provider
         {
-            /// <summary>
-            /// The shader property name for the environment depth texture.
-            /// </summary>
-            /// <value>
-            /// The shader property name for the environment depth texture.
-            /// </value>
             const string k_TextureEnvironmentDepthPropertyName = "_EnvironmentDepth";
-
-            /// <summary>
-            /// The shader keyword for enabling environment depth rendering.
-            /// </summary>
-            /// <value>
-            /// The shader keyword for enabling environment depth rendering.
-            /// </value>
             const string k_EnvironmentDepthEnabledMaterialKeyword = "ARCORE_ENVIRONMENT_DEPTH_ENABLED";
+            static readonly int k_TextureEnvironmentDepthPropertyId =
+                Shader.PropertyToID(k_TextureEnvironmentDepthPropertyName);
 
-            /// <summary>
-            /// The shader property name identifier for the environment depth texture.
-            /// </summary>
-            /// <value>
-            /// The shader property name identifier for the environment depth texture.
-            /// </value>
-            static readonly int k_TextureEnvironmentDepthPropertyId = Shader.PropertyToID(k_TextureEnvironmentDepthPropertyName);
+            static readonly List<string> k_EnvironmentDepthShaderKeywords = new(){ k_EnvironmentDepthEnabledMaterialKeyword };
+            static readonly ReadOnlyList<string> k_EnvironmentDepthShaderKeywordsReadOnly = new(k_EnvironmentDepthShaderKeywords);
+            static readonly XRShaderKeywords k_DepthEnabledShaderKeywords =new(k_EnvironmentDepthShaderKeywordsReadOnly, null);
+            static readonly XRShaderKeywords k_DepthDisabledShaderKeywords = new(null, k_EnvironmentDepthShaderKeywordsReadOnly);
 
-            /// <summary>
-            /// The shader keywords for enabling environment depth rendering.
-            /// </summary>
-            /// <value>
-            /// The shader keywords for enabling environment depth rendering.
-            /// </value>
-            static readonly List<string> k_EnvironmentDepthEnabledMaterialKeywords = new List<string>() {k_EnvironmentDepthEnabledMaterialKeyword};
-
-            static readonly ShaderKeywords k_DepthEnabledShaderKeywords = new ShaderKeywords(k_EnvironmentDepthEnabledMaterialKeywords?.AsReadOnly(), null);
-
-            static readonly ShaderKeywords k_DepthDisabledShaderKeywords = new ShaderKeywords(null, k_EnvironmentDepthEnabledMaterialKeywords?.AsReadOnly());
-
-            /// <summary>
-            /// The occlusion preference mode for when rendering the background.
-            /// </summary>
             OcclusionPreferenceMode m_OcclusionPreferenceMode;
 
-            /// <summary>
-            /// Constructs the implementation provider.
-            /// </summary>
             public ARCoreProvider()
             {
                 bool supportsR16 = SystemInfo.SupportsTextureFormat(TextureFormat.R16);
@@ -100,27 +66,10 @@ namespace UnityEngine.XR.ARCore
                 NativeApi.UnityARCore_OcclusionProvider_Construct(k_TextureEnvironmentDepthPropertyId, useAdvancedRendering);
             }
 
-            /// <summary>
-            /// Starts the provider.
-            /// </summary>
             public override void Start() => NativeApi.UnityARCore_OcclusionProvider_Start();
-
-            /// <summary>
-            /// Stops the provider.
-            /// </summary>
             public override void Stop() => NativeApi.UnityARCore_OcclusionProvider_Stop();
-
-            /// <summary>
-            /// Destroys the provider.
-            /// </summary>
             public override void Destroy() => NativeApi.UnityARCore_OcclusionProvider_Destruct();
 
-            /// <summary>
-            /// The requested environment depth mode.
-            /// </summary>
-            /// <value>
-            /// The requested environment depth mode.
-            /// </value>
             public override EnvironmentDepthMode requestedEnvironmentDepthMode
             {
                 get => NativeApi.UnityARCore_OcclusionProvider_GetRequestedEnvironmentDepthMode();
@@ -131,10 +80,6 @@ namespace UnityEngine.XR.ARCore
                 }
             }
 
-            /// <summary>
-            /// The current environment depth mode.
-            /// </summary>
-            /// <value>Describes the resolution category of the depth image and whether depth is enabled.</value>
             public override EnvironmentDepthMode currentEnvironmentDepthMode
                 => NativeApi.UnityARCore_OcclusionProvider_GetCurrentEnvironmentDepthMode();
 
@@ -147,43 +92,17 @@ namespace UnityEngine.XR.ARCore
                 set => Api.SetFeatureRequested(Feature.EnvironmentDepthTemporalSmoothing, value);
             }
 
-            /// <summary>
-            /// Specifies the requested occlusion preference mode.
-            /// </summary>
-            /// <value>
-            /// The requested occlusion preference mode.
-            /// </value>
             public override OcclusionPreferenceMode requestedOcclusionPreferenceMode
             {
                 get => m_OcclusionPreferenceMode;
                 set => m_OcclusionPreferenceMode = value;
             }
 
-            /// <summary>
-            /// Get the occlusion preference mode currently in use by the provider.
-            /// </summary>
             public override OcclusionPreferenceMode currentOcclusionPreferenceMode => m_OcclusionPreferenceMode;
 
-            /// <summary>
-            /// Gets the environment texture descriptor.
-            /// </summary>
-            /// <param name="environmentDepthDescriptor">The environment depth texture descriptor to be populated, if
-            /// available.</param>
-            /// <returns>
-            /// <c>true</c> if the environment depth texture descriptor is available and is returned. Otherwise,
-            /// <c>false</c>.
-            /// </returns>
             public override bool TryGetEnvironmentDepth(out XRTextureDescriptor environmentDepthDescriptor)
                 => NativeApi.UnityARCore_OcclusionProvider_TryGetEnvironmentDepth(out environmentDepthDescriptor);
 
-            /// <summary>
-            /// Gets the CPU construction information for a environment depth image.
-            /// </summary>
-            /// <param name="cinfo">The CPU image construction information, on success.</param>
-            /// <returns>
-            /// <c>true</c> if the environment depth texture is available and its CPU image construction information is
-            /// returned. Otherwise, <c>false</c>.
-            /// </returns>
             /// <remarks>
             /// If  <see cref='environmentDepthTemporalSmoothingEnabled'/> is <c>true</c> then the CPU image construction information
             /// will be for the temporally smoothed environmental depth image otherwise it will be for the raw environmental depth image.
@@ -201,46 +120,18 @@ namespace UnityEngine.XR.ARCore
             public override bool TryAcquireSmoothedEnvironmentDepthCpuImage(out XRCpuImage.Cinfo cinfo) =>
                 ARCoreCpuImageApi.TryAcquireLatestImage(ARCoreCpuImageApi.ImageType.EnvironmentDepth, out cinfo);
 
-            /// <summary>
-            /// The CPU image API for interacting with the environment depth image.
-            /// </summary>
             public override XRCpuImage.Api environmentDepthCpuImageApi => ARCoreCpuImageApi.instance;
 
-            /// <summary>
-            /// Get the environment depth confidence texture descriptor.
-            /// </summary>
-            /// <param name="environmentDepthConfidenceDescriptor">The environment depth texture descriptor to be
-            /// populated, if available.</param>
-            /// <returns>
-            /// <c>true</c> if the environment depth confidence texture descriptor is available and is returned.
-            /// Otherwise, <c>false</c>.
-            /// </returns>
             public override bool TryGetEnvironmentDepthConfidence(out XRTextureDescriptor environmentDepthConfidenceDescriptor)
                 => NativeApi.UnityARCore_OcclusionProvider_TryGetEnvironmentDepthConfidence(out environmentDepthConfidenceDescriptor);
 
-            /// <summary>
-            /// Gets the CPU construction information for a environment depth confidence image.
-            /// </summary>
-            /// <param name="cinfo">The CPU image construction information, on success.</param>
-            /// <returns>
-            /// <c>true</c> if the environment depth texture confidence is available and its CPU image construction information is
-            /// returned. Otherwise, <c>false</c>.
-            /// </returns>
             public override bool TryAcquireEnvironmentDepthConfidenceCpuImage(out XRCpuImage.Cinfo cinfo)
-                => ARCoreCpuImageApi.TryAcquireLatestImage(ARCoreCpuImageApi.ImageType.RawEnvironmentDepthConfidence,
+                => ARCoreCpuImageApi.TryAcquireLatestImage(
+                    ARCoreCpuImageApi.ImageType.RawEnvironmentDepthConfidence,
                     out cinfo);
 
-            /// <summary>
-            /// The CPU image API for interacting with the environment depth confidence image.
-            /// </summary>
             public override XRCpuImage.Api environmentDepthConfidenceCpuImageApi => ARCoreCpuImageApi.instance;
 
-            /// <summary>
-            /// Gets the occlusion texture descriptors associated with the current AR frame.
-            /// </summary>
-            /// <param name="defaultDescriptor">The default descriptor value.</param>
-            /// <param name="allocator">The allocator to use when creating the returned <c>NativeArray</c>.</param>
-            /// <returns>The occlusion texture descriptors.</returns>
             public override unsafe NativeArray<XRTextureDescriptor> GetTextureDescriptors(
                 XRTextureDescriptor defaultDescriptor,
                 Allocator allocator)
@@ -264,42 +155,44 @@ namespace UnityEngine.XR.ARCore
                 }
             }
 
-            /// <summary>
-            /// Gets the enabled and disabled shader keywords for the material.
-            /// </summary>
-            /// <param name="enabledKeywords">The keywords to enable for the material.</param>
-            /// <param name="disabledKeywords">The keywords to disable for the material.</param>
-#pragma warning disable CS0672 // This internal method intentionally overrides a publicly deprecated method
+            [Obsolete]
             public override void GetMaterialKeywords(out List<string> enabledKeywords, out List<string> disabledKeywords)
 #pragma warning restore CS0672
             {
                 bool isEnvDepthEnabled = NativeApi.UnityARCore_OcclusionProvider_IsEnvironmentDepthEnabled();
 
-                if ((m_OcclusionPreferenceMode == OcclusionPreferenceMode.NoOcclusion) || !isEnvDepthEnabled)
+                if (m_OcclusionPreferenceMode == OcclusionPreferenceMode.NoOcclusion || !isEnvDepthEnabled)
                 {
                     enabledKeywords = null;
-                    disabledKeywords = k_EnvironmentDepthEnabledMaterialKeywords;
+                    disabledKeywords = k_EnvironmentDepthShaderKeywords;
                 }
                 else
                 {
-                    enabledKeywords = k_EnvironmentDepthEnabledMaterialKeywords;
+                    enabledKeywords = k_EnvironmentDepthShaderKeywords;
                     disabledKeywords = null;
                 }
             }
 
+            [Obsolete]
             public override ShaderKeywords GetShaderKeywords()
             {
                 var isEnvDepthEnabled = NativeApi.UnityARCore_OcclusionProvider_IsEnvironmentDepthEnabled();
 
-                return ((m_OcclusionPreferenceMode == OcclusionPreferenceMode.NoOcclusion) || !isEnvDepthEnabled)
+                return m_OcclusionPreferenceMode == OcclusionPreferenceMode.NoOcclusion || !isEnvDepthEnabled
+                    ? new ShaderKeywords(null, k_EnvironmentDepthShaderKeywords.AsReadOnly())
+                    : new ShaderKeywords(k_EnvironmentDepthShaderKeywords.AsReadOnly(), null);
+            }
+
+            public override XRShaderKeywords GetShaderKeywords2()
+            {
+                var isEnvDepthEnabled = NativeApi.UnityARCore_OcclusionProvider_IsEnvironmentDepthEnabled();
+
+                return m_OcclusionPreferenceMode == OcclusionPreferenceMode.NoOcclusion || !isEnvDepthEnabled
                     ? k_DepthDisabledShaderKeywords
                     : k_DepthEnabledShaderKeywords;
             }
         }
 
-        /// <summary>
-        /// Container to wrap the native ARCore human body APIs.
-        /// </summary>
         static class NativeApi
         {
             [DllImport(Constants.k_LibraryName)]
@@ -321,16 +214,19 @@ namespace UnityEngine.XR.ARCore
             public static extern EnvironmentDepthMode UnityARCore_OcclusionProvider_GetRequestedEnvironmentDepthMode();
 
             [DllImport(Constants.k_LibraryName)]
-            public static extern void UnityARCore_OcclusionProvider_SetRequestedEnvironmentDepthMode(EnvironmentDepthMode environmentDepthMode);
+            public static extern void UnityARCore_OcclusionProvider_SetRequestedEnvironmentDepthMode(
+                EnvironmentDepthMode environmentDepthMode);
 
             [DllImport(Constants.k_LibraryName)]
             public static extern EnvironmentDepthMode UnityARCore_OcclusionProvider_GetCurrentEnvironmentDepthMode();
 
             [DllImport(Constants.k_LibraryName)]
-            public static extern bool UnityARCore_OcclusionProvider_TryGetEnvironmentDepth(out XRTextureDescriptor envDepthDescriptor);
+            public static extern bool UnityARCore_OcclusionProvider_TryGetEnvironmentDepth(
+                out XRTextureDescriptor envDepthDescriptor);
 
             [DllImport(Constants.k_LibraryName)]
-            public static extern unsafe void* UnityARCore_OcclusionProvider_AcquireTextureDescriptors(out int length, out int elementSize);
+            public static extern unsafe void* UnityARCore_OcclusionProvider_AcquireTextureDescriptors(
+                out int length, out int elementSize);
 
             [DllImport(Constants.k_LibraryName)]
             public static extern unsafe void UnityARCore_OcclusionProvider_ReleaseTextureDescriptors(void* descriptors);
@@ -342,7 +238,8 @@ namespace UnityEngine.XR.ARCore
             public static extern bool UnityARCore_OcclusionProvider_GetEnvironmentDepthTemporalSmoothingEnabled();
 
             [DllImport(Constants.k_LibraryName)]
-            public static extern bool UnityARCore_OcclusionProvider_TryGetEnvironmentDepthConfidence(out XRTextureDescriptor environmentDepthConfidenceDescriptor);
+            public static extern bool UnityARCore_OcclusionProvider_TryGetEnvironmentDepthConfidence(
+                out XRTextureDescriptor environmentDepthConfidenceDescriptor);
         }
     }
 }

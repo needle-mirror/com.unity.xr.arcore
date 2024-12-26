@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using AOT;
 using Unity.Collections;
+using Unity.XR.CoreUtils.Collections;
 using UnityEngine.Scripting;
 using UnityEngine.XR.ARSubsystems;
 
@@ -166,9 +167,6 @@ namespace UnityEngine.XR.ARCore
             remove => ((ARCoreProvider)provider).beforeGetCameraConfiguration -= value;
         }
 
-        /// <summary>
-        /// Provides the camera functionality for the ARCore implementation.
-        /// </summary>
         class ARCoreProvider : Provider
         {
             /// <summary>
@@ -194,13 +192,14 @@ namespace UnityEngine.XR.ARCore
             /// <summary>
             /// The shader keywords for enabling image stabilization rendering.
             /// </summary>
-            static readonly List<string> k_EnabledMaterialKeywords = new() { k_ImageStabilizationEnabledMaterialKeyword };
+            static readonly List<string> k_StabilizationEnabledKeywordList = new() { k_ImageStabilizationEnabledMaterialKeyword };
+            static readonly ReadOnlyList<string> k_StabilizationEnabledKeywordListReadOnly = new(k_StabilizationEnabledKeywordList);
 
-            static readonly ShaderKeywords k_ImageStabilizationEnabledShaderKeywords =
-                new(k_EnabledMaterialKeywords?.AsReadOnly(), null);
+            static readonly XRShaderKeywords k_StabilizationEnabledKeywords =
+                new(k_StabilizationEnabledKeywordListReadOnly, null);
 
-            static readonly ShaderKeywords k_ImageStabilizationDisabledShaderKeywords =
-                new(null, k_EnabledMaterialKeywords?.AsReadOnly());
+            static readonly XRShaderKeywords k_StabilizationDisabledKeywords =
+                new(null, k_StabilizationEnabledKeywordListReadOnly);
 
             Material GetOrCreateCameraMaterial()
             {
@@ -218,12 +217,6 @@ namespace UnityEngine.XR.ARCore
                 }
             }
 
-            /// <summary>
-            /// Get the material used by <c>XRCameraSubsystem</c> to render the camera texture.
-            /// </summary>
-            /// <returns>
-            /// The material to render the camera texture.
-            /// </returns>
             /// <remarks>
             /// This subsystem will lazily create the camera materials depending on the <see cref="currentBackgroundRenderingMode"/>.
             /// Once created, the materials exist for the lifespan of this subsystem.
@@ -241,10 +234,8 @@ namespace UnityEngine.XR.ARCore
             /// </returns>
             public override bool permissionGranted => ARCorePermissionManager.IsPermissionGranted(k_CameraPermissionName);
 
-            /// <inheritdoc />
             public override bool invertCulling => NativeApi.UnityARCore_Camera_ShouldInvertCulling();
 
-            /// <inheritdoc />
             public override XRCpuImage.Api cpuImageApi => ARCoreCpuImageApi.instance;
 
             /// <summary>
@@ -274,7 +265,6 @@ namespace UnityEngine.XR.ARCore
                 }
             }
 
-            /// <inheritdoc />
             public override XRSupportedCameraBackgroundRenderingMode requestedBackgroundRenderingMode
             {
                 get => m_RequestedCameraRenderingMode;
@@ -356,19 +346,9 @@ namespace UnityEngine.XR.ARCore
                 }
             }
 
-            /// <summary>
-            /// Start the camera functionality.
-            /// </summary>
             public override void Start() => NativeApi.UnityARCore_Camera_Start();
-
-            /// <summary>
-            /// Stop the camera functionality.
-            /// </summary>
             public override void Stop() => NativeApi.UnityARCore_Camera_Stop();
 
-            /// <summary>
-            /// Destroy any resources required for the camera functionality.
-            /// </summary>
             public override void Destroy()
             {
                 NativeApi.UnityARCore_Camera_Destruct();
@@ -379,62 +359,31 @@ namespace UnityEngine.XR.ARCore
                 m_GCHandle = default;
             }
 
-            /// <summary>
-            /// Get the camera frame for the subsystem.
-            /// </summary>
-            /// <param name="cameraParams">The current Unity <c>Camera</c> parameters.</param>
-            /// <param name="cameraFrame">The current camera frame returned by the method.</param>
-            /// <returns>
-            /// <see langword="true"/> if the method successfully got a frame. Otherwise, <see langword="false"/>.
-            /// </returns>
             public override bool TryGetFrame(XRCameraParams cameraParams, out XRCameraFrame cameraFrame)
-            {
-                return NativeApi.UnityARCore_Camera_TryGetFrame(cameraParams, out cameraFrame);
-            }
+                => NativeApi.UnityARCore_Camera_TryGetFrame(cameraParams, out cameraFrame);
 
-            /// <summary>
-            /// Get or set the focus mode for the camera.
-            /// </summary>
             public override bool autoFocusRequested
             {
                 get => Api.GetRequestedFeatures().All(Feature.AutoFocus);
                 set => Api.SetFeatureRequested(Feature.AutoFocus, value);
             }
 
-            /// <summary>
-            /// Get the actual auto focus state
-            /// </summary>
             public override bool autoFocusEnabled => NativeApi.GetAutoFocusEnabled();
 
-            /// <summary>
-            /// Get or set the Image Stabilization for the camera.
-            /// </summary>
-            /// <value><see langword="true"/> if EIS is requested. Otherwise, <see langword="false"/>.</value>
             public override bool imageStabilizationRequested
             {
                 get => Api.GetRequestedFeatures().All(Feature.ImageStabilization);
                 set => Api.SetFeatureRequested(Feature.ImageStabilization, value);
             }
 
-            /// <summary>
-            /// Get the actual Image Stabilization state
-            /// </summary>
             public override bool imageStabilizationEnabled => NativeApi.UnityARCore_Camera_GetImageStabilizationEnabled();
 
-            /// <summary>
-            /// Get or set the requested camera torch mode.
-            /// </summary>
-            /// <returns>The requested <see cref="XRCameraTorchMode"/>.</returns>
             public override XRCameraTorchMode requestedCameraTorchMode
             {
                 get => Api.GetRequestedFeatures().All(Feature.CameraTorch) ? XRCameraTorchMode.On : XRCameraTorchMode.Off;
                 set => Api.SetFeatureRequested(Feature.CameraTorch, (value == XRCameraTorchMode.On ? true : false));
             }
 
-            /// <summary>
-            /// Gets the current camera torch mode
-            /// </summary>
-            /// <returns>The current <see cref="XRCameraTorchMode"/>.</returns>
             public override XRCameraTorchMode currentCameraTorchMode
             {
                 get {
@@ -442,14 +391,8 @@ namespace UnityEngine.XR.ARCore
                 }
             }
 
-            /// <summary>
-            /// Get whether the current session configuration allows the camera torch to be turned on or off.
-            /// </summary>
-            /// <returns> true if supported. </returns>
             public override bool DoesCurrentCameraSupportTorch()
-            {
-                return NativeApi.UnityARCore_Camera_GetSupportsCameraTorchMode() == Supported.Supported;
-            }
+                => NativeApi.UnityARCore_Camera_GetSupportsCameraTorchMode() == Supported.Supported;
 
             /// <summary>
             /// Called on the render thread by background rendering code immediately before the background
@@ -463,31 +406,34 @@ namespace UnityEngine.XR.ARCore
                 NativeApi.UnityARCore_Camera_GetFenceWaitHandler(id);
             }
 
-            /// <inheritdoc />
-#pragma warning disable CS0672 // This internal method intentionally overrides a publicly deprecated method
+            [Obsolete]
             public override void GetMaterialKeywords(out List<string> enabledKeywords, out List<string> disabledKeywords)
-#pragma warning restore CS0672
             {
                 if (imageStabilizationEnabled)
                 {
-                    enabledKeywords = k_EnabledMaterialKeywords;
+                    enabledKeywords = k_StabilizationEnabledKeywordList;
                     disabledKeywords = null;
                 }
                 else
                 {
                     enabledKeywords = null;
-                    disabledKeywords = k_EnabledMaterialKeywords;
+                    disabledKeywords = k_StabilizationEnabledKeywordList;
                 }
             }
 
+            [Obsolete]
             public override ShaderKeywords GetShaderKeywords()
             {
-                return imageStabilizationEnabled ? k_ImageStabilizationEnabledShaderKeywords : k_ImageStabilizationDisabledShaderKeywords;
+                return imageStabilizationEnabled
+                    ? new ShaderKeywords(k_StabilizationEnabledKeywordList.AsReadOnly(), null)
+                    : new ShaderKeywords(null, k_StabilizationEnabledKeywordList.AsReadOnly());
             }
 
-            /// <summary>
-            /// Get or set the light estimation mode.
-            /// </summary>
+            public override XRShaderKeywords GetShaderKeywords2()
+            {
+                return imageStabilizationEnabled ? k_StabilizationEnabledKeywords : k_StabilizationDisabledKeywords;
+            }
+
             public override Feature requestedLightEstimation
             {
                 get => Api.GetRequestedFeatures();
@@ -498,29 +444,11 @@ namespace UnityEngine.XR.ARCore
                 }
             }
 
-            /// <summary>
-            /// Get the light estimation features currently enabled
-            /// </summary>
             public override Feature currentLightEstimation => NativeApi.GetCurrentLightEstimation();
 
-            /// <summary>
-            /// Get the camera intrinsics information.
-            /// </summary>
-            /// <param name="cameraIntrinsics">The camera intrinsics information returned from the method.</param>
-            /// <returns>
-            /// <see langword="true"/> if the method successfully gets the camera intrinsics information. Otherwise, <see langword="false"/>.
-            /// </returns>
-            public override bool TryGetIntrinsics(out XRCameraIntrinsics cameraIntrinsics) => NativeApi.UnityARCore_Camera_TryGetIntrinsics(out cameraIntrinsics);
+            public override bool TryGetIntrinsics(out XRCameraIntrinsics cameraIntrinsics)
+                => NativeApi.UnityARCore_Camera_TryGetIntrinsics(out cameraIntrinsics);
 
-            /// <summary>
-            /// Queries the supported camera configurations.
-            /// </summary>
-            /// <param name="defaultCameraConfiguration">A default value used to fill the returned array before copying
-            /// in real values. This ensures future additions to this struct are backwards compatible.</param>
-            /// <param name="allocator">The allocation strategy to use for the returned data.</param>
-            /// <returns>
-            /// The supported camera configurations.
-            /// </returns>
             public override NativeArray<XRCameraConfiguration> GetConfigurations(
                 XRCameraConfiguration defaultCameraConfiguration,
                 Allocator allocator)
@@ -598,12 +526,6 @@ namespace UnityEngine.XR.ARCore
                 }
             }
 
-            /// <summary>
-            /// Gets the texture descriptors associated with the camera image.
-            /// </summary>
-            /// <returns>The texture descriptors.</returns>
-            /// <param name="defaultDescriptor">Default descriptor.</param>
-            /// <param name="allocator">Allocator.</param>
             public override unsafe NativeArray<XRTextureDescriptor> GetTextureDescriptors(
                 XRTextureDescriptor defaultDescriptor,
                 Allocator allocator)
@@ -624,13 +546,6 @@ namespace UnityEngine.XR.ARCore
                 }
             }
 
-            /// <summary>
-            /// Query for the latest native camera image.
-            /// </summary>
-            /// <param name="cameraImageCinfo">The metadata required to construct a <see cref="XRCpuImage"/></param>
-            /// <returns>
-            /// <see langword="true"/> if the camera image is acquired. Otherwise, <see langword="false"/>.
-            /// </returns>
             public override bool TryAcquireLatestCpuImage(out XRCpuImage.Cinfo cameraImageCinfo)
                 => ARCoreCpuImageApi.TryAcquireLatestImage(ARCoreCpuImageApi.ImageType.Camera, out cameraImageCinfo);
 
@@ -667,11 +582,9 @@ namespace UnityEngine.XR.ARCore
             }
         }
 
-        internal static bool TryGetCurrentConfiguration(out XRCameraConfiguration configuration) => NativeApi.UnityARCore_Camera_TryGetCurrentConfiguration(out configuration);
+        internal static bool TryGetCurrentConfiguration(out XRCameraConfiguration configuration)
+            => NativeApi.UnityARCore_Camera_TryGetCurrentConfiguration(out configuration);
 
-        /// <summary>
-        /// Container to wrap the native ARCore camera APIs.
-        /// </summary>
         static class NativeApi
         {
             [DllImport(Constants.k_LibraryName, EntryPoint = "UnityARCore_Camera_SetOnBeforeGetCameraConfigurationCallback")]

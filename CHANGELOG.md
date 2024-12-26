@@ -8,6 +8,25 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [6.1.0-pre.4] - 2024-12-26
+
+### Added
+
+- Added support for the `XRShaderKeywords` struct to the camera and occlusion providers.
+
+### Changed
+
+- Changed AR Foundation dependency version from 6.1.0-pre.3 to 6.1.0-pre.4.
+
+### Deprecated
+
+- Deprecated and replaced the following APIs related to session recording and playback.
+  - [ARCoreSessionSubsystem.StartPlayback](xref:UnityEngine.XR.ARCore.ARCoreSessionSubsystem.StartPlayback) to [ARCoreSessionSubsystem.StartPlaybackUri](xref:UnityEngine.XR.ARCore.ARCoreSessionSubsystem.StartPlaybackUri).
+  - [ARCoreSessionSubsystem.StopPlayback](xref:UnityEngine.XR.ARCore.ARCoreSessionSubsystem.StopPlayback) to [ARCoreSessionSubsystem.StopPlaybackUri](xref:UnityEngine.XR.ARCore.ARCoreSessionSubsystem.StopPlaybackUri).
+  - [ARRecordingConfig.GetMp4DatasetFilePath](xref:UnityEngine.XR.ARCore.ARRecordingConfig.GetMp4DatasetFilePath) to [ARRecordingConfig.GetMp4DatasetUri](xref:UnityEngine.XR.ARCore.ARRecordingConfig.GetMp4DatasetUri).
+  - [ARRecordingConfig.SetMp4DatasetFilePath](xref:UnityEngine.XR.ARCore.ARRecordingConfig.SetMp4DatasetFilePath) to [ARRecordingConfig.SetMp4DatasetUri](xref:UnityEngine.XR.ARCore.ARRecordingConfig.SetMp4DatasetUri).
+  - [ARSession.SetPlaybackDataset](xref:UnityEngine.XR.ARCore.ARSession.SetPlaybackDataset) to [ARSession.SetPlaybackDatasetUri](xref:UnityEngine.XR.ARCore.ARSession.SetPlaybackDatasetUri).
+
 ## [6.1.0-pre.3] - 2024-11-14
 
 ### Added
