@@ -18,10 +18,7 @@ namespace UnityEngine.XR.ARCore
         static AndroidJavaObject s_Activity;
         static AndroidJavaObject s_PermissionService;
         static Action<string, bool> s_CurrentCallback;
-
-#if UNITY_2022_2_OR_NEWER
         static IntPtr s_IsPermissionGrantedMethodId;
-#endif
 
         /// <summary>
         /// Checks if an Android permission is granted to the application.
@@ -35,7 +32,6 @@ namespace UnityEngine.XR.ARCore
             if (Application.isEditor)
                 return true;
 
-#if UNITY_2022_2_OR_NEWER
             if (s_IsPermissionGrantedMethodId == IntPtr.Zero)
             {
                 var androidPermissionClass = new AndroidJavaClass(k_AndroidPermissionService).GetRawClass();
@@ -44,9 +40,6 @@ namespace UnityEngine.XR.ARCore
             }
 
             return permissionsService.Call<bool>(s_IsPermissionGrantedMethodId, activity, permissionName);
-#else
-            return permissionsService.Call<bool>(k_IsPermissionGrantedString, activity, permissionName);
-#endif
         }
 
         /// <summary>
@@ -102,8 +95,7 @@ namespace UnityEngine.XR.ARCore
         [Preserve]
         void OnActivityResult() { }
 
-        ARCorePermissionManager() : base(k_AndroidPermissionsClass)
-        { }
+        ARCorePermissionManager() : base(k_AndroidPermissionsClass) { }
 
         static ARCorePermissionManager instance => s_Instance ??= new ARCorePermissionManager();
 
