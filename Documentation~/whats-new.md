@@ -1,7 +1,7 @@
 ---
 uid: arcore-whats-new
 ---
-# What's new in version 5.1
+# What's new in version 5.2
 
 No changes.
 

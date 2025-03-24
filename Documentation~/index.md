@@ -38,7 +38,7 @@ You can also install and uninstall this package using the [Package Manager](http
 
 # Requirements
 
-Version 5.1 of the Google ARCore XR Plug-in is compatible with the following versions of the Unity Editor:
+Version 5.2 of the Google ARCore XR Plug-in is compatible with the following versions of the Unity Editor:
 
 * 2021.3
 * 2022.3
