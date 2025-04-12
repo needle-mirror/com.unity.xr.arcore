@@ -22,6 +22,9 @@ Some ARCore features require specific Unity Project settings to function properl
 * **[ARCore support Requirement](#arcore-required)**: can be set to **optional** or **required** depending on whether your app can be used without ARCore support.
 * **[ARCore Depth support](#arcore-depth-required)**: can be set to **optional** or **required** depending on whether your app can be used without ARCore depth information.
 * **[Ignore Gradle Version](#gradle-version)**: can be enabled to silence Gradle version warnings, typically from using a custom Gradle setup.
+* **[Enable Cloud Anchors](#cloud-anchors)**: can be enabled to allow saving persistent anchors to Google Cloud. Must also provide a valid authorization to a Google Cloud project.
+* **[Authorization Type](#cloud-anchors)**: when using Google Cloud for persistent anchors, this selection indicates which authorization type to use.
+* **[Api Key](#cloud-anchors)**: when using API Key authorization for Google Cloud, input the API Key to your Google Cloud project here.
 
 <a name="enable-arcore"></a>
 ### Enable the Google ARCore plug-in
@@ -171,6 +174,15 @@ To change this setting:
 4. Click the checkbox for **Ignore Gradle Version**, to enable or disable the option.
 
 See [Gradle for Android](xref:android-gradle-overview) for more information about Gradle.
+
+<a name="cloud-anchors"></a>
+### Google Cloud Anchors
+
+[Google Cloud anchors](https://developers.google.com/ar/develop/cloud-anchors) are used for storing persistent anchors when using ARCore. In order to successfully use Google Cloud anchors in your application you must:
+
+1. Set up a [Google Cloud](https://cloud.google.com/docs/get-started) project where anchor data will be stored.
+2. Select the checkbox for **Enable Cloud Anchors** to enable it in your project.
+3. Set up and select a valid **Authorization Type**. If using API Key, enter the key in the **Api Key** setting.
 
 <a name="project-validation"></a>
 ## Project validation

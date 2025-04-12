@@ -274,11 +274,18 @@ namespace UnityEngine.XR.ARCore
                 }
 #endif // !URP_7_OR_NEWER
 
+                ARCoreFeatures arCoreFeatures = ARCoreFeatures.None;
+                if (ARCoreRuntimeSettings.Instance.enableCloudAnchors)
+                {
+                    arCoreFeatures |= ARCoreFeatures.CloudAnchors;
+                }
+
                 NativeApi.UnityARCore_session_update(
                     updateParams.screenOrientation,
                     updateParams.screenDimensions,
                     configuration.descriptor.identifier,
-                    configuration.features);
+                    configuration.features,
+                    arCoreFeatures);
 
                 if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Vulkan && !s_VulkanSupportRendererFeatureEnabled)
                     throw new InvalidOperationException("If Vulkan is the Graphics API: "
@@ -784,7 +791,8 @@ namespace UnityEngine.XR.ARCore
                 ScreenOrientation orientation,
                 Vector2Int screenDimensions,
                 IntPtr configId,
-                Feature features);
+                Feature features,
+                ARCoreFeatures arCoreFeatures);
 
             [DllImport(Constants.k_LibraryName)]
             public static extern void UnityARCore_session_getConfigurationDescriptors(

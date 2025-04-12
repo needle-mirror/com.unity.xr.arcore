@@ -3,8 +3,6 @@ uid: arcore-session-recording
 ---
 # ARCore Session Recording
 
-**Note**: The session recording feature described below is currently only supported when the graphics rendering API is set to `OpenGLES3`.  Attempting to play back a session recording through the ARCore playback APIs, when the graphics rendering API is set to `Vulkan`, will not succeed.
-
 ARCore allows you to record an ArSession to an `.mp4` and play it back at a later time. To support this feature, the [ARCoreSessionSubsystem](xref:UnityEngine.XR.ARCore.ARCoreSessionSubsystem) exposes the following methods:
 
 * [StartRecording](xref:UnityEngine.XR.ARCore.ARCoreSessionSubsystem.StartRecording(UnityEngine.XR.ARCore.ArRecordingConfig))

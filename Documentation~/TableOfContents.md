@@ -9,6 +9,8 @@
   * [Face tracking](xref:arcore-face-tracking)
   * [Point clouds](xref:arcore-point-clouds)
   * [Anchors](xref:arcore-anchors)
+    * [Platform support](xref:arcore-anchors-platform-support)
+    * [Persistent anchors](xref:arcore-anchors-persistent)
   * [Environment Probes](xref:arcore-environment-probes)
   * [Occlusion](xref:arcore-occlusion)
   * [Ray casts](xref:arcore-raycasts)

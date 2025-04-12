@@ -229,6 +229,7 @@ namespace UnityEditor.XR.ARCore
         const string k_AndroidManifestPath = "/src/main/AndroidManifest.xml";
         const string k_AndroidHardwareCameraAr = "android.hardware.camera.ar";
         const string k_AndroidPermissionCamera = "android.permission.CAMERA";
+        const string k_AndroidPermissionInternet = "android.permission.INTERNET";
         const string k_AndroidDepth = "com.google.ar.core.depth";
 
         public int callbackOrder => 2;
@@ -358,6 +359,17 @@ namespace UnityEditor.XR.ARCore
             {
                 FindOrCreateTagWithAttributes(manifestDoc, manifestNode, "uses-feature", "name", k_AndroidDepth, "required", "true");
             }
+
+            var runtimeSettings = ARCoreRuntimeSettings.Instance;
+            if (runtimeSettings.enableCloudAnchors)
+            {
+                if (runtimeSettings.authorizationType == ARCoreRuntimeSettings.AuthorizationType.ApiKey)
+                {
+                    FindOrCreateTagWithAttributes(manifestDoc, applicationNode, "meta-data", "name", "com.google.android.ar.API_KEY", "value", runtimeSettings.apiKey);
+                }
+                FindOrCreateTagWithAttribute(manifestDoc, manifestNode, "uses-permission", "name", k_AndroidPermissionInternet);
+            }
+
             manifestDoc.Save(manifestPath);
         }
     }

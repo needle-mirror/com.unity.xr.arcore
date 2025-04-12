@@ -6,6 +6,7 @@
         "Unity.XR.ARSubsystems.Editor",
         "Unity.XR.Management",
         "Unity.XR.Management.Editor",
+        "Unity.XR.CoreUtils",
         "Unity.XR.CoreUtils.Editor"
     ],
     "includePlatforms": [

@@ -3,11 +3,11 @@
     "rootNamespace": "",
     "references": [
         "Unity.XR.ARSubsystems",
+        "Unity.XR.CoreUtils",
         "Unity.XR.Management",
         "Unity.InputSystem",
         "Unity.RenderPipelines.Core.Runtime",
-        "Unity.RenderPipelines.Universal.Runtime",
-        "Unity.XR.CoreUtils"
+        "Unity.RenderPipelines.Universal.Runtime"
     ],
     "includePlatforms": [
         "Android",

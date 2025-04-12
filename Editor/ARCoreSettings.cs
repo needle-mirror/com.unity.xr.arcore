@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.XR.Management;
-using System.IO;
 
 namespace UnityEditor.XR.ARCore
 {

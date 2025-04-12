@@ -14,6 +14,10 @@ rendering events signaled by the `ARCommandBufferSupportRendererFeature` in orde
 - `Session Recording`, through the `ARCoreSessionSubsystem`, is not supported when the graphics rendering API is set to `Vulkan`.
 - Added the ability to turn the camera torch light on and off. Refer to the AR Foundation [Camera torch mode (flash)](xref:arfoundation-camera-torch-mode) documentation for more information
 
+### Persistent Anchors
+
+- Added support for [Persistent Anchors](xref:arfoundation-anchors-persistent).
+
 For a full list of changes in this version including backwards-compatible bugfixes, refer to the package [changelog](xref:arcore-changelog).
 
 ## Deprecated

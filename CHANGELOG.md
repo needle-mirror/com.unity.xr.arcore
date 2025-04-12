@@ -8,6 +8,22 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [6.2.0-pre.1] - 2025-04-12
+
+### Added
+
+- Added support for [Persistent Anchors](xref:arfoundation-anchors-persistent).
+
+### Changed
+
+- Upgraded ARCore version from 1.45 to 1.48.
+- Recompiled the native plug-in with support for [16 KB page sizes](https://developer.android.com/guide/practices/page-sizes) on Android 15 or newer.
+- Changed AR Foundation dependency version from 6.1.0 to 6.2.0-pre.1.
+
+### Fixed
+
+- Fixed the `ARCoreOcclusionSubsystem` and the `ARCoreCameraSubsystem` so that they no longer return invalid textures on the first frames after an ARCore session start.
+
 ## [6.1.0] - 2025-02-19
 
 ### Changed
