@@ -275,7 +275,7 @@ namespace UnityEditor.XR.ARCore
 
             builder.AppendLine().AppendLine(barLine);
 
-            Debug.LogWarning(builder.ToString());
+            Debug.LogWarning(builder.ToString(), AssetDatabase.LoadAssetAtPath<XRReferenceImageLibrary>(libraryPath));
         }
     }
 }

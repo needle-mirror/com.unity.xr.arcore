@@ -8,6 +8,13 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [6.0.6] - 2025-05-27
+
+### Changed
+
+- Recompiled the native plug-in with support for [16 KB page sizes](https://developer.android.com/guide/practices/page-sizes) on Android 15 or newer.
+- Changed AR Foundation dependency version from 6.0.5 to 6.0.6
+
 ## [6.0.5] - 2025-01-24
 
 ### Changed
