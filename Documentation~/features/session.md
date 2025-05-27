@@ -7,6 +7,18 @@ This page is a supplement to the AR Foundation [Session](xref:arfoundation-sessi
 
 [!include[](../snippets/arf-docs-tip.md)]
 
+## Optional feature support
+
+ARCore implements the following optional features of AR Foundation's [XRSessionSubsystem](xref:UnityEngine.XR.ARSubsystems.XRSessionSubsystem):
+
+| Feature | Descriptor Property | Supported |
+| :------ | :--------------- | :--------: |
+| **Install** | [supportsInstall](xref:UnityEngine.XR.ARSubsystems.XRSessionSubsystemDescriptor.supportsInstall) | Yes |
+| **Match frame rate** | [supportsMatchFrameRate](xref:UnityEngine.XR.ARSubsystems.XRSessionSubsystemDescriptor.supportsMatchFrameRate) | Yes |
+
+> [!NOTE]
+> Refer to AR Foundation [Session platform support](xref:arfoundation-session-platform-support) for more information on the optional features of the session subsystem.
+
 ## Check if AR is supported
 
 ARCore implements [XRSessionSubsystem.GetAvailabilityAsync](xref:UnityEngine.XR.ARSubsystems.XRSessionSubsystem.GetAvailabilityAsync). Use this function to determine if the device ARCore is currently running on is supported. ARCore's list of supported devices is frequently updated to include additional devices. For a full list of devices that ARCore supports, refer to [ARCore supported devices](https://developers.google.com/ar/discover/supported-devices).
@@ -32,7 +44,7 @@ This package also provides a header file containing the definitions of various n
 Cast `void* sessionPtr` to an [ArSession](https://developers.google.com/ar/reference/c/group/ar-session) handle in C++ using the following example code:
 
 ```cpp
-// Marhshal the native session data from the XRSessionSubsystem.nativePtr in C#
+// Marshal the native session data from the XRSessionSubsystem.nativePtr in C#
 UnityXRNativeSession nativeSessionData;
 ArSession* session = static_cast<ArSession*>(nativeSessionData.sessionPtr);
 ```

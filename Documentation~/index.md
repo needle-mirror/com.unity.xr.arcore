@@ -31,13 +31,13 @@ This package does not implement the following AR features, as they are not suppo
 | [Meshing](xref:arfoundation-meshing) | Generate meshes of the environment. |
 | [Participants](xref:arfoundation-participant-tracking) | Track other devices in a shared AR session. |
 
-# Install the Google ARCore XR Plug-in
+## Install the Google ARCore XR Plug-in
 
 When you enable the Google ARCore XR Plug-in in **Project Settings** > **XR Plug-in Management**, Unity automatically installs this package if necessary. Refer to [Enable the ARCore plug-in](xref:arcore-project-config#enable-arcore) for instructions.
 
 You can also install and uninstall this package using the [Package Manager](https://learn.unity.com/tutorial/the-package-manager). Installing through the Package Manager does not automatically enable the plug-in. In this case you must enable it in **Project Settings** > **XR Plug-in Management**.
 
-# Requirements
+## Requirements
 
 Version 6.0 of the Google ARCore XR Plug-in is compatible with the following versions of the Unity Editor:
 
@@ -45,3 +45,7 @@ Version 6.0 of the Google ARCore XR Plug-in is compatible with the following ver
 
 > [!NOTE]
 > You can visit the Unity Forum for more information on the [Unity 6 New Naming Convention](https://forum.unity.com/threads/unity-6-new-naming-convention.1558592/).
+
+## Samples
+
+You can access pre-configured sample scenes that demonstrate AR Foundation features from the [AR Foundation Samples](https://github.com/Unity-Technologies/arfoundation-samples) GitHub repository. This project also contains [ARCore samples](xref:arfoundation-samples-arcore) that demonstrate ARCore-specific functionality. To understand how to use these samples, and learn more about each scene, refer to [AR Foundation samples](xref:arfoundation-samples).
