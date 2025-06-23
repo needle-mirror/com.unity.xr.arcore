@@ -56,7 +56,7 @@ To check the API level:
 1. Open the **Project Settings** window (menu: **Edit &gt; Project Settings**).
 2. Click **XR Plug-in Management** on the left to open the plug-in provider list.
 3. Select **Project Validation** in the list to view the validation page.
-4. Select the **Android** tab to view the status of the validation checks for Android XR plug-ins, including ARCore.
+4. Select the **Android** tab to view the status of the validation checks for XR plug-ins on the Android platform, including ARCore.
 5. If the **Android API level** check appears with a red error icon, the current setting is too low. Click the **Fix** button to raise the API level to the minimum supported value.
 
    ![Android API level error](images/arcore-api-level-error.png "Android API level error")<br />*Use the Project Validation page to check the Android API level*
@@ -151,7 +151,7 @@ To change this setting:
 <a name="arcore-depth-required"></a>
 ### Set ARCore Depth support
 
-If your app cannot function without ARCore depth support, you can prevent prevent it from being installed on devices without depth support by setting the ARCore plug-in **Depth** setting to **Required**. Alternately, if your app can function acceptably without depth information, you can make support optional. See [Depth adds realism](https://developers.google.com/ar/develop/depth#unity-ar-foundation) in Google's ARCore documentation for more information about the ARCore depth feature.
+If your app cannot function without ARCore depth support, you can prevent it from being installed on devices without depth support by setting the ARCore plug-in **Depth** setting to **Required**. Alternately, if your app can function acceptably without depth information, you can make support optional. See [Depth adds realism](https://developers.google.com/ar/develop/depth#unity-ar-foundation) in Google's ARCore documentation for more information about the ARCore depth feature.
 
 To change this setting:
 
@@ -196,7 +196,7 @@ To review the ARCore project validation results:
 1. Open the **Project Settings** window (menu: **Edit &gt; Project Settings**).
 2. Click **XR Plug-in Management** on the left to open the plug-in provider list.
 3. Select **Project Validation** in the list to view the validation page.
-4. Select the **Android** tab to view the status of the validation checks for Android XR plug-ins, including ARCore.
+4. Select the **Android** tab to view the status of the validation checks for XR plug-ins on the Android platform, including ARCore.
 
 Rules that pass validation are not shown unless you enable **Show all**.
 
