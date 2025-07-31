@@ -8,6 +8,12 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [6.3.0-pre.1] - 2025-07-31
+
+### Changed
+
+- Changed AR Foundation dependency version from 6.2.0 to 6.3.0-pre.1.
+
 ## [6.2.0] - 2025-06-23
 
 ### Changed
