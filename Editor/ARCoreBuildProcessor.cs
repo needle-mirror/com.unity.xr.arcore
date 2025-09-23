@@ -10,7 +10,6 @@ using UnityEditor.XR.Management;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.XR.ARCore;
-using Diag = System.Diagnostics;
 
 namespace UnityEditor.XR.ARCore
 {
@@ -120,16 +119,20 @@ namespace UnityEditor.XR.ARCore
 
         static AndroidSdkVersions GetMinimumSdkForCurrentGraphicsApi(ARCoreSettings arcoreSettings, GraphicsDeviceType graphicsApi)
         {
+#if UNITY_6000_3_OR_NEWER
+            const AndroidSdkVersions minSupportedSdkVersion = AndroidSdkVersions.AndroidApiLevel25;
+#else
             const AndroidSdkVersions minSupportedSdkVersion = AndroidSdkVersions.AndroidApiLevel23;
-
-            // Minimum required is ApiLevel 14, however Unity's minimum is always higher than 14
-            const AndroidSdkVersions minSdkVersionOptional = minSupportedSdkVersion;
+#endif
+            const AndroidSdkVersions minSdkVersionWithVulkan = AndroidSdkVersions.AndroidApiLevel29;
+#if UNITY_6000_3_OR_NEWER
+            const AndroidSdkVersions minSdkVersionWithOpenGLES3 = AndroidSdkVersions.AndroidApiLevel25;
+#else
+            const AndroidSdkVersions minSdkVersionWithOpenGLES3 = AndroidSdkVersions.AndroidApiLevel24;
+#endif
 
             if (arcoreSettings.requirement == ARCoreSettings.Requirement.Optional)
-                return minSdkVersionOptional;
-
-            const AndroidSdkVersions minSdkVersionWithVulkan = AndroidSdkVersions.AndroidApiLevel29;
-            const AndroidSdkVersions minSdkVersionWithOpenGLES3 = AndroidSdkVersions.AndroidApiLevel24;
+                return minSupportedSdkVersion;
 
             return graphicsApi == GraphicsDeviceType.Vulkan ? minSdkVersionWithVulkan : minSdkVersionWithOpenGLES3;
         }
@@ -205,7 +208,7 @@ namespace UnityEditor.XR.ARCore
                 if (plugin.isNativePlugin &&
                     k_RuntimePluginNames.Any(pluginName => plugin.assetPath.Contains(pluginName)))
                 {
-                    plugin.SetIncludeInBuildDelegate(path => isARCoreLoaderEnabled);
+                    plugin.SetIncludeInBuildDelegate(_ => isARCoreLoaderEnabled);
                 }
             }
         }

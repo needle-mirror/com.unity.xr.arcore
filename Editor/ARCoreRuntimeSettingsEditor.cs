@@ -16,31 +16,12 @@ namespace UnityEditor.XR.ARCore
         SerializedProperty m_AuthorizationTypeProperty;
         SerializedProperty m_ApiKeyProperty;
 
-        static readonly GUIContent k_KeylessAuthText = new GUIContent("Follow the steps to configure Keyless authorization for your app.");
-        static readonly GUIContent k_KeylessAuthUrlText = new GUIContent("View Documentation");
-        static readonly string k_KeylessAuthUrl = "https://developers.google.com/ar/develop/authorization";
+        static readonly GUIContent k_KeylessAuthText = new("Follow the steps to configure Keyless authorization for your app.");
+        static readonly GUIContent k_KeylessAuthUrlText = new("View Documentation");
+        const string k_KeylessAuthUrl = "https://developers.google.com/ar/develop/authorization";
 
         static GUIStyle s_UrlLabelPersonal;
         static GUIStyle s_UrlLabelProfessional;
-
-        static readonly Color k_UrlColorPersonal = new Color(8 / 255f, 8 / 255f, 252 / 255f);
-        static readonly Color k_UrlColorProfessional = new Color(79 / 255f, 128 / 255f, 248 / 255f);
-
-        void Awake()
-        {
-            s_UrlLabelPersonal = new GUIStyle(EditorStyles.label)
-            {
-                name = "url-label",
-                richText = true,
-                normal = new GUIStyleState { textColor = k_UrlColorPersonal },
-            };
-            s_UrlLabelProfessional = new GUIStyle(EditorStyles.label)
-            {
-                name = "url-label",
-                richText = true,
-                normal = new GUIStyleState { textColor = k_UrlColorProfessional },
-            };
-        }
 
         void OnEnable()
         {
@@ -61,41 +42,53 @@ namespace UnityEditor.XR.ARCore
             m_ARCoreRuntimeSettingsSerializedObject.Update();
             m_ARCoreSettingsSerializedObject.Update();
 
-            using (var change = new EditorGUI.ChangeCheckScope())
+            using var change = new EditorGUI.ChangeCheckScope();
+            EditorGUILayout.PropertyField(m_RequirementProperty);
+            EditorGUILayout.PropertyField(m_DepthProperty);
+            EditorGUILayout.PropertyField(m_IgnoreGradleVersionProperty);
+            EditorGUILayout.PropertyField(m_EnableCloudAnchorsProperty);
+
+            if (m_EnableCloudAnchorsProperty.boolValue)
             {
-                EditorGUILayout.PropertyField(m_RequirementProperty);
-                EditorGUILayout.PropertyField(m_DepthProperty);
-                EditorGUILayout.PropertyField(m_IgnoreGradleVersionProperty);
-                EditorGUILayout.PropertyField(m_EnableCloudAnchorsProperty);
-
-                if (m_EnableCloudAnchorsProperty.boolValue)
+                EditorGUILayout.PropertyField(m_AuthorizationTypeProperty);
+                if (m_AuthorizationTypeProperty.intValue == (int)ARCoreRuntimeSettings.AuthorizationType.ApiKey)
                 {
-                    EditorGUILayout.PropertyField(m_AuthorizationTypeProperty);
-                    if (m_AuthorizationTypeProperty.intValue == (int)ARCoreRuntimeSettings.AuthorizationType.ApiKey)
-                    {
-                        EditorGUILayout.PropertyField(m_ApiKeyProperty);
-                    }
-                    else if (m_AuthorizationTypeProperty.intValue == (int)ARCoreRuntimeSettings.AuthorizationType.Keyless)
-                    {
-                        GUILayout.BeginVertical(EditorStyles.helpBox);
-                        {
-                            EditorGUILayout.LabelField(k_KeylessAuthText);
-                            DisplayLink(k_KeylessAuthUrlText, k_KeylessAuthUrl, 2);
-                        }
-                        GUILayout.EndVertical();
-                    }
+                    EditorGUILayout.PropertyField(m_ApiKeyProperty);
                 }
-
-                if (change.changed)
+                else if (m_AuthorizationTypeProperty.intValue == (int)ARCoreRuntimeSettings.AuthorizationType.Keyless)
                 {
-                    m_ARCoreRuntimeSettingsSerializedObject.ApplyModifiedProperties();
-                    m_ARCoreSettingsSerializedObject.ApplyModifiedProperties();
+                    GUILayout.BeginVertical(EditorStyles.helpBox);
+                    {
+                        EditorGUILayout.LabelField(k_KeylessAuthText);
+                        DisplayLink(k_KeylessAuthUrlText, k_KeylessAuthUrl, 2);
+                    }
+                    GUILayout.EndVertical();
                 }
+            }
+
+            if (change.changed)
+            {
+                m_ARCoreRuntimeSettingsSerializedObject.ApplyModifiedProperties();
+                m_ARCoreSettingsSerializedObject.ApplyModifiedProperties();
             }
         }
 
-        void DisplayLink(GUIContent text, string url, int leftMargin)
+        static void DisplayLink(GUIContent text, string url, int leftMargin)
         {
+            s_UrlLabelPersonal ??= new(EditorStyles.label)
+            {
+                name = "url-label",
+                richText = true,
+                normal = new GUIStyleState { textColor = new(8 / 255f, 8 / 255f, 252 / 255f) },
+            };
+
+            s_UrlLabelProfessional ??= new(EditorStyles.label)
+            {
+                name = "url-label",
+                richText = true,
+                normal = new GUIStyleState { textColor = new(79 / 255f, 128 / 255f, 248 / 255f) },
+            };
+
             var labelStyle = EditorGUIUtility.isProSkin ? s_UrlLabelProfessional : s_UrlLabelPersonal;
             var size = labelStyle.CalcSize(text);
             var uriRect = GUILayoutUtility.GetRect(text, labelStyle);

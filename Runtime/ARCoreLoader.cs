@@ -1,5 +1,7 @@
 using System;
+#if UNITY_ANDROID && !UNITY_EDITOR
 using System.Collections.Generic;
+#endif
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -16,17 +18,19 @@ namespace UnityEngine.XR.ARCore
         , IXRLoaderPreInit
 #endif
     {
-        static List<XRSessionSubsystemDescriptor> s_SessionSubsystemDescriptors = new List<XRSessionSubsystemDescriptor>();
-        static List<XRCameraSubsystemDescriptor> s_CameraSubsystemDescriptors = new List<XRCameraSubsystemDescriptor>();
-        static List<XRPointCloudSubsystemDescriptor> s_PointCloudSubsystemDescriptors = new List<XRPointCloudSubsystemDescriptor>();
-        static List<XRPlaneSubsystemDescriptor> s_PlaneSubsystemDescriptors = new List<XRPlaneSubsystemDescriptor>();
-        static List<XRAnchorSubsystemDescriptor> s_AnchorSubsystemDescriptors = new List<XRAnchorSubsystemDescriptor>();
-        static List<XRRaycastSubsystemDescriptor> s_RaycastSubsystemDescriptors = new List<XRRaycastSubsystemDescriptor>();
-        static List<XRImageTrackingSubsystemDescriptor> s_ImageTrackingSubsystemDescriptors = new List<XRImageTrackingSubsystemDescriptor>();
-        static List<XRInputSubsystemDescriptor> s_InputSubsystemDescriptors = new List<XRInputSubsystemDescriptor>();
-        static List<XRFaceSubsystemDescriptor> s_FaceSubsystemDescriptors = new List<XRFaceSubsystemDescriptor>();
-        static List<XREnvironmentProbeSubsystemDescriptor> s_EnvironmentProbeSubsystemDescriptors = new List<XREnvironmentProbeSubsystemDescriptor>();
-        static List<XROcclusionSubsystemDescriptor> s_OcclusionSubsystemDescriptors = new List<XROcclusionSubsystemDescriptor>();
+#if UNITY_ANDROID && !UNITY_EDITOR
+        static List<XRSessionSubsystemDescriptor> s_SessionSubsystemDescriptors = new();
+        static List<XRCameraSubsystemDescriptor> s_CameraSubsystemDescriptors = new();
+        static List<XRPointCloudSubsystemDescriptor> s_PointCloudSubsystemDescriptors = new();
+        static List<XRPlaneSubsystemDescriptor> s_PlaneSubsystemDescriptors = new();
+        static List<XRAnchorSubsystemDescriptor> s_AnchorSubsystemDescriptors = new();
+        static List<XRRaycastSubsystemDescriptor> s_RaycastSubsystemDescriptors = new();
+        static List<XRImageTrackingSubsystemDescriptor> s_ImageTrackingSubsystemDescriptors = new();
+        static List<XRInputSubsystemDescriptor> s_InputSubsystemDescriptors = new();
+        static List<XRFaceSubsystemDescriptor> s_FaceSubsystemDescriptors = new();
+        static List<XREnvironmentProbeSubsystemDescriptor> s_EnvironmentProbeSubsystemDescriptors = new();
+        static List<XROcclusionSubsystemDescriptor> s_OcclusionSubsystemDescriptors = new();
+#endif
 
         /// <summary>
         /// The `XRSessionSubsystem` whose lifecycle is managed by this loader.
@@ -105,7 +109,7 @@ namespace UnityEngine.XR.ARCore
         /// <summary>
         /// Initializes the loader.
         /// </summary>
-        /// <returns>`True` if the session subsystem was successfully created, otherwise `false`.</returns>
+        /// <returns>`true` if the session subsystem was successfully created. Otherwise, `false`.</returns>
         public override bool Initialize()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
@@ -130,24 +134,6 @@ namespace UnityEngine.XR.ARCore
 #else
             return false;
 #endif
-        }
-
-        /// <summary>
-        /// Starts all subsystems.
-        /// </summary>
-        /// <returns>`True` if the subsystems were started, otherwise `false`.</returns>
-        public override bool Start()
-        {
-            return true;
-        }
-
-        /// <summary>
-        /// Stops all subsystems.
-        /// </summary>
-        /// <returns>`True` if the subsystems were stopped, otherwise `false`.</returns>
-        public override bool Stop()
-        {
-            return true;
         }
 
         /// <summary>

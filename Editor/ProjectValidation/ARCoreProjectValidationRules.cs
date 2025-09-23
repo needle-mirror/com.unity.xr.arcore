@@ -19,11 +19,17 @@ namespace UnityEditor.XR.ARCore
         [InitializeOnLoadMethod]
         static void AddARCoreValidationRules()
         {
-            const AndroidSdkVersions minSupportedSdkVersion = AndroidSdkVersions.AndroidApiLevel23;
+#if UNITY_6000_3_OR_NEWER
+            const AndroidSdkVersions minSdkVersion = AndroidSdkVersions.AndroidApiLevel25;
+#else
+            const AndroidSdkVersions minSdkVersion = AndroidSdkVersions.AndroidApiLevel23;
+#endif
             const AndroidSdkVersions minSdkVersionWithVulkan = AndroidSdkVersions.AndroidApiLevel29;
+#if UNITY_6000_3_OR_NEWER
+            const AndroidSdkVersions minSdkVersionWithOpenGLES3 = AndroidSdkVersions.AndroidApiLevel25;
+#else
             const AndroidSdkVersions minSdkVersionWithOpenGLES3 = AndroidSdkVersions.AndroidApiLevel24;
-            // Minimum required is ApiLevel 14, however Unity's minimum is always higher than 14
-            const AndroidSdkVersions minSdkVersionOptional = minSupportedSdkVersion;
+#endif
 
             // When adding a new validation rule, please remember to add it in the docs also with a user-friendly description
             var androidGlobalRules = new[]
@@ -36,7 +42,7 @@ namespace UnityEditor.XR.ARCore
                     CheckPredicate = () =>
                     {
                         var graphicsApis = PlayerSettings.GetGraphicsAPIs(BuildTarget.Android);
-                        return graphicsApis[0] == GraphicsDeviceType.Vulkan ? graphicsApis.Contains(GraphicsDeviceType.OpenGLES3) : true;
+                        return graphicsApis[0] != GraphicsDeviceType.Vulkan || graphicsApis.Contains(GraphicsDeviceType.OpenGLES3);
                     },
                     FixItMessage = "Open Project Settings > Player Settings > Android tab. In the list of 'Graphics APIs', make sure that " +
                                    "'Vulkan' is listed as the first API, and 'OpenGLES3' as the second one.",
@@ -55,7 +61,7 @@ namespace UnityEditor.XR.ARCore
                 new BuildValidationRule
                 {
                     Category = k_Catergory,
-                    Message = $"With Vulkan Graphics API, Google ARCore requires targeting minimum Android 10.0 API level {minSdkVersionWithVulkan} when AR is 'Required', or Android 4.0 'Ice Cream Sandwich' API Level {minSdkVersionOptional} when AR is 'Optional' (currently: {PlayerSettings.Android.minSdkVersion}).",
+                    Message = $"With Vulkan Graphics API, Google ARCore requires targeting minimum Android 10.0 API level {minSdkVersionWithVulkan} when AR is 'Required', or Android 4.0 'Ice Cream Sandwich' API Level {minSdkVersion} when AR is 'Optional' (currently: {PlayerSettings.Android.minSdkVersion}).",
                     IsRuleEnabled = IsARCorePluginEnabled,
                     CheckPredicate = () =>
                     {
@@ -64,28 +70,28 @@ namespace UnityEditor.XR.ARCore
                             return true;
 
                         var arcoreSettings = ARCoreSettings.GetOrCreateSettings();
-                        var minSdkVersion = arcoreSettings.requirement == ARCoreSettings.Requirement.Optional ? minSdkVersionOptional : minSdkVersionWithVulkan;
+                        var projectMinSdkVersion = arcoreSettings.requirement == ARCoreSettings.Requirement.Optional ? minSdkVersion : minSdkVersionWithVulkan;
 
-                        return PlayerSettings.Android.minSdkVersion >= minSdkVersion;
+                        return PlayerSettings.Android.minSdkVersion >= projectMinSdkVersion;
                     },
                     FixItMessage = "Open Project Settings > Player Settings > Android tab and increase the 'Minimum API Level' to" +
                         $" 'API Level {minSdkVersionWithVulkan}' (if using Vulkan) for AR Required," +
-                        $" and to 'API Level {minSdkVersionOptional}' or greater for AR Optional.",
+                        $" and to 'API Level {minSdkVersion}' or greater for AR Optional.",
                     FixIt = () =>
                     {
                         var graphicsApis = PlayerSettings.GetGraphicsAPIs(BuildTarget.Android);
                         var minRequiredVersion = graphicsApis.Length > 0 && graphicsApis[0] == GraphicsDeviceType.Vulkan ? minSdkVersionWithVulkan : minSdkVersionWithOpenGLES3;
 
                         var arcoreSettings = ARCoreSettings.GetOrCreateSettings();
-                        var minSdkVersion = arcoreSettings.requirement == ARCoreSettings.Requirement.Optional ? minSdkVersionOptional : minRequiredVersion;
-                        PlayerSettings.Android.minSdkVersion = minSdkVersion;
+                        var projectMinSdkVersion = arcoreSettings.requirement == ARCoreSettings.Requirement.Optional ? minSdkVersion : minRequiredVersion;
+                        PlayerSettings.Android.minSdkVersion = projectMinSdkVersion;
                     },
                     Error = true
                 },
                 new BuildValidationRule
                 {
                     Category = k_Catergory,
-                    Message = $"With OpenGLES3 Graphics API, Google ARCore requires targeting minimum Android 7.0 'Nougat' API level {minSdkVersionWithOpenGLES3} when AR is 'Required', or Android 4.0 'Ice Cream Sandwich' API Level {minSdkVersionOptional} when AR is 'Optional' (currently: {PlayerSettings.Android.minSdkVersion}).",
+                    Message = $"With OpenGLES3 Graphics API, Google ARCore requires targeting minimum Android 7.0 'Nougat' API level {minSdkVersionWithOpenGLES3} when AR is 'Required', or Android 4.0 'Ice Cream Sandwich' API Level {minSdkVersion} when AR is 'Optional' (currently: {PlayerSettings.Android.minSdkVersion}).",
                     IsRuleEnabled = IsARCorePluginEnabled,
                     CheckPredicate = () =>
                     {
@@ -94,21 +100,21 @@ namespace UnityEditor.XR.ARCore
                             return true;
 
                         var arcoreSettings = ARCoreSettings.GetOrCreateSettings();
-                        var minSdkVersion = arcoreSettings.requirement == ARCoreSettings.Requirement.Optional ? minSupportedSdkVersion : minSdkVersionWithOpenGLES3;
+                        var projectMinSdkVersion = arcoreSettings.requirement == ARCoreSettings.Requirement.Optional ? minSdkVersion : minSdkVersionWithOpenGLES3;
 
-                        return PlayerSettings.Android.minSdkVersion >= minSdkVersion;
+                        return PlayerSettings.Android.minSdkVersion >= projectMinSdkVersion;
                     },
                     FixItMessage = "Open Project Settings > Player Settings > Android tab and increase the 'Minimum API Level' to" +
                         $" 'API Level {minSdkVersionWithOpenGLES3}' or greater for AR Required," +
-                        $" and to 'API Level {minSupportedSdkVersion}' or greater for AR Optional.",
+                        $" and to 'API Level {minSdkVersion}' or greater for AR Optional.",
                     FixIt = () =>
                     {
                         var graphicsApis = PlayerSettings.GetGraphicsAPIs(BuildTarget.Android);
                         var minRequiredVersion = graphicsApis.Length > 0 && graphicsApis[0] == GraphicsDeviceType.OpenGLES3 ? minSdkVersionWithOpenGLES3 : minSdkVersionWithVulkan;
 
                         var arcoreSettings = ARCoreSettings.GetOrCreateSettings();
-                        var minSdkVersion = arcoreSettings.requirement == ARCoreSettings.Requirement.Optional ? minSdkVersionOptional : minRequiredVersion;
-                        PlayerSettings.Android.minSdkVersion = minSdkVersion;
+                        var projectMinSdkVersion = arcoreSettings.requirement == ARCoreSettings.Requirement.Optional ? minSdkVersion : minRequiredVersion;
+                        PlayerSettings.Android.minSdkVersion = projectMinSdkVersion;
                     },
                     Error = true
                 },
