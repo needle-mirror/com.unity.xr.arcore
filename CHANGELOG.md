@@ -8,6 +8,18 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [6.2.1] - 2025-11-07
+
+### Changed
+
+- Changed AR Foundation dependency version from 6.2.0 to 6.2.1.
+
+### Fixed
+
+- Fixed stuttering camera background rendering on Android mobile devices when the `Graphics API` was set to `OpenGLES3` and `Multithreaded Rendering` was turned `on` in the `Player` settings for the project.
+- Fixed `ARCoreEnvironmentProbeSubsystem` so that it no longer corrupts render state over time when using multithreaded GLES rendering.
+- Fixed `ARCoreRuntimeSettingsEditor` so that it no longer throws a `NullReferenceException` when you reload the domain while **Project Settings** > **XR Plug-in Management** > **Google ARCore** is open.
+
 ## [6.2.0] - 2025-06-23
 
 ### Changed

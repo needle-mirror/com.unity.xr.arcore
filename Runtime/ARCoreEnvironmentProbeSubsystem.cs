@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
 using System;
 using Unity.Collections;
+using UnityEngine.Rendering;
 using UnityEngine.Scripting;
 using UnityEngine.XR.ARSubsystems;
 
@@ -50,12 +51,20 @@ namespace UnityEngine.XR.ARCore
             /// <summary>
             /// Starts the environment probe subsystem by enabling the HDR Environmental Light Estimation.
             /// </summary>
-            public override void Start() => NativeApi.UnityARCore_EnvironmentProbeProvider_Start();
+            public override void Start()
+            {
+                CreateCubeMapTexture();
+                NativeApi.UnityARCore_EnvironmentProbeProvider_Start();
+            }
 
             /// <summary>
             /// Stops the environment probe subsystem by disabling the environment probe state.
             /// </summary>
-            public override void Stop() => NativeApi.UnityARCore_EnvironmentProbeProvider_Stop();
+            public override void Stop()
+            {
+                NativeApi.UnityARCore_EnvironmentProbeProvider_Stop();
+                DeleteCubeMapTexture();
+            }
 
             /// <summary>
             /// Destroy the environment probe subsystem by first ensuring that the subsystem has been stopped and then
@@ -124,6 +133,40 @@ namespace UnityEngine.XR.ARCore
 
                 return changes;
             }
+
+            void IssueRenderEventAndWaitForCompletion(NativeApi.RenderEvent renderEvent)
+            {
+                // Note: If renderEventFunc is zero, it means
+                //     1. We are running in the Editor.
+                //     2. The UnityARCore library could not be loaded or similar catastrophic failure.
+                //     3. OR, we are single threaded
+                IntPtr renderEventFunc = NativeApi.UnityARCore_EnvironmentProbeProvider_SetRenderEventPending();
+                if (renderEventFunc != IntPtr.Zero)
+                {
+                    GL.IssuePluginEvent(renderEventFunc, (int)renderEvent);
+                    NativeApi.UnityARCore_EnvironmentProbeProvider_WaitForRenderEvent();
+                }
+            }
+
+            // Safe to call multiple times; does nothing if already created.
+            void CreateCubeMapTexture()
+            {
+                // MT GLES requires directing the cube map texture creation from C# since it needs
+                // to synchronize with the render thread.  Vulkan can create it purely from native
+                // code.
+                if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES3 && SystemInfo.graphicsMultiThreaded)
+                    IssueRenderEventAndWaitForCompletion(NativeApi.RenderEvent.CreateCubeMapTexture);
+            }
+
+            // Safe to call multiple times; does nothing if already destroyed.
+            void DeleteCubeMapTexture()
+            {
+                // MT GLES requires directing the cube map texture deletion from C# since it needs
+                // to synchronize with the render thread.  Vulkan can create it purely from native
+                // code.
+                if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES3 && SystemInfo.graphicsMultiThreaded)
+                    IssueRenderEventAndWaitForCompletion(NativeApi.RenderEvent.DeleteCubeMapTexture);
+            }
         }
     }
 
@@ -132,6 +175,12 @@ namespace UnityEngine.XR.ARCore
     /// </summary>
     static class NativeApi
     {
+        public enum RenderEvent
+        {
+            CreateCubeMapTexture = 0,
+            DeleteCubeMapTexture = 1,
+        }
+
         [DllImport(Constants.k_LibraryName)]
         internal static extern void UnityARCore_EnvironmentProbeProvider_Construct(ColorSpace activeColorSpace);
 
@@ -152,5 +201,11 @@ namespace UnityEngine.XR.ARCore
 
         [DllImport(Constants.k_LibraryName)]
         internal static extern void UnityARCore_EnvironmentProbeProvider_GetChanges(out int numAdded, out int numUpdated, out int numRemoved, ref XREnvironmentProbe outProbe);
+
+        [DllImport(Constants.k_LibraryName)]
+        internal static extern IntPtr UnityARCore_EnvironmentProbeProvider_SetRenderEventPending();
+
+        [DllImport(Constants.k_LibraryName)]
+        internal static extern void UnityARCore_EnvironmentProbeProvider_WaitForRenderEvent();
     }
 }
