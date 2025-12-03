@@ -316,9 +316,6 @@ namespace UnityEngine.XR.ARCore
             if (!Api.platformAndroid || !Api.loaderPresent)
                 return;
 
-            // If cloud anchors are not enabled, don't allow users to access the save, load, and cancel features
-            var cloudAnchorsEnabled = ARCoreRuntimeSettings.Instance.enableCloudAnchors;
-
             var cinfo = new XRAnchorSubsystemDescriptor.Cinfo
             {
                 id = "ARCore-Anchor",
@@ -326,10 +323,10 @@ namespace UnityEngine.XR.ARCore
                 subsystemTypeOverride = typeof(ARCoreAnchorSubsystem),
                 supportsTrackableAttachments = true,
                 supportsSynchronousAdd = true,
-                supportsSaveAnchor = cloudAnchorsEnabled,
-                supportsLoadAnchor = cloudAnchorsEnabled,
-                supportsEraseAnchor = false,
-                supportsGetSavedAnchorIds = false,
+                supportsSaveAnchorDelegate = () => ARCoreRuntimeSettings.Instance.enableCloudAnchors,
+                supportsLoadAnchorDelegate = () => ARCoreRuntimeSettings.Instance.enableCloudAnchors,
+                supportsEraseAnchorDelegate = () => false,
+                supportsGetSavedAnchorIdsDelegate = () => false,
                 supportsAsyncCancellation = true,
             };
 

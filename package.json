@@ -1,7 +1,7 @@
 {
   "name": "com.unity.xr.arcore",
   "displayName": "Google ARCore XR Plugin",
-  "version": "6.4.0-pre.1",
+  "version": "6.4.0",
   "unity": "6000.0",
   "description": "Provides native Google ARCore integration for use with Unity's multi-platform XR API.\nSupports the following features:\n-Efficient Background Rendering\n-Horizontal Planes\n-Depth Data\n-Anchors\n-Hit Testing\n-Occlusion",
   "keywords": [
@@ -13,22 +13,22 @@
     "core"
   ],
   "dependencies": {
-    "com.unity.xr.arfoundation": "6.4.0-pre.1",
+    "com.unity.xr.arfoundation": "6.4.0",
     "com.unity.xr.core-utils": "2.2.2",
     "com.unity.xr.management": "4.4.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.unitywebrequest": "1.0.0"
   },
   "_upm": {
-    "changelog": "### Changed\n\n- Changed AR Foundation dependency version from 6.3.0 to 6.4.0-pre.1.\n\n### Fixed\n\n- Fixed `ARCoreEnvironmentProbeSubsystem` so that it no longer corrupts render state over time when using multithreaded GLES rendering."
+    "changelog": "### Fixed\n\n- Fixed stuttering camera background rendering on Android mobile devices when the `Graphics API` was set to `OpenGLES3` and `Multithreaded Rendering` was turned `on` in the `Player` settings for the project.\n\n### Changed\n\n- Changed AR Foundation dependency version from 6.4.0-pre.1 to 6.4.0."
   },
   "upmCi": {
-    "footprint": "8166e1b4e2d0f69053dd7322c9c0e5f0f5a711a0"
+    "footprint": "90f4c402ba6820167a311e116ddaab37374a615a"
   },
   "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.xr.arcore@6.4/manual/index.html",
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/arfoundation.git",
     "type": "git",
-    "revision": "102fdedc102caf50f3bd5f0a7e11322d5b775031"
+    "revision": "0242ac75553e35b1b89d658278606bb3dea5fa30"
   }
 }
