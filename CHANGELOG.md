@@ -8,6 +8,15 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [6.3.2] - 2025-12-18
+
+### Changed
+- Changed AR Foundation dependency version from 6.3.1 to 6.3.2.
+
+### Fixed
+
+- Fixed stuttering camera background rendering on Android mobile devices when the `Graphics API` was set to `OpenGLES3` and `Multithreaded Rendering` was turned `on` in the `Player` settings for the project.
+
 ## [6.3.1] - 2025-11-04
 
 ### Changed
