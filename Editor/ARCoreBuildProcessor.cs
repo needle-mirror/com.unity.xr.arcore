@@ -117,15 +117,20 @@ namespace UnityEditor.XR.ARCore
                 throw new BuildFailedException($"ARCore {arcoreSettings.requirement} apps using {graphicsApi} require a minimum SDK version of {minSdkVersion}. Currently set to {PlayerSettings.Android.minSdkVersion}");
         }
 
-        static AndroidSdkVersions GetMinimumSdkForCurrentGraphicsApi(ARCoreSettings arcoreSettings, GraphicsDeviceType graphicsApi)
+        static AndroidSdkVersions GetMinimumSdkForCurrentGraphicsApi(
+            ARCoreSettings arcoreSettings, GraphicsDeviceType graphicsApi)
         {
-#if UNITY_6000_3_OR_NEWER
+#if UNITY_6000_5_OR_NEWER
+            const AndroidSdkVersions minSupportedSdkVersion = AndroidSdkVersions.AndroidApiLevel26;
+#elif UNITY_6000_3_OR_NEWER
             const AndroidSdkVersions minSupportedSdkVersion = AndroidSdkVersions.AndroidApiLevel25;
 #else
             const AndroidSdkVersions minSupportedSdkVersion = AndroidSdkVersions.AndroidApiLevel23;
 #endif
             const AndroidSdkVersions minSdkVersionWithVulkan = AndroidSdkVersions.AndroidApiLevel29;
-#if UNITY_6000_3_OR_NEWER
+#if UNITY_6000_5_OR_NEWER
+            const AndroidSdkVersions minSdkVersionWithOpenGLES3 = AndroidSdkVersions.AndroidApiLevel26;
+#elif UNITY_6000_3_OR_NEWER
             const AndroidSdkVersions minSdkVersionWithOpenGLES3 = AndroidSdkVersions.AndroidApiLevel25;
 #else
             const AndroidSdkVersions minSdkVersionWithOpenGLES3 = AndroidSdkVersions.AndroidApiLevel24;

@@ -1,7 +1,7 @@
 ---
 uid: arcore-whats-new
 ---
-# What's new in version 6.4
+# What's new in version 6.5
 
 This release contains no significant changes to the Google ARCore XR Plug-in.
 

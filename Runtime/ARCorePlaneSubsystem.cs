@@ -174,8 +174,8 @@ namespace UnityEngine.XR.ARCore
                 supportsHorizontalPlaneDetection = true,
                 supportsVerticalPlaneDetection = true,
                 supportsArbitraryPlaneDetection = false,
-                supportsBoundaryVertices = true,
-                supportsClassification = false,
+                supportsBoundaryVerticesDelegate = () => true,
+                supportsClassificationDelegate = () => false,
             };
 
             XRPlaneSubsystemDescriptor.Register(cinfo);

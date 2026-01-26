@@ -12,20 +12,24 @@ namespace UnityEditor.XR.ARCore
     static class ARCoreProjectValidationRules
     {
         const string k_PreferencesExternalTools = "Preferences/External Tools";
-        const string k_Catergory = "Google ARCore";
+        const string k_Category = "Google ARCore";
         const string k_GradleVersionUnknown = "cannot be determined";
         static readonly Version k_MinimumGradleVersion = new(5, 6, 4);
 
         [InitializeOnLoadMethod]
         static void AddARCoreValidationRules()
         {
-#if UNITY_6000_3_OR_NEWER
+#if UNITY_6000_5_OR_NEWER
+            const AndroidSdkVersions minSdkVersion = AndroidSdkVersions.AndroidApiLevel26;
+#elif UNITY_6000_3_OR_NEWER
             const AndroidSdkVersions minSdkVersion = AndroidSdkVersions.AndroidApiLevel25;
 #else
             const AndroidSdkVersions minSdkVersion = AndroidSdkVersions.AndroidApiLevel23;
 #endif
             const AndroidSdkVersions minSdkVersionWithVulkan = AndroidSdkVersions.AndroidApiLevel29;
-#if UNITY_6000_3_OR_NEWER
+#if UNITY_6000_5_OR_NEWER
+            const AndroidSdkVersions minSdkVersionWithOpenGLES3 = AndroidSdkVersions.AndroidApiLevel26;
+#elif UNITY_6000_3_OR_NEWER
             const AndroidSdkVersions minSdkVersionWithOpenGLES3 = AndroidSdkVersions.AndroidApiLevel25;
 #else
             const AndroidSdkVersions minSdkVersionWithOpenGLES3 = AndroidSdkVersions.AndroidApiLevel24;
@@ -36,7 +40,7 @@ namespace UnityEditor.XR.ARCore
             {
                 new BuildValidationRule
                 {
-                    Category = k_Catergory,
+                    Category = k_Category,
                     Message = "It is recommended to use OpenGLES3 as the second Graphics API when using Vulkan as first Graphics API and AR is 'Required', so that devices that do not support the needed Vulkan extension fall back to a working renderer.",
                     IsRuleEnabled = IsARCorePluginEnabled,
                     CheckPredicate = () =>
@@ -60,7 +64,7 @@ namespace UnityEditor.XR.ARCore
                 },
                 new BuildValidationRule
                 {
-                    Category = k_Catergory,
+                    Category = k_Category,
                     Message = $"With Vulkan Graphics API, Google ARCore requires targeting minimum Android 10.0 API level {minSdkVersionWithVulkan} when AR is 'Required', or Android 4.0 'Ice Cream Sandwich' API Level {minSdkVersion} when AR is 'Optional' (currently: {PlayerSettings.Android.minSdkVersion}).",
                     IsRuleEnabled = IsARCorePluginEnabled,
                     CheckPredicate = () =>
@@ -90,7 +94,7 @@ namespace UnityEditor.XR.ARCore
                 },
                 new BuildValidationRule
                 {
-                    Category = k_Catergory,
+                    Category = k_Category,
                     Message = $"With OpenGLES3 Graphics API, Google ARCore requires targeting minimum Android 7.0 'Nougat' API level {minSdkVersionWithOpenGLES3} when AR is 'Required', or Android 4.0 'Ice Cream Sandwich' API Level {minSdkVersion} when AR is 'Optional' (currently: {PlayerSettings.Android.minSdkVersion}).",
                     IsRuleEnabled = IsARCorePluginEnabled,
                     CheckPredicate = () =>
@@ -120,7 +124,7 @@ namespace UnityEditor.XR.ARCore
                 },
                 new BuildValidationRule
                 {
-                    Category = k_Catergory,
+                    Category = k_Category,
                     Message = "Google ARCore requires OpenGLES3 or Vulkan graphics API.",
                     IsRuleEnabled = IsARCorePluginEnabled,
                     CheckPredicate = () =>
@@ -164,7 +168,7 @@ namespace UnityEditor.XR.ARCore
                 },
                 new BuildValidationRule
                 {
-                    Category = k_Catergory,
+                    Category = k_Category,
                     Message = "IL2CPP scripting backend and ARM64 architecture is recommended for Google ARCore.",
                     HelpLink = "https://developers.google.com/ar/64bit",
                     IsRuleEnabled = IsARCorePluginEnabled,
@@ -184,7 +188,7 @@ namespace UnityEditor.XR.ARCore
                 },
                 new BuildValidationRule
                 {
-                    Category = k_Catergory,
+                    Category = k_Category,
                     Message = $"Google ARCore requires at least Gradle version {k_MinimumGradleVersion} (currently: {GetGradleVersionString()}).",
                     HelpLink = "https://developers.google.com/ar/develop/unity-arf/android-11-build",
                     IsRuleEnabled = () => IsARCorePluginEnabled() && EditorUserBuildSettings.activeBuildTarget == BuildTarget.Android,
