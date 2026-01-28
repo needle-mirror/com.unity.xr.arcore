@@ -8,6 +8,14 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [5.2.2] - 2026-01-28
+
+### Changed
+
+- Recompiled the native plug-in with support for [16 KB page sizes](https://developer.android.com/guide/practices/page-sizes) on Android 15 or newer.
+- Upgraded ARCore version from 1.42 to 1.45.
+- Changed the AR Foundation dependency version from 5.2.0 to 5.2.2.
+
 ## [5.2.0] - 2025-03-24
 
 ### Changed
