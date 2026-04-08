@@ -8,6 +8,13 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [6.0.7] - 2026-04-08
+
+### Changed
+
+- Upgraded ARCore version from 1.42 to 1.48, fixing an issue regarding 16KB page sizes for ARCore binaries on Android 15 or newer.
+- Changed AR Foundation dependency version from 6.0.6 to 6.0.7
+
 ## [6.0.6] - 2025-05-27
 
 ### Changed

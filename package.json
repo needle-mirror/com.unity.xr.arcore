@@ -1,7 +1,7 @@
 {
   "name": "com.unity.xr.arcore",
   "displayName": "Google ARCore XR Plugin",
-  "version": "6.0.6",
+  "version": "6.0.7",
   "unity": "6000.0",
   "description": "Provides native Google ARCore integration for use with Unity's multi-platform XR API.\nSupports the following features:\n-Efficient Background Rendering\n-Horizontal Planes\n-Depth Data\n-Anchors\n-Hit Testing\n-Occlusion",
   "keywords": [
@@ -13,22 +13,22 @@
     "core"
   ],
   "dependencies": {
-    "com.unity.xr.arfoundation": "6.0.6",
+    "com.unity.xr.arfoundation": "6.0.7",
     "com.unity.xr.core-utils": "2.2.2",
     "com.unity.xr.management": "4.4.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.unitywebrequest": "1.0.0"
   },
   "_upm": {
-    "changelog": "### Changed\n\n- Recompiled the native plug-in with support for [16 KB page sizes](https://developer.android.com/guide/practices/page-sizes) on Android 15 or newer.\n- Changed AR Foundation dependency version from 6.0.5 to 6.0.6"
+    "changelog": "### Changed\n\n- Upgraded ARCore version from 1.42 to 1.48, fixing an issue regarding 16KB page sizes for ARCore binaries on Android 15 or newer.\n- Changed AR Foundation dependency version from 6.0.6 to 6.0.7"
   },
   "upmCi": {
-    "footprint": "012a06fe4d690e17e70dea8c5a748bde0722be9f"
+    "footprint": "950cbed2a4b614c51de7c956ad2776e331ab4097"
   },
   "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.xr.arcore@6.0/manual/index.html",
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/arfoundation.git",
     "type": "git",
-    "revision": "4c5ceb8fa417c3793d0202f40d6941468c62644f"
+    "revision": "ee54064513d2af520a7b5d8b03ff66e8dd9450d3"
   }
 }
