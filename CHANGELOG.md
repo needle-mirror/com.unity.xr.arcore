@@ -8,7 +8,18 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [6.4.2] - 2026-03-17
+## [6.4.3] - 2026-05-11
+
+### Changed
+
+- Changed AR Foundation dependency version from 6.4.2 to 6.4.3.
+
+### Fixed
+
+- Fixed Vulkan backend applying unnecessary color space conversions to AR camera background, causing over-brightness in Gamma color space.
+- Fixed an issue where Android builds on Unity 6.4 or newer that contain this package would fail due to the upgraded version of Gradle used by those Editor versions. Refer to [Discussions](https://discussions.unity.com/t/info-android-gradle-9-1-0-agp-9-0-0-update-in-unity-6-4/1709062) for more information.
+
+## [6.4.2] - 2026-03-20
 
 ### Changed
 

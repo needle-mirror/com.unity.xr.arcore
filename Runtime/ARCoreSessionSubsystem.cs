@@ -198,6 +198,8 @@ namespace UnityEngine.XR.ARCore
             GCHandle m_ProviderHandle;
             Action<ArSession, ArConfig, IntPtr> m_SetConfigurationCallback = SetConfigurationCallback;
             Guid m_SessionId;
+            // Storing unity version for thread-safe accessing
+            static string s_UnityVersion;
 
             [Obsolete("Use SetPlaybackDatasetUri(string uri) instead")]
             public ArStatus SetPlaybackDataset(string playbackDataset)
@@ -237,6 +239,7 @@ namespace UnityEngine.XR.ARCore
                 }
 
                 m_ProviderHandle = GCHandle.Alloc(this);
+                s_UnityVersion = Application.unityVersion;
                 NativeApi.UnityARCore_session_setConfigCallback(m_SetConfigurationCallback, GCHandle.ToIntPtr(m_ProviderHandle));
             }
 
@@ -354,6 +357,7 @@ namespace UnityEngine.XR.ARCore
             [MonoPInvokeCallback(typeof(Action<ArSession, ArConfig, IntPtr>))]
             static void SetConfigurationCallback(ArSession session, ArConfig config, IntPtr context)
             {
+                NativeApi.UnityARCore_session_reportEngineVersion(session.AsIntPtr(), s_UnityVersion);
                 var providerHandle = (GCHandle)context;
 
                 if (providerHandle.Target is ARCoreProvider provider)
@@ -836,6 +840,9 @@ namespace UnityEngine.XR.ARCore
 
             [DllImport(Constants.k_LibraryName)]
             public static extern IntPtr UnityARCore_session_getVulkanTaskHandlerEventFunc();
+
+            [DllImport(Constants.k_LibraryName)]
+            public static extern void UnityARCore_session_reportEngineVersion(IntPtr session, [MarshalAs(UnmanagedType.LPStr)]string engineVersion);
 
             [DllImport(Constants.k_LibraryName)]
             public static extern void UnityARCore_session_onVulkanSupportRendererFeatureEnabled();
