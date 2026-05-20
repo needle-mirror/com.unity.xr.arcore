@@ -443,9 +443,6 @@ Shader "Unlit/ARCoreBackground/AfterOpaques"
                 }
 
                 float3 result = tex2D(_MainTex, uvs).xyz;
-#ifndef UNITY_COLORSPACE_GAMMA
-                result = GammaToLinearSpace(result);
-#endif // !UNITY_COLORSPACE_GAMMA
 
                 o.color = float4(result, 1.0);
                 o.depth = 1.0 - depth; // Unity Vulkan uses reverse Z.
@@ -530,14 +527,6 @@ Shader "Unlit/ARCoreBackground/AfterOpaques"
             sampler2D _EnvironmentDepth;
 #endif // ARCORE_ENVIRONMENT_DEPTH_ENABLED
 
-#ifndef UNITY_COLORSPACE_GAMMA
-            float3 GammaToLinearSpace(float3 sRGB)
-            {
-                // Approximate version from http://chilliant.blogspot.com.au/2012/08/srgb-approximations-for-hlsl.html?m=1
-                return sRGB * (sRGB * (sRGB * 0.305306011F + 0.682171111F) + 0.012522878F);
-            }
-#endif // !UNITY_COLORSPACE_GAMMA
-
             float ConvertDistanceToDepth(float d)
             {
                 d = _UnityCameraForwardScale > 0.0 ? _UnityCameraForwardScale * d : d;
@@ -571,10 +560,6 @@ Shader "Unlit/ARCoreBackground/AfterOpaques"
                 float distance = tex2D(_EnvironmentDepth, tc).x;
                 depth = ConvertDistanceToDepth(distance);
 #endif // ARCORE_ENVIRONMENT_DEPTH_ENABLED
-
-#ifndef UNITY_COLORSPACE_GAMMA
-                result = GammaToLinearSpace(result);
-#endif // !UNITY_COLORSPACE_GAMMA
 
                 fragOutput o;
 

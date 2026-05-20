@@ -4,48 +4,62 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Unity.Collections;
+using Unity.XR.CoreUtils;
 using UnityEngine.Scripting;
 using UnityEngine.XR.ARSubsystems;
+using static UnityEngine.XR.ARSubsystems.XRResultStatus;
+using SerializableGuid = UnityEngine.XR.ARSubsystems.SerializableGuid;
 
 namespace UnityEngine.XR.ARCore
 {
     /// <summary>
-    /// The ARCore implementation of the
-    /// [XRAnchorSubsystem](xref:UnityEngine.XR.ARSubsystems.XRAnchorSubsystem).
-    /// Do not create this directly. Use the
-    /// [SubsystemManager](xref:UnityEngine.SubsystemManager)
-    /// instead.
+    /// The ARCore implementation of the [XRAnchorSubsystem](xref:UnityEngine.XR.ARSubsystems.XRAnchorSubsystem).
+    /// Don't create this directly. Use the [SubsystemManager](xref:UnityEngine.SubsystemManager) instead.
     /// </summary>
     [Preserve]
     public sealed class ARCoreAnchorSubsystem : XRAnchorSubsystem
     {
+        struct SaveRequest
+        {
+            internal AwaitableCompletionSource<Result<SerializableGuid>> completionSource;
+            internal CancellationTokenRegistration tokenRegistration;
+
+            internal SaveRequest(
+                AwaitableCompletionSource<Result<SerializableGuid>> completionSource,
+                CancellationTokenRegistration tokenRegistration)
+            {
+                this.completionSource = completionSource;
+                this.tokenRegistration = tokenRegistration;
+            }
+        }
+
+        struct LoadRequest
+        {
+            internal AwaitableCompletionSource<Result<XRAnchor>> completionSource;
+            internal CancellationTokenRegistration tokenRegistration;
+
+            internal LoadRequest(
+                AwaitableCompletionSource<Result<XRAnchor>> completionSource,
+                CancellationTokenRegistration tokenRegistration)
+            {
+                this.completionSource = completionSource;
+                this.tokenRegistration = tokenRegistration;
+            }
+        }
+
         class ARCoreProvider : Provider
         {
             const uint k_MaxLifespanApiKey = 1;
-
             const uint k_MaxLifespanKeyless = 365;
 
-            static readonly Dictionary<TrackableId, AwaitableCompletionSource<Result<SerializableGuid>>> s_SaveAsyncPendingRequests = new();
+            static readonly Dictionary<TrackableId, SaveRequest> s_PendingSaveRequestsByAnchorId = new();
+            static readonly Dictionary<SerializableGuid, LoadRequest> s_PendingLoadRequestsByUuid = new();
 
-            static readonly Dictionary<SerializableGuid, AwaitableCompletionSource<Result<XRAnchor>>> s_LoadAsyncPendingRequests = new();
+            static readonly Pool.ObjectPool<AwaitableCompletionSource<Result<SerializableGuid>>> s_SaveCompletionSources =
+                ObjectPoolCreateUtil.Create<AwaitableCompletionSource<Result<SerializableGuid>>>();
 
-            static readonly Pool.ObjectPool<AwaitableCompletionSource<Result<SerializableGuid>>> s_SaveAsyncCompletionSources = new(
-                createFunc: () => new AwaitableCompletionSource<Result<SerializableGuid>>(),
-                actionOnGet: null,
-                actionOnRelease: null,
-                actionOnDestroy: null,
-                collectionCheck: false,
-                defaultCapacity: 8,
-                maxSize: 1024);
-
-            static readonly Pool.ObjectPool<AwaitableCompletionSource<Result<XRAnchor>>> s_LoadAsyncCompletionSources = new(
-                createFunc: () => new AwaitableCompletionSource<Result<XRAnchor>>(),
-                actionOnGet: null,
-                actionOnRelease: null,
-                actionOnDestroy: null,
-                collectionCheck: false,
-                defaultCapacity: 8,
-                maxSize: 1024);
+            static readonly Pool.ObjectPool<AwaitableCompletionSource<Result<XRAnchor>>> s_LoadCompletionSources =
+                ObjectPoolCreateUtil.Create<AwaitableCompletionSource<Result<XRAnchor>>>();
 
             protected override bool TryInitialize()
             {
@@ -54,22 +68,16 @@ namespace UnityEngine.XR.ARCore
             }
 
             public override void Start() => UnityARCore_anchors_start();
-
             public override void Stop() => UnityARCore_anchors_stop();
-
             public override void Destroy() => UnityARCore_anchors_onDestroy();
 
-            public override unsafe TrackableChanges<XRAnchor> GetChanges(
-                XRAnchor defaultAnchor,
-                Allocator allocator)
+            public override unsafe TrackableChanges<XRAnchor> GetChanges(XRAnchor defaultAnchor, Allocator allocator)
             {
-                int addedCount, updatedCount, removedCount, elementSize;
-                void* addedPtr, updatedPtr, removedPtr;
                 var context = UnityARCore_anchors_acquireChanges(
-                    out addedPtr, out addedCount,
-                    out updatedPtr, out updatedCount,
-                    out removedPtr, out removedCount,
-                    out elementSize);
+                    out var addedPtr, out var addedCount,
+                    out var updatedPtr, out var updatedCount,
+                    out var removedPtr, out var removedCount,
+                    out var elementSize);
 
                 try
                 {
@@ -84,20 +92,14 @@ namespace UnityEngine.XR.ARCore
                 {
                     UnityARCore_anchors_releaseChanges(context);
                 }
-
             }
 
-            public override bool TryAddAnchor(
-                Pose pose,
-                out XRAnchor anchor)
+            public override bool TryAddAnchor(Pose pose, out XRAnchor anchor)
             {
                 return UnityARCore_anchors_tryAdd(pose, out anchor);
             }
 
-            public override bool TryAttachAnchor(
-                TrackableId attachedToId,
-                Pose pose,
-                out XRAnchor anchor)
+            public override bool TryAttachAnchor(TrackableId attachedToId, Pose pose, out XRAnchor anchor)
             {
                 return UnityARCore_anchors_tryAttach(attachedToId, pose, out anchor);
             }
@@ -107,7 +109,8 @@ namespace UnityEngine.XR.ARCore
                 return UnityARCore_anchors_tryRemove(anchorId);
             }
 
-            internal XRResultStatus EstimateFeatureMapQualityForHosting(TrackableId anchorId, ref ArFeatureMapQuality quality)
+            internal XRResultStatus EstimateFeatureMapQualityForHosting(
+                TrackableId anchorId, ref ArFeatureMapQuality quality)
             {
                 return UnityARCore_anchors_estimateFeatureMapQualityForHosting(anchorId, ref quality);
             }
@@ -124,19 +127,16 @@ namespace UnityEngine.XR.ARCore
                 TrackableId anchorId, uint lifespan, CancellationToken cancellationToken = default)
             {
                 if (lifespan == 0)
-                {
                     throw new ArgumentException("Lifespan must be greater than 0");
-                }
 
-                var completionSource = s_SaveAsyncCompletionSources.Get();
-                var wasAddedToMap = s_SaveAsyncPendingRequests.TryAdd(anchorId, completionSource);
+                if (cancellationToken.IsCancellationRequested)
+                    throw new OperationCanceledException();
 
-                if (!wasAddedToMap)
+                if (s_PendingSaveRequestsByAnchorId.ContainsKey(anchorId))
                 {
                     Debug.LogError($"Cannot save anchor with trackableId [{anchorId}] while saving for it is already in progress!");
-                    var resultStatus = new XRResultStatus(XRResultStatus.StatusCode.ValidationFailure);
-                    var result = new Result<SerializableGuid>(resultStatus, default);
-                    return AwaitableUtils<Result<SerializableGuid>>.FromResult(completionSource, result);
+                    var result = new Result<SerializableGuid>(new(StatusCode.ValidationFailure), default);
+                    return AwaitableUtils<Result<SerializableGuid>>.FromResult(result);
                 }
 
                 var usingKeyless = ARCoreRuntimeSettings.Instance.authorizationType == ARCoreRuntimeSettings.AuthorizationType.Keyless;
@@ -151,24 +151,34 @@ namespace UnityEngine.XR.ARCore
                     lifespan = k_MaxLifespanApiKey;
                 }
 
+                var tokenRegistration = cancellationToken.Register(() =>
+                {
+                    if (s_PendingSaveRequestsByAnchorId.Remove(anchorId, out var saveRequest))
+                    {
+                        saveRequest.tokenRegistration.Dispose();
+                        UnityARCore_anchors_cancelSaveAnchor(anchorId);
+                        saveRequest.completionSource.SetCanceled();
+                        saveRequest.completionSource.Reset();
+                        s_SaveCompletionSources.Release(saveRequest.completionSource);
+                    }
+                    else
+                    {
+                        Debug.LogError($"An unknown error occurred when canceling {nameof(TrySaveAnchorAsync)}.");
+                    }
+                });
+
+                var completionSource = s_SaveCompletionSources.Get();
+                s_PendingSaveRequestsByAnchorId[anchorId] = new SaveRequest(completionSource, tokenRegistration);
+
                 var synchronousResultStatus = UnityARCore_anchors_trySaveAnchorAsync(anchorId, (int)lifespan);
                 if (synchronousResultStatus.IsError())
                 {
+                    tokenRegistration.Dispose();
+                    s_SaveCompletionSources.Release(completionSource);
+                    s_PendingSaveRequestsByAnchorId.Remove(anchorId);
                     var result = new Result<SerializableGuid>(synchronousResultStatus, default);
-                    return AwaitableUtils<Result<SerializableGuid>>.FromResult(completionSource, result);
+                    return AwaitableUtils<Result<SerializableGuid>>.FromResult(result);
                 }
-
-                cancellationToken.Register(() =>
-                {
-                    var resultStatus = UnityARCore_anchors_cancelSaveAnchor(anchorId);
-                    if (!s_SaveAsyncPendingRequests.Remove(anchorId))
-                    {
-                        Debug.LogError($"An unknown error occurred during a system callback for {nameof(TrySaveAnchorAsync)}.");
-                    }
-                    completionSource.SetResult(new Result<SerializableGuid>(resultStatus, default));
-                    completionSource.Reset();
-                    s_SaveAsyncCompletionSources.Release(completionSource);
-                });
 
                 return completionSource.Awaitable;
             }
@@ -176,85 +186,130 @@ namespace UnityEngine.XR.ARCore
             public override Awaitable<Result<XRAnchor>> TryLoadAnchorAsync(
                 SerializableGuid savedAnchorGuid, CancellationToken cancellationToken = default)
             {
-                var completionSource = s_LoadAsyncCompletionSources.Get();
-                var wasAddedToMap = s_LoadAsyncPendingRequests.TryAdd(savedAnchorGuid, completionSource);
+                if (cancellationToken.IsCancellationRequested)
+                    throw new OperationCanceledException();
 
-                if (!wasAddedToMap)
+                if (s_PendingLoadRequestsByUuid.ContainsKey(savedAnchorGuid))
                 {
                     Debug.LogError($"Cannot load persistent anchor GUID [{savedAnchorGuid}] while loading for it is already in progress!");
-                    var resultStatus = new XRResultStatus(XRResultStatus.StatusCode.ValidationFailure);
-                    var result = new Result<XRAnchor>(resultStatus, XRAnchor.defaultValue);
-                    return AwaitableUtils<Result<XRAnchor>>.FromResult(completionSource, result);
+                    var result = new Result<XRAnchor>(new(StatusCode.ValidationFailure), XRAnchor.defaultValue);
+                    return AwaitableUtils<Result<XRAnchor>>.FromResult(result);
                 }
+
+                var tokenRegistration = cancellationToken.Register(() =>
+                {
+                    if (s_PendingLoadRequestsByUuid.Remove(savedAnchorGuid, out var loadRequest))
+                    {
+                        loadRequest.tokenRegistration.Dispose();
+                        UnityARCore_anchors_cancelLoadAnchor(savedAnchorGuid);
+                        loadRequest.completionSource.SetCanceled();
+                        loadRequest.completionSource.Reset();
+                        s_LoadCompletionSources.Release(loadRequest.completionSource);
+                    }
+                    else
+                    {
+                        Debug.LogError($"An unknown error occurred when canceling {nameof(TryLoadAnchorAsync)}.");
+                    }
+                });
+
+                var completionSource = s_LoadCompletionSources.Get();
+                s_PendingLoadRequestsByUuid[savedAnchorGuid] =
+                    new LoadRequest(completionSource, tokenRegistration);
 
                 var synchronousResultStatus = UnityARCore_anchors_tryLoadAnchorAsync(savedAnchorGuid);
                 if (synchronousResultStatus.IsError())
                 {
+                    tokenRegistration.Dispose();
+                    s_LoadCompletionSources.Release(completionSource);
+                    s_PendingLoadRequestsByUuid.Remove(savedAnchorGuid);
                     var result = new Result<XRAnchor>(synchronousResultStatus, XRAnchor.defaultValue);
-                    return AwaitableUtils<Result<XRAnchor>>.FromResult(completionSource, result);
+                    return AwaitableUtils<Result<XRAnchor>>.FromResult(result);
                 }
-
-                cancellationToken.Register(() =>
-                {
-                    var resultStatus = UnityARCore_anchors_cancelLoadAnchor(savedAnchorGuid);
-                    if (!s_LoadAsyncPendingRequests.Remove(savedAnchorGuid))
-                    {
-                        Debug.LogError($"An unknown error occurred during a system callback for {nameof(TryLoadAnchorAsync)}.");
-                    }
-                    completionSource.SetResult(new Result<XRAnchor>(resultStatus, default));
-                    completionSource.Reset();
-                    s_LoadAsyncCompletionSources.Release(completionSource);
-                });
 
                 return completionSource.Awaitable;
             }
 
             /// <summary>
-            /// Function pointer marshalled to native API to call when <see cref="TrySaveAnchorAsync"/> is complete.
+            /// Function pointer marshaled to native API to call when <see cref="TrySaveAnchorAsync"/> is complete.
             /// </summary>
-            static readonly IntPtr s_SaveAsyncCallback = Marshal.GetFunctionPointerForDelegate((SaveAsyncDelegate)OnSaveAsyncComplete);
+            static readonly IntPtr s_SaveAsyncCallback =
+                Marshal.GetFunctionPointerForDelegate((SaveAsyncDelegate)OnSaveAsyncComplete);
 
             /// <summary>
-            /// Function pointer marshalled to native API to call when <see cref="TryLoadAnchorAsync"/> is complete.
+            /// Function pointer marshaled to native API to call when <see cref="TryLoadAnchorAsync"/> is complete.
             /// </summary>
-            static readonly IntPtr s_LoadAsyncCallback = Marshal.GetFunctionPointerForDelegate((LoadAsyncDelegate)OnLoadAsyncComplete);
+            static readonly IntPtr s_LoadAsyncCallback =
+                Marshal.GetFunctionPointerForDelegate((LoadAsyncDelegate)OnLoadAsyncComplete);
 
             /// <summary>
             /// Delegate method type for <see cref="ARCoreProvider.s_SaveAsyncCallback"/>.
             /// </summary>
-            delegate void SaveAsyncDelegate(TrackableId anchorId, TrackableId cloudAnchorId, XRResultStatus resultStatus);
+            delegate void SaveAsyncDelegate(TrackableId anchorId, SerializableGuid cloudAnchorId, XRResultStatus resultStatus);
 
             /// <summary>
             /// Delegate method type for <see cref="ARCoreProvider.s_LoadAsyncCallback"/>.
             /// </summary>
-            delegate void LoadAsyncDelegate(XRAnchor anchor, TrackableId cloudAnchorId, XRResultStatus resultStatus);
+            delegate void LoadAsyncDelegate(XRAnchor anchor, SerializableGuid cloudAnchorId, XRResultStatus resultStatus);
 
             [MonoPInvokeCallback(typeof(SaveAsyncDelegate))]
-            static async void OnSaveAsyncComplete(TrackableId anchorId, TrackableId cloudAnchorId, XRResultStatus resultStatus)
+            static async void OnSaveAsyncComplete(
+                TrackableId anchorId, SerializableGuid cloudAnchorId, XRResultStatus resultStatus)
             {
-                await Awaitable.MainThreadAsync();
-
-                if (!s_SaveAsyncPendingRequests.Remove(anchorId, out var completionSource))
+                try
                 {
-                    Debug.LogError($"An unknown error occurred during a system callback for {nameof(TrySaveAnchorAsync)}.");
-                }
+                    await Awaitable.MainThreadAsync();
 
-                completionSource.SetResult(new Result<SerializableGuid>(resultStatus, cloudAnchorId));
-                completionSource.Reset();
-                s_SaveAsyncCompletionSources.Release(completionSource);
+                    if (!s_PendingSaveRequestsByAnchorId.Remove(anchorId, out var saveRequest))
+                    {
+                        Debug.LogError($"An unknown error occurred during a system callback for {nameof(TrySaveAnchorAsync)}.");
+                        return;
+                    }
+
+                    saveRequest.tokenRegistration.Dispose();
+                    var completionSource = saveRequest.completionSource;
+                    completionSource.SetResult(new Result<SerializableGuid>(resultStatus, cloudAnchorId));
+                    completionSource.Reset();
+                    s_SaveCompletionSources.Release(completionSource);
+                }
+                catch (OperationCanceledException)
+                {
+                    // do nothing
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                }
             }
 
             [MonoPInvokeCallback(typeof(LoadAsyncDelegate))]
-            static void OnLoadAsyncComplete(XRAnchor anchor, TrackableId cloudAnchorId, XRResultStatus resultStatus)
+            static async void OnLoadAsyncComplete(
+                XRAnchor anchor, SerializableGuid cloudAnchorId, XRResultStatus resultStatus)
             {
-                if (!s_LoadAsyncPendingRequests.Remove(cloudAnchorId, out var completionSource))
+                try
                 {
-                    Debug.LogError($"An unknown error occurred during a system callback for {nameof(TryLoadAnchorAsync)}.");
-                }
+                    // need to be on main thread to modify pending requests dictionary
+                    await Awaitable.MainThreadAsync();
 
-                completionSource.SetResult(new Result<XRAnchor>(resultStatus, anchor));
-                completionSource.Reset();
-                s_LoadAsyncCompletionSources.Release(completionSource);
+                    if (!s_PendingLoadRequestsByUuid.Remove(cloudAnchorId, out var loadRequest))
+                    {
+                        Debug.LogError($"An unknown error occurred during a system callback for {nameof(TryLoadAnchorAsync)}.");
+                        return;
+                    }
+
+                    loadRequest.tokenRegistration.Dispose();
+                    var completionSource = loadRequest.completionSource;
+                    completionSource.SetResult(new Result<XRAnchor>(resultStatus, anchor));
+                    completionSource.Reset();
+                    s_LoadCompletionSources.Release(completionSource);
+                }
+                catch (OperationCanceledException)
+                {
+                    // do nothing
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                }
             }
 
             [DllImport(Constants.k_LibraryName)]
@@ -277,37 +332,33 @@ namespace UnityEngine.XR.ARCore
                 out int elementSize);
 
             [DllImport(Constants.k_LibraryName)]
-            static extern unsafe void UnityARCore_anchors_releaseChanges(
-                void* changes);
+            static extern unsafe void UnityARCore_anchors_releaseChanges(void* changes);
 
             [DllImport(Constants.k_LibraryName)]
-            static extern bool UnityARCore_anchors_tryAdd(
-                Pose pose,
-                out XRAnchor anchor);
+            static extern bool UnityARCore_anchors_tryAdd(Pose pose, out XRAnchor anchor);
 
             [DllImport(Constants.k_LibraryName)]
             static extern bool UnityARCore_anchors_tryAttach(
-                TrackableId trackableToAffix,
-                Pose pose,
-                out XRAnchor anchor);
+                TrackableId trackableToAffix, Pose pose, out XRAnchor anchor);
 
             [DllImport(Constants.k_LibraryName)]
             static extern bool UnityARCore_anchors_tryRemove(TrackableId anchorId);
 
             [DllImport(Constants.k_LibraryName)]
-            static extern XRResultStatus UnityARCore_anchors_estimateFeatureMapQualityForHosting(TrackableId anchorId, ref ArFeatureMapQuality quality);
+            static extern XRResultStatus UnityARCore_anchors_estimateFeatureMapQualityForHosting(
+                TrackableId anchorId, ref ArFeatureMapQuality quality);
 
             [DllImport(Constants.k_LibraryName)]
             static extern XRResultStatus UnityARCore_anchors_trySaveAnchorAsync(TrackableId anchorId, int lifespan);
 
             [DllImport(Constants.k_LibraryName)]
-            static extern XRResultStatus UnityARCore_anchors_tryLoadAnchorAsync(TrackableId anchorId);
-
-            [DllImport(Constants.k_LibraryName)]
-            static extern XRResultStatus UnityARCore_anchors_cancelLoadAnchor(TrackableId anchorId);
-
-            [DllImport(Constants.k_LibraryName)]
             static extern XRResultStatus UnityARCore_anchors_cancelSaveAnchor(TrackableId anchorId);
+
+            [DllImport(Constants.k_LibraryName)]
+            static extern XRResultStatus UnityARCore_anchors_tryLoadAnchorAsync(SerializableGuid savedAnchorGuid);
+
+            [DllImport(Constants.k_LibraryName)]
+            static extern XRResultStatus UnityARCore_anchors_cancelLoadAnchor(SerializableGuid savedAnchorGuid);
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]

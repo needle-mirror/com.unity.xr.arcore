@@ -2,17 +2,15 @@ using System.Runtime.InteropServices;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Collections.LowLevel.Unsafe;
+using Unity.XR.CoreUtils;
 using UnityEngine.Scripting;
 using UnityEngine.XR.ARSubsystems;
 
 namespace UnityEngine.XR.ARCore
 {
     /// <summary>
-    /// The ARCore implementation of the
-    /// [XRPlaneSubsystem](xref:UnityEngine.XR.ARSubsystems.XRPlaneSubsystem).
-    /// Do not create this directly. Use the
-    /// [SubsystemManager](xref:UnityEngine.SubsystemManager)
-    /// instead.
+    /// The ARCore implementation of the [XRPlaneSubsystem](xref:UnityEngine.XR.ARSubsystems.XRPlaneSubsystem).
+    /// Do not create this directly. Use the [SubsystemManager](xref:UnityEngine.SubsystemManager) instead.
     /// </summary>
     [Preserve]
     public sealed class ARCorePlaneSubsystem : XRPlaneSubsystem
@@ -24,16 +22,12 @@ namespace UnityEngine.XR.ARCore
             public override void Stop() => UnityARCore_planeTracking_stopTracking();
 
             public override unsafe void GetBoundary(
-                TrackableId trackableId,
-                Allocator allocator,
-                ref NativeArray<Vector2> boundary)
+                TrackableId trackableId, Allocator allocator, ref NativeArray<Vector2> boundary)
             {
                 int numPoints;
-                var plane = UnityARCore_planeTracking_acquireBoundary(
-                    trackableId,
-                    out numPoints);
+                var plane = UnityARCore_planeTracking_acquireBoundary(trackableId, out numPoints);
 
-                CreateOrResizeNativeArrayIfNecessary(numPoints, allocator, ref boundary);
+                NativeArrayUtils.EnsureExactSize(ref boundary, numPoints, allocator);
 
                 if (UnityARCore_planeTracking_tryCopyBoundary(plane, boundary.GetUnsafePtr()))
                 {
@@ -64,9 +58,7 @@ namespace UnityEngine.XR.ARCore
                     for (int i = 0; i < half; ++i)
                     {
                         var j = vertices.Length - 1 - i;
-                        var temp = vertices[j];
-                        vertices[j] = vertices[i];
-                        vertices[i] = temp;
+                        (vertices[j], vertices[i]) = (vertices[i], vertices[j]);
                     }
                 }
             }

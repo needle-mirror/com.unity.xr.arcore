@@ -74,7 +74,7 @@ namespace UnityEngine.XR.ARCore
 
                 try
                 {
-                    return NativeCopyUtility.PtrToNativeArrayWithDefault<XRRaycastHit>(
+                    return NativeCopyUtility.PtrToNativeArrayWithDefault(
                         defaultRaycastHit,
                         hitBuffer, elementSize,
                         hitCount, allocator);
@@ -103,7 +103,7 @@ namespace UnityEngine.XR.ARCore
 
                 try
                 {
-                    return NativeCopyUtility.PtrToNativeArrayWithDefault<XRRaycastHit>(
+                    return NativeCopyUtility.PtrToNativeArrayWithDefault(
                         defaultRaycastHit,
                         hitBuffer, elementSize,
                         hitCount, allocator);
@@ -115,7 +115,7 @@ namespace UnityEngine.XR.ARCore
             }
 
             [DllImport(Constants.k_LibraryName)]
-            static unsafe extern void UnityARCore_raycast_acquireHitResults(
+            static extern unsafe void UnityARCore_raycast_acquireHitResults(
                 Vector2 screenPoint,
                 TrackableType filter,
                 out void* hitBuffer,
@@ -123,7 +123,7 @@ namespace UnityEngine.XR.ARCore
                 out int elementSize);
 
             [DllImport(Constants.k_LibraryName)]
-            static unsafe extern void UnityARCore_raycast_acquireHitResultsRay(
+            static extern unsafe void UnityARCore_raycast_acquireHitResultsRay(
                 Vector3 rayOrigin,
                 Vector3 rayDirection,
                 TrackableType filter,
@@ -132,18 +132,14 @@ namespace UnityEngine.XR.ARCore
                 out int elementSize);
 
             [DllImport(Constants.k_LibraryName)]
-            static unsafe extern void UnityARCore_raycast_releaseHitResults(
-                void* buffer);
+            static extern unsafe void UnityARCore_raycast_releaseHitResults(void* buffer);
 
             [DllImport(Constants.k_LibraryName)]
-            static unsafe extern bool UnityARCore_raycast_tryAddRaycast(
-                Vector2 screenPoint,
-                float estimatedDistance,
-                out XRRaycast raycastOut);
+            static extern unsafe bool UnityARCore_raycast_tryAddRaycast(
+                Vector2 screenPoint, float estimatedDistance, out XRRaycast raycastOut);
 
             [DllImport(Constants.k_LibraryName)]
-            static unsafe extern void UnityARCore_raycast_removeRaycast(
-               TrackableId trackableId);
+            static extern unsafe void UnityARCore_raycast_removeRaycast(TrackableId trackableId);
 
             [DllImport(Constants.k_LibraryName)]
             static extern void UnityARCore_raycast_startTracking();
@@ -159,8 +155,7 @@ namespace UnityEngine.XR.ARCore
                 out int elementSize);
 
             [DllImport(Constants.k_LibraryName)]
-            static extern unsafe void UnityARCore_raycast_releaseChanges(
-                void* changes);
+            static extern unsafe void UnityARCore_raycast_releaseChanges(void* changes);
 
             [DllImport(Constants.k_LibraryName)]
             static extern void UnityARCore_raycast_destroy();
@@ -180,7 +175,7 @@ namespace UnityEngine.XR.ARCore
                 subsystemTypeOverride = typeof(ARCoreRaycastSubsystem),
                 supportsViewportBasedRaycast = true,
                 supportsWorldBasedRaycast = true,
-                supportedTrackableTypes =
+                supportedTrackableTypesDelegate = () =>
                     (TrackableType.Planes & ~TrackableType.PlaneWithinInfinity) |
                     TrackableType.FeaturePoint |
                     TrackableType.Depth,
