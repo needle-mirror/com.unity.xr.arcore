@@ -372,12 +372,12 @@ namespace UnityEngine.XR.ARCore
                 id = "ARCore-Anchor",
                 providerType = typeof(ARCoreAnchorSubsystem.ARCoreProvider),
                 subsystemTypeOverride = typeof(ARCoreAnchorSubsystem),
-                supportsTrackableAttachments = true,
                 supportsSynchronousAdd = true,
                 supportsSaveAnchorDelegate = () => ARCoreRuntimeSettings.Instance.enableCloudAnchors,
                 supportsLoadAnchorDelegate = () => ARCoreRuntimeSettings.Instance.enableCloudAnchors,
                 supportsEraseAnchorDelegate = () => false,
                 supportsGetSavedAnchorIdsDelegate = () => false,
+                supportsTrackableAttachmentsDelegate = () => true,
                 supportsAsyncCancellation = true,
             };
 
