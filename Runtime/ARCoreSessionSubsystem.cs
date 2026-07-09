@@ -289,11 +289,6 @@ namespace UnityEngine.XR.ARCore
                     configuration.descriptor.identifier,
                     configuration.features,
                     arCoreFeatures);
-
-                if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Vulkan && !s_VulkanSupportRendererFeatureEnabled)
-                    throw new InvalidOperationException("If Vulkan is the Graphics API: "
-                        + "1. When using URP, ARCommandBufferSupportRendererFeature must be added to the current renderer. "
-                        + "2. When using built-in render pipeline, there must be an active main camera in the scene.");
             }
 
             public ArStatus StartRecording(ArRecordingConfig recordingConfig)

@@ -8,6 +8,21 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [6.6.0] - 2026-07-09
+
+### Added
+
+- Added a Project Validation rule to check if ARCommandBufferSupportRendererFeature is enabled when using Vulkan as primary Graphics API.
+
+### Changed
+
+- Changed the minimum dependency version of AR Foundation from 6.6.0-pre.2 to 6.6.0.
+- Changed the minimum dependency version of XR Core Utils from 2.6.0-pre.2 to 2.6.0.
+
+### Fixed
+
+- Fixed "`ARCommandBufferSupportRendererFeature` not enabled" error thrown, when it is enabled. ([UUM-142798](https://issuetracker.unity3d.com/issues/arcore-arcommandbuffersupportrendererfeature-not-enabled-error-is-shown-when-it-is-enabled))
+
 ## [6.6.0-pre.2] - 2026-06-04
 
 ### Changed

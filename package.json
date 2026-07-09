@@ -1,7 +1,7 @@
 {
   "name": "com.unity.xr.arcore",
   "displayName": "Google ARCore XR Plugin",
-  "version": "6.6.0-pre.2",
+  "version": "6.6.0",
   "unity": "6000.0",
   "description": "Provides native Google ARCore integration for use with Unity's multi-platform XR API.\nSupports the following features:\n-Efficient Background Rendering\n-Horizontal Planes\n-Depth Data\n-Anchors\n-Hit Testing\n-Occlusion",
   "keywords": [
@@ -13,22 +13,22 @@
     "core"
   ],
   "dependencies": {
-    "com.unity.xr.arfoundation": "6.6.0-pre.2",
-    "com.unity.xr.core-utils": "2.6.0-pre.2",
+    "com.unity.xr.arfoundation": "6.6.0",
+    "com.unity.xr.core-utils": "2.6.0",
     "com.unity.xr.management": "4.4.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.unitywebrequest": "1.0.0"
   },
   "_upm": {
-    "changelog": "### Changed\n\n- Changed minimum dependency version of AR Foundation from 6.6.0-pre.1 to 6.6.0-pre.2."
+    "changelog": "### Added\n\n- Added a Project Validation rule to check if ARCommandBufferSupportRendererFeature is enabled when using Vulkan as primary Graphics API.\n\n### Changed\n\n- Changed the minimum dependency version of AR Foundation from 6.6.0-pre.2 to 6.6.0.\n- Changed the minimum dependency version of XR Core Utils from 2.6.0-pre.2 to 2.6.0.\n\n### Fixed\n\n- Fixed \"`ARCommandBufferSupportRendererFeature` not enabled\" error thrown, when it is enabled. ([UUM-142798](https://issuetracker.unity3d.com/issues/arcore-arcommandbuffersupportrendererfeature-not-enabled-error-is-shown-when-it-is-enabled))"
   },
   "upmCi": {
-    "footprint": "48a857756e73a51de8fdad369ddd6e81795b46a4"
+    "footprint": "69e0dac9737474d6786088bf2b36afdf956f2713"
   },
   "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.xr.arcore@6.6/manual/index.html",
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/arfoundation.git",
     "type": "git",
-    "revision": "1dcb3649bdd029ec3275cff261cb6f78ac1c3590"
+    "revision": "31511096c604d966e820289af047fbe0487aa788"
   }
 }
