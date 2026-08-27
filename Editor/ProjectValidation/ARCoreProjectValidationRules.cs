@@ -4,8 +4,13 @@ using System.Linq;
 using Unity.XR.CoreUtils.Editor;
 using UnityEditor.Build;
 using UnityEditor.XR.Management;
+using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.XR.ARCore;
+#if URP_7_OR_NEWER
+using UnityEngine.Rendering.Universal;
+using UnityEngine.XR.ARFoundation;
+#endif
 
 namespace UnityEditor.XR.ARCore
 {
@@ -186,6 +191,73 @@ namespace UnityEditor.XR.ARCore
                     },
                     Error = false
                 },
+#if URP_7_OR_NEWER
+                new BuildValidationRule
+                {
+                    Category = k_Category,
+                    Message = "When using Vulkan with URP, ARCommandBufferSupportRendererFeature must be added to the current URP renderer.",
+                    IsRuleEnabled = () =>
+                    {
+                        if (IsARCorePluginEnabled() && GraphicsSettings.currentRenderPipeline is UniversalRenderPipelineAsset)
+                        {
+                            var graphicsApis = PlayerSettings.GetGraphicsAPIs(BuildTarget.Android);
+                            return graphicsApis.Length > 0 && graphicsApis[0] == GraphicsDeviceType.Vulkan;
+                        }
+
+                        return false;
+                    },
+                    CheckPredicate = () =>
+                    {
+                        if (GraphicsSettings.currentRenderPipeline is not UniversalRenderPipelineAsset urpAsset)
+                            return true;
+
+                        foreach (var rendererData in urpAsset.rendererDataList)
+                        {
+                            if (rendererData == null)
+                                continue;
+
+                            if (!rendererData.rendererFeatures.Any(feature => feature is ARCommandBufferSupportRendererFeature))
+                                return false;
+                        }
+
+                        return true;
+                    },
+                    FixItMessage = "Add the ARCommandBufferSupportRendererFeature to each renderer of the current URP asset.",
+                    FixIt = () =>
+                    {
+                        if (GraphicsSettings.currentRenderPipeline is not UniversalRenderPipelineAsset urpAsset)
+                            return;
+
+                        foreach (var rendererData in urpAsset.rendererDataList)
+                        {
+                            if (rendererData == null || rendererData.rendererFeatures.Any(feature => feature is ARCommandBufferSupportRendererFeature))
+                                continue;
+
+                            var feature = ScriptableObject.CreateInstance<ARCommandBufferSupportRendererFeature>();
+                            feature.name = nameof(ARCommandBufferSupportRendererFeature);
+                            feature.hideFlags |= HideFlags.HideInHierarchy;
+                            Undo.RegisterCreatedObjectUndo(feature, "Add Renderer Feature");
+
+                            AssetDatabase.AddObjectToAsset(feature, rendererData);
+                            AssetDatabase.TryGetGUIDAndLocalFileIdentifier(feature, out _, out long localId);
+
+                            var serializedRendererData = new SerializedObject(rendererData);
+                            var featuresProperty = serializedRendererData.FindProperty("m_RendererFeatures");
+                            featuresProperty.arraySize++;
+                            featuresProperty.GetArrayElementAtIndex(featuresProperty.arraySize - 1).objectReferenceValue = feature;
+
+                            var featureMapProperty = serializedRendererData.FindProperty("m_RendererFeatureMap");
+                            featureMapProperty.arraySize++;
+                            featureMapProperty.GetArrayElementAtIndex(featureMapProperty.arraySize - 1).longValue = localId;
+
+                            serializedRendererData.ApplyModifiedProperties();
+                            EditorUtility.SetDirty(rendererData);
+                            AssetDatabase.SaveAssetIfDirty(rendererData);
+                        }
+                    },
+                    Error = true
+                },
+#endif
                 new BuildValidationRule
                 {
                     Category = k_Category,

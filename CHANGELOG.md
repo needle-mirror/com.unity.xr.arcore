@@ -8,6 +8,21 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [6.5.1] - 2026-08-27
+
+### Added
+
+- Added a Project Validation rule to check if ARCommandBufferSupportRendererFeature is enabled when using Vulkan as primary Graphics API.
+
+### Changed
+
+- Changed AR Foundation dependency version from 6.5.0 to 6.5.1.
+
+### Fixed
+
+- Fixed "`ARCommandBufferSupportRendererFeature` not enabled" error thrown, when it is enabled. ([UUM-142798](https://issuetracker.unity3d.com/issues/arcore-arcommandbuffersupportrendererfeature-not-enabled-error-is-shown-when-it-is-enabled))
+- Fixed Vulkan backend applying unnecessary color space conversions to AR camera background, causing over-brightness in Gamma color space.
+
 ## [6.5.0] - 2026-03-26
 
 ### Changed
@@ -19,6 +34,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 
 - Changed AR Foundation dependency version from 6.5.0-pre.2 to 6.5.0-pre.3.
+
+### Fixed
+
+- Fixed an issue where Android builds on Unity 6.4 or newer that contain this package would fail due to the upgraded version of Gradle used by those Editor versions. Refer to [Discussions](https://discussions.unity.com/t/info-android-gradle-9-1-0-agp-9-0-0-update-in-unity-6-4/1709062) for more information.
 
 ## [6.5.0-pre.2] - 2026-02-04
 
