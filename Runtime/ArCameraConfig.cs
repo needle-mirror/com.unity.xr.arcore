@@ -18,7 +18,7 @@ namespace UnityEngine.XR.ARCore
         ArCameraConfig(IntPtr value) => m_Self = value;
 
         /// <summary>
-        /// Creates a <see cref="ArCameraConfig"/> from a native pointer. The native pointer must point
+        /// Creates an <see cref="ArCameraConfig"/> from a native pointer. The native pointer must point
         /// to an existing <see cref="ArCameraConfig"/>.
         /// </summary>
         /// <param name="value">A pointer to an existing native `ArCameraConfig`.</param>

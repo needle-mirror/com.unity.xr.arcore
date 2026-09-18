@@ -14,7 +14,7 @@ To start a recording, supply an [ArRecordingConfig](xref:UnityEngine.XR.ARCore.A
 
 To play back a video, use the `StartPlaybackUri` method, and specify an `.mp4` file created during an earlier recording.
 
-**Note**: The file location string parameters, provided to the recording and playback APIs, must be in URI format.  For example, referencing a file on the Android local file system requires escaping the path, and have the "file://" protocol prefix.  For references related to file paths as URIs, there are articles available [RFC-8089](https://dl.acm.org/doi/10.17487/RFC8089), and [here](https://en.wikipedia.org/wiki/File_URI_scheme).
+**Note**: The file location string parameters, provided to the recording and playback APIs, must be in URI format. For example, referencing a file on the Android local file system requires escaping the path, and having the "file://" protocol prefix.  For references related to file paths as URIs, there are articles available [RFC-8089](https://dl.acm.org/doi/10.17487/RFC8089), and [here](https://en.wikipedia.org/wiki/File_URI_scheme).
 
 To start or stop a recorded file in ARCore, the [ARCoreSessionSubsystem](xref:UnityEngine.XR.ARCore.ARCoreSessionSubsystem) pauses the session. Pausing and resuming a session can take between 0.5 and 1.0 seconds.
 

@@ -71,7 +71,7 @@ The following code demonstrates how to use `TrySaveAnchorWithLifeSpanAsync` to s
 
 ## Native status code
 
-The native status code for a save or load operation should be interpreted as an [ArCloudAnchorState](https://developers.google.com/ar/reference/c/group/ar-anchor#arcloudanchorstate), unless if the operation is cancelled, in which case the native status code is an [ArFutureState](https://developers.google.com/ar/reference/c/group/ar-future#ar_future_state_pending).
+The native status code for a save or load operation should be interpreted as an [ArCloudAnchorState](https://developers.google.com/ar/reference/c/group/ar-anchor#arcloudanchorstate), unless the operation is cancelled, in which case the native status code is an [ArFutureState](https://developers.google.com/ar/reference/c/group/ar-future#ar_future_state_pending).
 
 The following code demonstrates how to check the native status code when the native status code is an `ArCloudAnchorState`:
 

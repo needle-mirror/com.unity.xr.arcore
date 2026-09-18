@@ -8,21 +8,22 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [6.6.2] - 2026-08-28
+## [6.7.0-pre.1] - 2026-09-18
+
+### Added
+
+- Added `ARCoreSessionSubsystem.TryStartAsync`, an override that starts the session and, if `XRSubsystemStartOptions.InstallSoftwareIfNeeded` is set, checks whether Google Play Services for AR (ARCore) is installed and installs it if needed before starting.
+- Added `ARCoreSessionSubsystem.TryInstallAsync`, which asynchronously checks whether Google Play Services for AR (ARCore) is installed on the device and attempts to install it if needed.
+- Declared support for `XRPlaneSubsystemDescriptor.supportsPlaneSubsumption`, indicating that ARCore will perform plane subsumption.
 
 ### Changed
 
-- Changed the minimum dependency version of AR Foundation from 6.6.1 to 6.6.2.
+- Changed the minimum dependency version of AR Foundation from 6.6.0 to 6.7.0-pre.1.
 
 ### Fixed
 
 - Fixed an issue where the macOS `arcoreimg` command line tool was published without a code signature.
-
-## [6.6.1] - 2026-07-30
-
-### Changed
-
-- Changed the minimum dependency version of AR Foundation from 6.6.0 to 6.6.1.
+- Fixed issues related to the `AutoStaticsCleanupAttribute`, as required by Unity versions 6000.7.0b1 and newer.
 
 ## [6.6.0] - 2026-07-09
 

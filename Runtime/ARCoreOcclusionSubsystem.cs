@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Unity.Collections;
+#if UNITY_6000_5_OR_NEWER
+using Unity.Scripting.LifecycleManagement;
+#endif
 using Unity.XR.CoreUtils.Collections;
 using UnityEngine.Scripting;
 using UnityEngine.XR.ARSubsystems;
@@ -11,9 +14,7 @@ namespace UnityEngine.XR.ARCore
     /// <summary>
     /// The ARCore implementation of the
     /// [XROcclusionSubsystem](xref:UnityEngine.XR.ARSubsystems.XROcclusionSubsystem).
-    /// Do not create this directly. Use the
-    /// [SubsystemManager](xref:UnityEngine.SubsystemManager)
-    /// instead.
+    /// Don't create this directly. Use the [SubsystemManager](xref:UnityEngine.SubsystemManager) instead.
     /// </summary>
     [Preserve]
     public sealed class ARCoreOcclusionSubsystem : XROcclusionSubsystem
@@ -50,9 +51,24 @@ namespace UnityEngine.XR.ARCore
             static readonly int k_TextureEnvironmentDepthPropertyId =
                 Shader.PropertyToID(k_TextureEnvironmentDepthPropertyName);
 
+#if UNITY_6000_5_OR_NEWER
+            [NoAutoStaticsCleanup]
+#endif
             static readonly List<string> k_EnvironmentDepthShaderKeywords = new(){ k_EnvironmentDepthEnabledMaterialKeyword };
+
+#if UNITY_6000_5_OR_NEWER
+            [NoAutoStaticsCleanup]
+#endif
             static readonly ReadOnlyList<string> k_EnvironmentDepthShaderKeywordsReadOnly = new(k_EnvironmentDepthShaderKeywords);
+
+#if UNITY_6000_5_OR_NEWER
+            [NoAutoStaticsCleanup]
+#endif
             static readonly XRShaderKeywords k_DepthEnabledShaderKeywords =new(k_EnvironmentDepthShaderKeywordsReadOnly, null);
+
+#if UNITY_6000_5_OR_NEWER
+            [NoAutoStaticsCleanup]
+#endif
             static readonly XRShaderKeywords k_DepthDisabledShaderKeywords = new(null, k_EnvironmentDepthShaderKeywordsReadOnly);
 
             OcclusionPreferenceMode m_OcclusionPreferenceMode;
@@ -221,23 +237,27 @@ namespace UnityEngine.XR.ARCore
             public static extern EnvironmentDepthMode UnityARCore_OcclusionProvider_GetCurrentEnvironmentDepthMode();
 
             [DllImport(Constants.k_LibraryName)]
+            [return: MarshalAs(UnmanagedType.U1)]
             public static extern bool UnityARCore_OcclusionProvider_TryGetEnvironmentDepth(
                 out XRTextureDescriptor envDepthDescriptor);
 
             [DllImport(Constants.k_LibraryName)]
-            public static extern unsafe void* UnityARCore_OcclusionProvider_AcquireTextureDescriptors(
+            public static unsafe extern void* UnityARCore_OcclusionProvider_AcquireTextureDescriptors(
                 out int length, out int elementSize);
 
             [DllImport(Constants.k_LibraryName)]
-            public static extern unsafe void UnityARCore_OcclusionProvider_ReleaseTextureDescriptors(void* descriptors);
+            public static unsafe extern void UnityARCore_OcclusionProvider_ReleaseTextureDescriptors(void* descriptors);
 
             [DllImport(Constants.k_LibraryName)]
+            [return: MarshalAs(UnmanagedType.U1)]
             public static extern bool UnityARCore_OcclusionProvider_IsEnvironmentDepthEnabled();
 
             [DllImport(Constants.k_LibraryName)]
+            [return: MarshalAs(UnmanagedType.U1)]
             public static extern bool UnityARCore_OcclusionProvider_GetEnvironmentDepthTemporalSmoothingEnabled();
 
             [DllImport(Constants.k_LibraryName)]
+            [return: MarshalAs(UnmanagedType.U1)]
             public static extern bool UnityARCore_OcclusionProvider_TryGetEnvironmentDepthConfidence(
                 out XRTextureDescriptor environmentDepthConfidenceDescriptor);
         }

@@ -1,7 +1,7 @@
 namespace UnityEngine.XR.ARCore
 {
     /// <summary>
-    /// Describe the possible recording statuses.
+    /// Describes the possible recording statuses.
     /// </summary>
     public enum ArRecordingStatus
     {

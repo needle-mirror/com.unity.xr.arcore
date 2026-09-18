@@ -19,8 +19,7 @@ namespace UnityEngine.XR.ARCore
             public override void Destroy() => UnityARCore_raycast_destroy();
 
             public override unsafe TrackableChanges<XRRaycast> GetChanges(
-                XRRaycast defaultRaycast,
-                Allocator allocator)
+                XRRaycast defaultRaycast, Allocator allocator)
             {
                 int addedLength, updatedLength, removedLength, elementSize;
                 void* addedPtr, updatedPtr, removedPtr;
@@ -115,7 +114,7 @@ namespace UnityEngine.XR.ARCore
             }
 
             [DllImport(Constants.k_LibraryName)]
-            static extern unsafe void UnityARCore_raycast_acquireHitResults(
+            static unsafe extern void UnityARCore_raycast_acquireHitResults(
                 Vector2 screenPoint,
                 TrackableType filter,
                 out void* hitBuffer,
@@ -123,7 +122,7 @@ namespace UnityEngine.XR.ARCore
                 out int elementSize);
 
             [DllImport(Constants.k_LibraryName)]
-            static extern unsafe void UnityARCore_raycast_acquireHitResultsRay(
+            static unsafe extern void UnityARCore_raycast_acquireHitResultsRay(
                 Vector3 rayOrigin,
                 Vector3 rayDirection,
                 TrackableType filter,
@@ -132,14 +131,15 @@ namespace UnityEngine.XR.ARCore
                 out int elementSize);
 
             [DllImport(Constants.k_LibraryName)]
-            static extern unsafe void UnityARCore_raycast_releaseHitResults(void* buffer);
+            static unsafe extern void UnityARCore_raycast_releaseHitResults(void* buffer);
 
             [DllImport(Constants.k_LibraryName)]
-            static extern unsafe bool UnityARCore_raycast_tryAddRaycast(
+            [return: MarshalAs(UnmanagedType.U1)]
+            static extern bool UnityARCore_raycast_tryAddRaycast(
                 Vector2 screenPoint, float estimatedDistance, out XRRaycast raycastOut);
 
             [DllImport(Constants.k_LibraryName)]
-            static extern unsafe void UnityARCore_raycast_removeRaycast(TrackableId trackableId);
+            static extern void UnityARCore_raycast_removeRaycast(TrackableId trackableId);
 
             [DllImport(Constants.k_LibraryName)]
             static extern void UnityARCore_raycast_startTracking();
@@ -148,18 +148,17 @@ namespace UnityEngine.XR.ARCore
             static extern void UnityARCore_raycast_stopTracking();
 
             [DllImport(Constants.k_LibraryName)]
-            static extern unsafe void* UnityARCore_raycast_acquireChanges(
+            static unsafe extern void* UnityARCore_raycast_acquireChanges(
                 out void* addedPtr, out int addedLength,
                 out void* updatedPtr, out int updatedLength,
                 out void* removedPtr, out int removedLength,
                 out int elementSize);
 
             [DllImport(Constants.k_LibraryName)]
-            static extern unsafe void UnityARCore_raycast_releaseChanges(void* changes);
+            static unsafe extern void UnityARCore_raycast_releaseChanges(void* changes);
 
             [DllImport(Constants.k_LibraryName)]
             static extern void UnityARCore_raycast_destroy();
-
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -167,6 +166,10 @@ namespace UnityEngine.XR.ARCore
         {
             if (!Api.platformAndroid || !Api.loaderPresent)
                 return;
+
+            var planeTypes = TrackableType.PlaneWithinPolygon
+                | TrackableType.PlaneWithinBounds
+                | TrackableType.PlaneEstimated;
 
             XRRaycastSubsystemDescriptor.Register(new XRRaycastSubsystemDescriptor.Cinfo
             {
@@ -176,7 +179,7 @@ namespace UnityEngine.XR.ARCore
                 supportsViewportBasedRaycast = true,
                 supportsWorldBasedRaycast = true,
                 supportedTrackableTypesDelegate = () =>
-                    (TrackableType.Planes & ~TrackableType.PlaneWithinInfinity) |
+                    planeTypes |
                     TrackableType.FeaturePoint |
                     TrackableType.Depth,
                 supportsTrackedRaycasts = true,

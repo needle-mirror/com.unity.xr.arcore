@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+#if UNITY_6000_5_OR_NEWER
+using Unity.Scripting.LifecycleManagement;
+#endif
 using UnityEngine.XR.ARSubsystems;
 
 namespace UnityEngine.XR.ARCore
@@ -21,7 +24,10 @@ namespace UnityEngine.XR.ARCore
         /// <summary>
         /// The shared API instance.
         /// </summary>
-        public static ARCoreCpuImageApi instance { get; } = new ARCoreCpuImageApi();
+#if UNITY_6000_5_OR_NEWER
+        [NoAutoStaticsCleanup]
+#endif
+        public static ARCoreCpuImageApi instance { get; } = new();
 
         /// <summary>
         /// Tries to acquire the latest image of type <paramref name="imageType"/>.
@@ -93,8 +99,8 @@ namespace UnityEngine.XR.ARCore
         /// <param name="format">The <c>TextureFormat</c> for the image.</param>
         /// <param name="size">The number of bytes required to store the converted image.</param>
         /// <returns><c>true</c> if the output <paramref name="size"/> was set.</returns>
-        public override bool TryGetConvertedDataSize(int nativeHandle, Vector2Int dimensions, TextureFormat format,
-                                                     out int size)
+        public override bool TryGetConvertedDataSize(
+            int nativeHandle, Vector2Int dimensions, TextureFormat format, out int size)
             => NativeApi.UnityARCore_CpuImage_TryGetConvertedDataSize(nativeHandle, dimensions, format, out size);
 
         /// <summary>
@@ -108,10 +114,10 @@ namespace UnityEngine.XR.ARCore
         /// <returns>
         /// <c>true</c> if the image was converted and stored in <paramref name="destinationBuffer"/>.
         /// </returns>
-        public override bool TryConvert(int nativeHandle, XRCpuImage.ConversionParams conversionParams,
-                                        IntPtr destinationBuffer, int bufferLength)
-            => NativeApi.UnityARCore_CpuImage_TryConvert(nativeHandle, conversionParams, destinationBuffer,
-                                                         bufferLength);
+        public override bool TryConvert(
+            int nativeHandle, XRCpuImage.ConversionParams conversionParams, IntPtr destinationBuffer, int bufferLength)
+            => NativeApi.UnityARCore_CpuImage_TryConvert(
+                nativeHandle, conversionParams, destinationBuffer, bufferLength);
 
         /// <summary>
         /// Create an asynchronous request to convert a camera image, similar to <see cref="TryConvert"/> except
@@ -151,12 +157,18 @@ namespace UnityEngine.XR.ARCore
         /// conversion was successful or not.</param>
         /// <param name="context">A native pointer which must be passed back unaltered to
         /// <paramref name="callback"/>.</param>
-        public override void ConvertAsync(int nativeHandle, XRCpuImage.ConversionParams conversionParams,
-                                          XRCpuImage.Api.OnImageRequestCompleteDelegate callback, IntPtr context)
-            => NativeApi.UnityARCore_CpuImage_CreateAsyncConversionRequestWithCallback(nativeHandle, conversionParams,
-                                                                                       callback, context);
+        public override void ConvertAsync(
+            int nativeHandle,
+            XRCpuImage.ConversionParams conversionParams,
+            OnImageRequestCompleteDelegate callback,
+            IntPtr context)
+            => NativeApi.UnityARCore_CpuImage_CreateAsyncConversionRequestWithCallback(
+                nativeHandle, conversionParams, callback, context);
 
-        static readonly HashSet<TextureFormat> s_SupportedVideoConversionFormats = new HashSet<TextureFormat>
+#if UNITY_6000_5_OR_NEWER
+        [NoAutoStaticsCleanup]
+#endif
+        static readonly HashSet<TextureFormat> s_SupportedVideoConversionFormats = new()
         {
             TextureFormat.Alpha8,
             TextureFormat.R8,
@@ -172,8 +184,7 @@ namespace UnityEngine.XR.ARCore
         /// Determines whether a given <see cref="UnityEngine.TextureFormat"/> is supported for image conversion.
         /// </summary>
         /// <param name="image">The <see cref="XRCpuImage"/> to convert.</param>
-        /// <param name="format">The <see cref="UnityEngine.TextureFormat"/>
-        ///     to test.</param>
+        /// <param name="format">The <see cref="UnityEngine.TextureFormat"/> to test.</param>
         /// <returns>Returns `true` if <paramref name="image"/> can be converted to <paramref name="format"/>.
         ///     Returns `false` otherwise.</returns>
         public override bool FormatSupported(XRCpuImage image, TextureFormat format)
@@ -183,8 +194,9 @@ namespace UnityEngine.XR.ARCore
         static class NativeApi
         {
             [DllImport(Constants.k_LibraryName)]
-            public static extern bool UnityARCore_CpuImage_TryAcquireLatestImage(ImageType imageType,
-                                                                                 out XRCpuImage.Cinfo cameraImageCinfo);
+            [return: MarshalAs(UnmanagedType.U1)]
+            public static extern bool UnityARCore_CpuImage_TryAcquireLatestImage(
+                ImageType imageType, out XRCpuImage.Cinfo cameraImageCinfo);
 
             [DllImport(Constants.k_LibraryName)]
             public static extern XRCpuImage.AsyncConversionStatus
@@ -197,28 +209,32 @@ namespace UnityEngine.XR.ARCore
             public static extern void UnityARCore_CpuImage_DisposeAsyncRequest(int requestHandle);
 
             [DllImport(Constants.k_LibraryName)]
-            public static extern bool UnityARCore_CpuImage_TryGetPlane(int nativeHandle, int planeIndex,
-                                                                       out XRCpuImage.Plane.Cinfo planeCinfo);
+            [return: MarshalAs(UnmanagedType.U1)]
+            public static extern bool UnityARCore_CpuImage_TryGetPlane(
+                int nativeHandle, int planeIndex, out XRCpuImage.Plane.Cinfo planeCinfo);
 
             [DllImport(Constants.k_LibraryName)]
+            [return: MarshalAs(UnmanagedType.U1)]
             public static extern bool UnityARCore_CpuImage_HandleValid(int nativeHandle);
 
             [DllImport(Constants.k_LibraryName)]
-            public static extern bool UnityARCore_CpuImage_TryGetConvertedDataSize(int nativeHandle, Vector2Int dimensions,
-                                                                                   TextureFormat format, out int size);
+            [return: MarshalAs(UnmanagedType.U1)]
+            public static extern bool UnityARCore_CpuImage_TryGetConvertedDataSize(
+                int nativeHandle, Vector2Int dimensions, TextureFormat format, out int size);
 
             [DllImport(Constants.k_LibraryName)]
-            public static extern bool UnityARCore_CpuImage_TryConvert(int nativeHandle,
-                                                                      XRCpuImage.ConversionParams conversionParams,
-                                                                      IntPtr buffer, int bufferLength);
+            [return: MarshalAs(UnmanagedType.U1)]
+            public static extern bool UnityARCore_CpuImage_TryConvert(
+                int nativeHandle, XRCpuImage.ConversionParams conversionParams, IntPtr buffer, int bufferLength);
 
             [DllImport(Constants.k_LibraryName)]
-            public static extern int UnityARCore_CpuImage_CreateAsyncConversionRequest(int nativeHandle,
-                                                                                       XRCpuImage.ConversionParams conversionParams);
+            public static extern int UnityARCore_CpuImage_CreateAsyncConversionRequest(
+                int nativeHandle, XRCpuImage.ConversionParams conversionParams);
 
             [DllImport(Constants.k_LibraryName)]
-            public static extern bool UnityARCore_CpuImage_TryGetAsyncRequestData(int requestHandle, out IntPtr dataPtr,
-                                                                                  out int dataLength);
+            [return: MarshalAs(UnmanagedType.U1)]
+            public static extern bool UnityARCore_CpuImage_TryGetAsyncRequestData(
+                int requestHandle, out IntPtr dataPtr, out int dataLength);
 
             [DllImport(Constants.k_LibraryName)]
             public static extern void UnityARCore_CpuImage_CreateAsyncConversionRequestWithCallback(

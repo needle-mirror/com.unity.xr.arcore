@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+#if UNITY_6000_5_OR_NEWER
+using Unity.Scripting.LifecycleManagement;
+#endif
 using UnityEngine;
 using UnityEngine.XR.ARCore;
 
@@ -30,6 +33,9 @@ namespace UnityEditor.XR.ARCore
             public List<IXRLoaderMetadata> loaderMetadata { get; set; }
         }
 
+#if UNITY_6000_5_OR_NEWER
+        [NoAutoStaticsCleanup]
+#endif
         static IXRPackageMetadata s_Metadata = new ARCorePackageMetadata()
         {
             packageName = "Google ARCore XR Plug-in",

@@ -1,7 +1,7 @@
 {
   "name": "com.unity.xr.arcore",
   "displayName": "Google ARCore XR Plugin",
-  "version": "6.6.2",
+  "version": "6.7.0-pre.1",
   "unity": "6000.0",
   "description": "Provides native Google ARCore integration for use with Unity's multi-platform XR API.\nSupports the following features:\n-Efficient Background Rendering\n-Horizontal Planes\n-Depth Data\n-Anchors\n-Hit Testing\n-Occlusion",
   "keywords": [
@@ -13,22 +13,22 @@
     "core"
   ],
   "dependencies": {
-    "com.unity.xr.arfoundation": "6.6.2",
+    "com.unity.xr.arfoundation": "6.7.0-pre.1",
     "com.unity.xr.core-utils": "2.6.0",
     "com.unity.xr.management": "4.4.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.unitywebrequest": "1.0.0"
   },
   "_upm": {
-    "changelog": "### Changed\n\n- Changed the minimum dependency version of AR Foundation from 6.6.1 to 6.6.2.\n\n### Fixed\n\n- Fixed an issue where the macOS `arcoreimg` command line tool was published without a code signature."
+    "changelog": "### Added\n\n- Added `ARCoreSessionSubsystem.TryStartAsync`, an override that starts the session and, if `XRSubsystemStartOptions.InstallSoftwareIfNeeded` is set, checks whether Google Play Services for AR (ARCore) is installed and installs it if needed before starting.\n- Added `ARCoreSessionSubsystem.TryInstallAsync`, which asynchronously checks whether Google Play Services for AR (ARCore) is installed on the device and attempts to install it if needed.\n- Declared support for `XRPlaneSubsystemDescriptor.supportsPlaneSubsumption`, indicating that ARCore will perform plane subsumption.\n\n### Changed\n\n- Changed the minimum dependency version of AR Foundation from 6.6.0 to 6.7.0-pre.1.\n\n### Fixed\n\n- Fixed an issue where the macOS `arcoreimg` command line tool was published without a code signature.\n- Fixed issues related to the `AutoStaticsCleanupAttribute`, as required by Unity versions 6000.7.0b1 and newer."
   },
   "upmCi": {
-    "footprint": "c5087c384d67175f84e86bd13777026005dd7126"
+    "footprint": "dad0e0b98783135116d4b8d9f008e4a0560380aa"
   },
-  "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.xr.arcore@6.6/manual/index.html",
+  "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.xr.arcore@6.7/manual/index.html",
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/arfoundation.git",
     "type": "git",
-    "revision": "adeacbd7ffbde9352a7fa0903c2bfaef716b5c7a"
+    "revision": "a68b90e7fa9d86632124839f80b75c5d7a55e4d6"
   }
 }

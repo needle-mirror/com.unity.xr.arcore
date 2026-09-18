@@ -24,7 +24,7 @@ This package also provides a header file containing the definitions of various n
 Cast `void* arImageCubemap` to an [ArImageCubemap](https://developers.google.com/ar/reference/c/group/ar-image#arimagecubemap) handle in C++ using the following example code:
 
 ```cpp
-// Marhshal the native environment probe data from the XREnvironmentProbe.nativePtr in C#
+// Marshal the native environment probe data from the XREnvironmentProbe.nativePtr in C#
 UnityXRNativeEnvironmentProbe nativeEnvironmentProbeData;
 ArImageCubemap* cubemapHandle = static_cast<ArImageCubemap*>(&nativeEnvironmentProbeData.arImageCubemap);
 ```

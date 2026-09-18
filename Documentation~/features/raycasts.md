@@ -55,7 +55,7 @@ This package also provides a header file containing the definitions of various n
 Cast `void* instantPoint` to an [ArTrackable](https://developers.google.com/ar/reference/c/group/ar-trackable) and `void* anchor` to an [ArAnchor](https://developers.google.com/ar/reference/c/group/ar-anchor) handle in C++ using the following example code:
 
 ```cpp
-// Marhshal the native ray cast data from XRRaycast.nativePtr in C#
+// Marshal the native ray cast data from XRRaycast.nativePtr in C#
 UnityXRNativeRaycast nativeRaycastData;
 ArTrackable* pointTrackableHandle = static_cast<ArTrackable*>(nativeRaycastData.instantPoint);
 ArAnchor* anchorHandle = static_cast<ArAnchor*>(nativeRaycastData.anchor);

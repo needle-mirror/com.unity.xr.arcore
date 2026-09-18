@@ -119,15 +119,14 @@ namespace UnityEngine.XR.ARCore
             static extern void UnityARCore_planeTracking_stopTracking();
 
             [DllImport(Constants.k_LibraryName)]
-            static extern unsafe void* UnityARCore_planeTracking_acquireChanges(
+            static unsafe extern void* UnityARCore_planeTracking_acquireChanges(
                 out void* addedPtr, out int addedLength,
                 out void* updatedPtr, out int updatedLength,
                 out void* removedPtr, out int removedLength,
                 out int elementSize);
 
             [DllImport(Constants.k_LibraryName)]
-            static extern unsafe void UnityARCore_planeTracking_releaseChanges(
-                void* changes);
+            static unsafe extern void UnityARCore_planeTracking_releaseChanges(void* changes);
 
             [DllImport(Constants.k_LibraryName, EntryPoint="UnityARCore_planeTracking_getRequestedPlaneDetectionMode")]
             static extern PlaneDetectionMode GetRequestedPlaneDetectionMode();
@@ -142,14 +141,12 @@ namespace UnityEngine.XR.ARCore
             static extern void UnityARCore_planeTracking_destroy();
 
             [DllImport(Constants.k_LibraryName)]
-            static extern unsafe void* UnityARCore_planeTracking_acquireBoundary(
-                TrackableId trackableId,
-                out int numPoints);
+            static unsafe extern void* UnityARCore_planeTracking_acquireBoundary(
+                TrackableId trackableId, out int numPoints);
 
             [DllImport(Constants.k_LibraryName)]
-            static extern unsafe bool UnityARCore_planeTracking_tryCopyBoundary(
-                void* plane,
-                void* boundaryOut);
+            [return: MarshalAs(UnmanagedType.U1)]
+            static unsafe extern bool UnityARCore_planeTracking_tryCopyBoundary(void* plane, void* boundaryOut);
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -168,6 +165,7 @@ namespace UnityEngine.XR.ARCore
                 supportsArbitraryPlaneDetection = false,
                 supportsBoundaryVerticesDelegate = () => true,
                 supportsClassificationDelegate = () => false,
+                supportsPlaneSubsumptionDelegate = () => true,
             };
 
             XRPlaneSubsystemDescriptor.Register(cinfo);

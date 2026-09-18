@@ -1,7 +1,9 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading;
 using Unity.Collections;
+using Unity.XR.CoreUtils;
 using UnityEngine.Scripting;
 using UnityEngine.XR.ARSubsystems;
 
@@ -52,10 +54,19 @@ namespace UnityEngine.XR.ARCore
                 }
             }
 
+            [Obsolete("CreateRuntimeLibrary is deprecated in AR Foundation 6.7. Use TryCreateRuntimeLibraryAsync instead.")]
             public unsafe override RuntimeReferenceImageLibrary CreateRuntimeLibrary(
                 XRReferenceImageLibrary serializedLibrary)
             {
                 return new ARCoreImageDatabase(serializedLibrary);
+            }
+
+            public override Awaitable<Result<RuntimeReferenceImageLibrary>> TryCreateRuntimeLibraryAsync(
+                XRReferenceImageLibrary serializedLibrary, CancellationToken cancellationToken = default)
+            {
+                RuntimeReferenceImageLibrary library = new ARCoreImageDatabase(serializedLibrary);
+                return AwaitableUtils<Result<RuntimeReferenceImageLibrary>>.FromResult(
+                    new Result<RuntimeReferenceImageLibrary>(library));
             }
 
             public unsafe override TrackableChanges<XRTrackedImage> GetChanges(
@@ -135,6 +146,7 @@ namespace UnityEngine.XR.ARCore
                 supportsMovingImages = true,
                 supportsMutableLibrary = true,
                 supportsImageValidation = true,
+                supportsRuntimeLibraryDelegate = () => true,
             });
         }
     }

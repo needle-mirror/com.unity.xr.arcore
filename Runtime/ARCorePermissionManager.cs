@@ -1,4 +1,7 @@
 using System;
+#if UNITY_6000_5_OR_NEWER
+using Unity.Scripting.LifecycleManagement;
+#endif
 using UnityEngine.Scripting;
 
 namespace UnityEngine.XR.ARCore
@@ -14,10 +17,29 @@ namespace UnityEngine.XR.ARCore
         const string k_AndroidPermissionsClass = "com.unity3d.plugin.UnityAndroidPermissions$IPermissionRequestResult";
         const string k_AndroidPermissionService = "com.unity3d.plugin.UnityAndroidPermissions";
 
+#if UNITY_6000_5_OR_NEWER
+        [NoAutoStaticsCleanup]
+#endif
         static ARCorePermissionManager s_Instance;
+
+#if UNITY_6000_5_OR_NEWER
+        [NoAutoStaticsCleanup]
+#endif
         static AndroidJavaObject s_Activity;
+
+#if UNITY_6000_5_OR_NEWER
+        [NoAutoStaticsCleanup]
+#endif
         static AndroidJavaObject s_PermissionService;
+
+#if UNITY_6000_5_OR_NEWER
+        [NoAutoStaticsCleanup]
+#endif
         static Action<string, bool> s_CurrentCallback;
+
+#if UNITY_6000_5_OR_NEWER
+        [NoAutoStaticsCleanup]
+#endif
         static IntPtr s_IsPermissionGrantedMethodId;
 
         /// <summary>

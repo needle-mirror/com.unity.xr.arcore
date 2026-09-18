@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using AOT;
 using Unity.Collections;
+#if UNITY_6000_5_OR_NEWER
+using Unity.Scripting.LifecycleManagement;
+#endif
 using Unity.XR.CoreUtils.Collections;
 using UnityEngine.Scripting;
 using UnityEngine.XR.ARSubsystems;
@@ -192,12 +195,25 @@ namespace UnityEngine.XR.ARCore
             /// <summary>
             /// The shader keywords for enabling image stabilization rendering.
             /// </summary>
+#if UNITY_6000_5_OR_NEWER
+            [NoAutoStaticsCleanup]
+#endif
             static readonly List<string> k_StabilizationEnabledKeywordList = new() { k_ImageStabilizationEnabledMaterialKeyword };
+
+#if UNITY_6000_5_OR_NEWER
+            [NoAutoStaticsCleanup]
+#endif
             static readonly ReadOnlyList<string> k_StabilizationEnabledKeywordListReadOnly = new(k_StabilizationEnabledKeywordList);
 
+#if UNITY_6000_5_OR_NEWER
+            [NoAutoStaticsCleanup]
+#endif
             static readonly XRShaderKeywords k_StabilizationEnabledKeywords =
                 new(k_StabilizationEnabledKeywordListReadOnly, null);
 
+#if UNITY_6000_5_OR_NEWER
+            [NoAutoStaticsCleanup]
+#endif
             static readonly XRShaderKeywords k_StabilizationDisabledKeywords =
                 new(null, k_StabilizationEnabledKeywordListReadOnly);
 
@@ -308,6 +324,9 @@ namespace UnityEngine.XR.ARCore
             public override XRSupportedCameraBackgroundRenderingMode supportedBackgroundRenderingMode
                 => XRSupportedCameraBackgroundRenderingMode.Any;
 
+#if UNITY_6000_5_OR_NEWER
+            [NoAutoStaticsCleanup]
+#endif
             static Action<IntPtr, ArSession, ArCameraConfigFilter> s_OnBeforeGetCameraConfigurationDelegate = OnBeforeGetCameraConfiguration;
 
             GCHandle m_GCHandle;
@@ -604,10 +623,12 @@ namespace UnityEngine.XR.ARCore
             public static extern void UnityARCore_Camera_Stop();
 
             [DllImport(Constants.k_LibraryName)]
+            [return: MarshalAs(UnmanagedType.U1)]
             public static extern bool UnityARCore_Camera_TryGetFrame(
                 XRCameraParams cameraParams, out XRCameraFrame cameraFrame);
 
             [DllImport(Constants.k_LibraryName, EntryPoint = "UnityARCore_Camera_GetAutoFocusEnabled")]
+            [return: MarshalAs(UnmanagedType.U1)]
             public static extern bool GetAutoFocusEnabled();
 
             [DllImport(Constants.k_LibraryName)]
@@ -617,6 +638,7 @@ namespace UnityEngine.XR.ARCore
             public static extern Supported UnityARCore_Camera_GetSupportsCameraTorchMode();
 
             [DllImport(Constants.k_LibraryName)]
+            [return: MarshalAs(UnmanagedType.U1)]
             public static extern bool UnityARCore_Camera_GetImageStabilizationEnabled();
 
             [DllImport(Constants.k_LibraryName)]
@@ -626,6 +648,7 @@ namespace UnityEngine.XR.ARCore
             public static extern Feature GetCurrentLightEstimation();
 
             [DllImport(Constants.k_LibraryName)]
+            [return: MarshalAs(UnmanagedType.U1)]
             public static extern bool UnityARCore_Camera_TryGetIntrinsics(out XRCameraIntrinsics cameraIntrinsics);
 
             [DllImport(Constants.k_LibraryName)]
@@ -636,6 +659,7 @@ namespace UnityEngine.XR.ARCore
             public static extern void UnityARCore_Camera_ReleaseConfigurations(IntPtr configurations);
 
             [DllImport(Constants.k_LibraryName)]
+            [return: MarshalAs(UnmanagedType.U1)]
             public static extern bool UnityARCore_Camera_TryGetCurrentConfiguration(
                 out XRCameraConfiguration cameraConfiguration);
 
@@ -644,14 +668,15 @@ namespace UnityEngine.XR.ARCore
                 XRCameraConfiguration cameraConfiguration);
 
             [DllImport(Constants.k_LibraryName)]
-            public static extern unsafe void* UnityARCore_Camera_AcquireTextureDescriptors(
+            public static unsafe extern void* UnityARCore_Camera_AcquireTextureDescriptors(
                 out int length, out int elementSize);
 
             [DllImport(Constants.k_LibraryName)]
-            public static extern unsafe void UnityARCore_Camera_ReleaseTextureDescriptors(
+            public static unsafe extern void UnityARCore_Camera_ReleaseTextureDescriptors(
                 void* descriptors);
 
             [DllImport(Constants.k_LibraryName)]
+            [return: MarshalAs(UnmanagedType.U1)]
             public static extern bool UnityARCore_Camera_ShouldInvertCulling();
 
             [DllImport(Constants.k_LibraryName, EntryPoint = "UnityARCore_Camera_GetCurrentFacingDirection")]

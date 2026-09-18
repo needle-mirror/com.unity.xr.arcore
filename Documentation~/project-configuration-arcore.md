@@ -15,7 +15,7 @@ You can review the [Project validation](#project-validation) section of the **XR
 Some ARCore features require specific Unity Project settings to function properly. The settings include:
 
 * **[Google ARCore XR plug-in enabled](#enable-arcore)**: must be enabled to use ARCore features.
-* **[Android API level](#api-level)**: the minimum Android varies with the version of the ARCore plug-in and Unity Editor. Checked by the project validation system.
+* **[Android API level](#api-level)**: the minimum Android API level varies with the version of the ARCore plug-in and Unity Editor. Checked by the project validation system.
 * **[Graphics API](#graphics-api)**: the ARCore plug-in supports both OpenGLES and Vulkan Graphics APIs.
 * **[Scripting Backend](#scripting-backend)**: you must use IL2CPP to use ARM64, which is the recommended target architecture.
 * **[Target Architectures](#target-architecture)**: ARM64 is recommended so that your app can run on all 64-bit devices.
@@ -98,7 +98,7 @@ To set the Graphics API:
 <a name="target-architecture"></a>
 ### Set the Target Architecture
 
-Unity recommends that you always enable the ARM64 target architecture for ARCore projects. If you only support, ARMv7, which is a 32-bit architecture, your app cannot be installed through the Google Playstore on 64-bit devices. In addition, 32-bit ARCore libraries are no longer available on some 64-bit devices, so your app could fail to create an AR session or crash if installed outside the Playstore. See [ARCore 64-bit requirement](https://developers.google.com/ar/64bit) in Google's ARCore documentation for more information.
+Unity recommends that you always enable the ARM64 target architecture for ARCore projects. If you only support ARMv7, which is a 32-bit architecture, your app cannot be installed through the Google Playstore on 64-bit devices. In addition, 32-bit ARCore libraries are no longer available on some 64-bit devices, so your app could fail to create an AR session or crash if installed outside the Playstore. See [ARCore 64-bit requirement](https://developers.google.com/ar/64bit) in Google's ARCore documentation for more information.
 
 To set the Android target architecture:
 

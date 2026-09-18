@@ -1,3 +1,6 @@
+#if UNITY_6000_5_OR_NEWER
+using Unity.Scripting.LifecycleManagement;
+#endif
 using UnityEngine.XR.ARSubsystems;
 
 namespace UnityEngine.XR.ARCore
@@ -18,6 +21,9 @@ namespace UnityEngine.XR.ARCore
             base.Resolve(result);
         }
 
+#if UNITY_6000_5_OR_NEWER
+        [NoAutoStaticsCleanup]
+#endif
         static int s_LastFrameUpdated;
     }
 }

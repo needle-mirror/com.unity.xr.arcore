@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Unity.Collections;
+#if UNITY_6000_5_OR_NEWER
+using Unity.Scripting.LifecycleManagement;
+#endif
 using Unity.XR.CoreUtils;
 using UnityEngine.Scripting;
 using UnityEngine.XR.ARSubsystems;
@@ -52,12 +55,25 @@ namespace UnityEngine.XR.ARCore
             const uint k_MaxLifespanApiKey = 1;
             const uint k_MaxLifespanKeyless = 365;
 
+#if UNITY_6000_5_OR_NEWER
+            [NoAutoStaticsCleanup]
+#endif
             static readonly Dictionary<TrackableId, SaveRequest> s_PendingSaveRequestsByAnchorId = new();
+
+#if UNITY_6000_5_OR_NEWER
+            [NoAutoStaticsCleanup]
+#endif
             static readonly Dictionary<SerializableGuid, LoadRequest> s_PendingLoadRequestsByUuid = new();
 
+#if UNITY_6000_5_OR_NEWER
+            [NoAutoStaticsCleanup]
+#endif
             static readonly Pool.ObjectPool<AwaitableCompletionSource<Result<SerializableGuid>>> s_SaveCompletionSources =
                 ObjectPoolCreateUtil.Create<AwaitableCompletionSource<Result<SerializableGuid>>>();
 
+#if UNITY_6000_5_OR_NEWER
+            [NoAutoStaticsCleanup]
+#endif
             static readonly Pool.ObjectPool<AwaitableCompletionSource<Result<XRAnchor>>> s_LoadCompletionSources =
                 ObjectPoolCreateUtil.Create<AwaitableCompletionSource<Result<XRAnchor>>>();
 
@@ -325,23 +341,26 @@ namespace UnityEngine.XR.ARCore
             static extern void UnityARCore_anchors_onDestroy();
 
             [DllImport(Constants.k_LibraryName)]
-            static extern unsafe void* UnityARCore_anchors_acquireChanges(
+            static unsafe extern void* UnityARCore_anchors_acquireChanges(
                 out void* addedPtr, out int addedCount,
                 out void* updatedPtr, out int updatedCount,
                 out void* removedPtr, out int removedCount,
                 out int elementSize);
 
             [DllImport(Constants.k_LibraryName)]
-            static extern unsafe void UnityARCore_anchors_releaseChanges(void* changes);
+            static unsafe extern void UnityARCore_anchors_releaseChanges(void* changes);
 
             [DllImport(Constants.k_LibraryName)]
+            [return: MarshalAs(UnmanagedType.U1)]
             static extern bool UnityARCore_anchors_tryAdd(Pose pose, out XRAnchor anchor);
 
             [DllImport(Constants.k_LibraryName)]
+            [return: MarshalAs(UnmanagedType.U1)]
             static extern bool UnityARCore_anchors_tryAttach(
                 TrackableId trackableToAffix, Pose pose, out XRAnchor anchor);
 
             [DllImport(Constants.k_LibraryName)]
+            [return: MarshalAs(UnmanagedType.U1)]
             static extern bool UnityARCore_anchors_tryRemove(TrackableId anchorId);
 
             [DllImport(Constants.k_LibraryName)]

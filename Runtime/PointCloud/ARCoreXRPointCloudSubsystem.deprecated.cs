@@ -4,6 +4,9 @@ using System.Runtime.InteropServices;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
+#if UNITY_6000_5_OR_NEWER
+using Unity.Scripting.LifecycleManagement;
+#endif
 using UnityEngine.Scripting;
 using UnityEngine.XR.ARSubsystems;
 
@@ -160,6 +163,9 @@ namespace UnityEngine.XR.ARCore
             [MonoPInvokeCallback(typeof(Func<Guid>))]
             static Guid GenerateGuid() => Guid.NewGuid();
 
+#if UNITY_6000_5_OR_NEWER
+            [NoAutoStaticsCleanup]
+#endif
             static Func<Guid> s_GenerateGuidDelegate = GenerateGuid;
 
             public ARCoreProvider() => UnityARCore_pointCloud_Create(s_GenerateGuidDelegate);

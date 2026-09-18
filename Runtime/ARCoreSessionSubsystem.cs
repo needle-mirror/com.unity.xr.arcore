@@ -4,19 +4,21 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
+#if UNITY_6000_5_OR_NEWER
+using Unity.Scripting.LifecycleManagement;
+#endif
 using UnityEngine.Assertions;
 using UnityEngine.Rendering;
 using UnityEngine.Scripting;
 using UnityEngine.XR.ARSubsystems;
+using static UnityEngine.XR.ARSubsystems.XRResultStatus;
 
 namespace UnityEngine.XR.ARCore
 {
     /// <summary>
     /// The ARCore implementation of the
     /// [XRSessionSubsystem](xref:UnityEngine.XR.ARSubsystems.XRSessionSubsystem).
-    /// Do not create this directly. Use the
-    /// [SubsystemManager](xref:UnityEngine.SubsystemManager)
-    /// instead.
+    /// Don't create this directly. Use the [SubsystemManager](xref:UnityEngine.SubsystemManager) instead.
     /// </summary>
     [Preserve]
     public sealed class ARCoreSessionSubsystem : XRSessionSubsystem
@@ -166,11 +168,17 @@ namespace UnityEngine.XR.ARCore
         /// <summary>
         /// An event callback to handle the native Vulkan command buffer recording and submitting for various subsystems.
         /// </summary>
+#if UNITY_6000_5_OR_NEWER
+        [NoAutoStaticsCleanup]
+#endif
         internal static IntPtr s_VulkanTaskHandlerEventFunc = IntPtr.Zero;
 
         /// <summary>
-        /// A boolean flag to check whether necessary renderer feature is enabled when Vulkan is used.
+        /// A boolean flag to check whether the necessary renderer feature is enabled when Vulkan is used.
         /// </summary>
+#if UNITY_6000_5_OR_NEWER
+        [NoAutoStaticsCleanup]
+#endif
         internal static bool s_VulkanSupportRendererFeatureEnabled = false;
 
         // For built-in render pipeline Vulkan plugin event callback injection.
@@ -193,12 +201,43 @@ namespace UnityEngine.XR.ARCore
         private static readonly string k_PluginCallbackCommandBufferName = "Vulkan Support Event Injection Pass (Built-in Render Pipeline)";
 #endif // !URP_7_OR_NEWER
 
+        /// <summary>
+        /// Attempts to start the subsystem with the given options, optionally checking for and installing ARCore software
+        /// if <see cref="XRSubsystemStartOptions.InstallSoftwareIfNeeded"/> is set.
+        /// </summary>
+        /// <param name="token">A cancellation token, which you can use to cancel the operation in progress.</param>
+        /// <param name="options">The start options.</param>
+        /// <returns>A status representing whether the subsystem was successfully started, and
+        /// any applicable error codes from the runtime.</returns>
+        public override async Awaitable<XRResultStatus> TryStartAsync(
+            CancellationToken token, XRSubsystemStartOptions options = XRSubsystemStartOptions.None)
+        {
+            var result = await ((ARCoreProvider)provider).TryStartAsync(token, options);
+            if (result.IsError())
+                return result;
+            Start();
+            return result;
+        }
+
+        /// <summary>
+        /// Asynchronously checks whether ARCore software is installed on the device, and if not,
+        /// attempts to install it.
+        /// </summary>
+        /// <param name="token">An optional cancellation token, which you can use to cancel the operation in progress.</param>
+        /// <returns>An <see cref="Awaitable{XRResultStatus}"/> that completes with the result of the operation.</returns>
+        public Awaitable<XRResultStatus> TryInstallAsync(CancellationToken token = default)
+            => ((ARCoreProvider)provider).TryInstallAsync(token);
+
         class ARCoreProvider : Provider
         {
             GCHandle m_ProviderHandle;
             Action<ArSession, ArConfig, IntPtr> m_SetConfigurationCallback = SetConfigurationCallback;
             Guid m_SessionId;
+
             // Storing unity version for thread-safe accessing
+#if UNITY_6000_5_OR_NEWER
+            [NoAutoStaticsCleanup]
+#endif
             static string s_UnityVersion;
 
             [Obsolete("Use SetPlaybackDatasetUri(string uri) instead")]
@@ -385,6 +424,48 @@ namespace UnityEngine.XR.ARCore
 
             public override void OnApplicationResume() => NativeApi.UnityARCore_session_onApplicationResume();
 
+            public async Awaitable<XRResultStatus> TryStartAsync(
+                CancellationToken token, XRSubsystemStartOptions options)
+            {
+                var result = unqualifiedSuccess;
+                if ((options & XRSubsystemStartOptions.InstallSoftwareIfNeeded) != 0)
+                {
+                    result = await TryInstallAsync(token);
+                }
+                return result;
+            }
+
+            public async Awaitable<XRResultStatus> TryInstallAsync(CancellationToken token)
+            {
+                var availabilityPromise = ExecuteAsync<NativeApi.ArAvailability>(context =>
+                    NativeApi.ArPresto_checkApkAvailability(OnCheckApkAvailabilityNative, context));
+                while (availabilityPromise.keepWaiting)
+                {
+                    token.ThrowIfCancellationRequested();
+                    await Awaitable.NextFrameAsync();
+                }
+                switch (availabilityPromise.result)
+                {
+                    case NativeApi.ArAvailability.SupportedInstalled:
+                        return unqualifiedSuccess;
+                    case NativeApi.ArAvailability.SupportedNotInstalled:
+                    case NativeApi.ArAvailability.SupportedApkTooOld:
+                        var installPromise = ExecuteAsync<NativeApi.ArPrestoApkInstallStatus>(context =>
+                            NativeApi.ArPresto_requestApkInstallation(true, OnApkInstallationNative, context));
+                        while (installPromise.keepWaiting)
+                        {
+                            token.ThrowIfCancellationRequested();
+                            await Awaitable.NextFrameAsync();
+                        }
+                        return GetInstallResultStatus(installPromise.result);
+                    case NativeApi.ArAvailability.UnsupportedDeviceNotCapable:
+                        return new XRResultStatus(StatusCode.Unsupported);
+                    default:
+                        return new XRResultStatus(StatusCode.UnknownError);
+                }
+            }
+
+            [Obsolete("GetAvailabilityAsync has been deprecated in AR Foundation version 6.7. Use XRSubsystemStartOptions.InstallSoftwareIfNeeded with TryStartAsync instead.")]
             public override Promise<SessionAvailability> GetAvailabilityAsync()
             {
                 return ExecuteAsync<SessionAvailability>((context) =>
@@ -393,6 +474,7 @@ namespace UnityEngine.XR.ARCore
                 });
             }
 
+            [Obsolete("InstallAsync has been deprecated in AR Foundation version 6.7. Use XRSubsystemStartOptions.InstallSoftwareIfNeeded with TryStartAsync instead.")]
             public override Promise<SessionInstallationStatus> InstallAsync()
             {
                 return ExecuteAsync<SessionInstallationStatus>((context) =>
@@ -511,6 +593,23 @@ namespace UnityEngine.XR.ARCore
                 return promise;
             }
 
+            [MonoPInvokeCallback(typeof(Action<NativeApi.ArAvailability, IntPtr>))]
+            static void OnCheckApkAvailabilityNative(NativeApi.ArAvailability availability, IntPtr context)
+                => ResolvePromise(context, availability);
+
+            [MonoPInvokeCallback(typeof(Action<NativeApi.ArPrestoApkInstallStatus, IntPtr>))]
+            static void OnApkInstallationNative(NativeApi.ArPrestoApkInstallStatus status, IntPtr context)
+                => ResolvePromise(context, status);
+
+            static XRResultStatus GetInstallResultStatus(NativeApi.ArPrestoApkInstallStatus status)
+                => status switch
+                {
+                    NativeApi.ArPrestoApkInstallStatus.Success => unqualifiedSuccess,
+                    NativeApi.ArPrestoApkInstallStatus.ErrorDeviceNotCompatible => new XRResultStatus(StatusCode.Unsupported),
+                    _ => new XRResultStatus(StatusCode.UnknownError),
+                };
+
+            [Obsolete("OnApkInstallation has been deprecated in AR Foundation version 6.7 along with InstallAsync. Use TryInstallAsync on ARCoreSessionSubsystem, or pass XRSubsystemStartOptions.InstallSoftwareIfNeeded to TryStartAsync instead.")]
             [MonoPInvokeCallback(typeof(Action<NativeApi.ArPrestoApkInstallStatus, IntPtr>))]
             static void OnApkInstallation(NativeApi.ArPrestoApkInstallStatus status, IntPtr context)
             {
@@ -543,6 +642,7 @@ namespace UnityEngine.XR.ARCore
                 ResolvePromise(context, sessionInstallation);
             }
 
+            [Obsolete("OnCheckApkAvailability has been deprecated in AR Foundation version 6.7 along with GetAvailabilityAsync. Use TryInstallAsync on ARCoreSessionSubsystem, or pass XRSubsystemStartOptions.InstallSoftwareIfNeeded to TryStartAsync instead.")]
             [MonoPInvokeCallback(typeof(Action<NativeApi.ArAvailability, IntPtr>))]
             static void OnCheckApkAvailability(NativeApi.ArAvailability availability, IntPtr context)
             {
@@ -639,7 +739,9 @@ namespace UnityEngine.XR.ARCore
                 id = "ARCore-Session",
                 providerType = typeof(ARCoreProvider),
                 subsystemTypeOverride = typeof(ARCoreSessionSubsystem),
+#pragma warning disable CS0618 // supportsInstall is deprecated
                 supportsInstall = true,
+#pragma warning restore CS0618
                 supportsMatchFrameRate = true
             });
         }
@@ -671,7 +773,7 @@ namespace UnityEngine.XR.ARCore
         }
 
         /// <summary>
-        /// This adds a command to the <paramref name="commandBuffer"/> to make call from the render thread
+        /// This adds a command to the <paramref name="commandBuffer"/> to make a call from the render thread
         /// to a callback on the `SessionProvider` implementation. The callback handles the native Vulkan
         /// command buffer recording and submitting for various subsystems.
         /// </summary>
@@ -686,8 +788,8 @@ namespace UnityEngine.XR.ARCore
 
 #if !URP_7_OR_NEWER
         /// <summary>
-        /// Support ARCore Vulkan rendering by injecting necessary plugin event callback to the main camera.
-        /// Implemenation required for built-in render pipeline only.
+        /// Support ARCore Vulkan rendering by injecting the necessary plugin event callback to the main camera.
+        /// Implementation required for built-in render pipeline only.
         /// </summary>
         /// <remarks>
         /// If using URP 7 or newer then the event injection will be handled by ARCommandBufferSupportRendererFeature,
@@ -813,6 +915,7 @@ namespace UnityEngine.XR.ARCore
             public static extern void UnityARCore_session_pause();
 
             [DllImport(Constants.k_LibraryName, EntryPoint = "UnityARCore_session_isPauseDesired")]
+            [return: MarshalAs(UnmanagedType.U1)]
             public static extern bool IsPauseDesired();
 
             [DllImport(Constants.k_LibraryName)]
@@ -858,9 +961,11 @@ namespace UnityEngine.XR.ARCore
             public static extern void UnityARCore_session_deleteTextureMainThread();
 
             [DllImport(Constants.k_LibraryName)]
+            [return: MarshalAs(UnmanagedType.U1)]
             public static extern bool UnityARCore_session_getMatchFrameRateEnabled();
 
             [DllImport(Constants.k_LibraryName)]
+            [return: MarshalAs(UnmanagedType.U1)]
             public static extern bool UnityARCore_session_getMatchFrameRateRequested();
 
             [DllImport(Constants.k_LibraryName)]

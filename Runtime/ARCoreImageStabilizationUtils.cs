@@ -2,6 +2,9 @@ using System;
 using AOT;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
+#if UNITY_6000_5_OR_NEWER
+using Unity.Scripting.LifecycleManagement;
+#endif
 using UnityEngine.Rendering;
 
 namespace UnityEngine.XR.ARCore
@@ -10,6 +13,10 @@ namespace UnityEngine.XR.ARCore
     {
         internal static readonly Matrix4x4 k_OrthographicProjectionGlesNdc = Matrix4x4.Ortho(
             -1f, 1f, -1f, 1f, 0f, 1f);
+
+#if UNITY_6000_5_OR_NEWER
+        [NoAutoStaticsCleanup]
+#endif
         internal static Mesh ImageStabilizationMesh { get; private set; }
 
         [MonoPInvokeCallback(typeof(Action<IntPtr, int, IntPtr, int>))]

@@ -14,7 +14,7 @@ namespace UnityEngine.XR.ARCore
     /// <code source="../Tests/Runtime/CodeExamples.cs" region="ArRecordingConfig_example"/>
     /// </example>
     /// <remarks>
-    /// A <see cref="ArRecordingConfig"/> represents a native object that must be disposed (by calling
+    /// An <see cref="ArRecordingConfig"/> represents a native object that must be disposed (by calling
     /// <see cref="ArRecordingConfig.Dispose"/>) to prevent memory leaks. Consider using a `using` statement for
     /// convenience.
     ///

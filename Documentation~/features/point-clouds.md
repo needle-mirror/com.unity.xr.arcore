@@ -28,7 +28,7 @@ This package also provides a header file containing the definitions of various n
 Cast `void* pointCloud` to an [ArPointCloud](https://developers.google.com/ar/reference/c/group/ar-point-cloud) handle in C++ using the following example code:
 
 ```cpp
-// Marhshal the native point cloud data from the XRPointCloud.nativePtr in C#
+// Marshal the native point cloud data from the XRPointCloud.nativePtr in C#
 UnityXRNativePointCloud nativePointCloudData;
 ArPointCloud* pointCloudHandle = static_cast<ArPointCloud*>(nativePointCloudData.pointCloud);
 ```

@@ -13,7 +13,7 @@ ARCore implements the following optional features of AR Foundation's [XRSessionS
 
 | Feature | Descriptor Property | Supported |
 | :------ | :--------------- | :--------: |
-| **Install** | [supportsInstall](xref:UnityEngine.XR.ARSubsystems.XRSessionSubsystemDescriptor.supportsInstall) | Yes |
+| **Install** (Deprecated) | [supportsInstall](xref:UnityEngine.XR.ARSubsystems.XRSessionSubsystemDescriptor.supportsInstall) | Yes |
 | **Match frame rate** | [supportsMatchFrameRate](xref:UnityEngine.XR.ARSubsystems.XRSessionSubsystemDescriptor.supportsMatchFrameRate) | Yes |
 
 > [!NOTE]
@@ -21,11 +21,11 @@ ARCore implements the following optional features of AR Foundation's [XRSessionS
 
 ## Check if AR is supported
 
-ARCore implements [XRSessionSubsystem.GetAvailabilityAsync](xref:UnityEngine.XR.ARSubsystems.XRSessionSubsystem.GetAvailabilityAsync). Use this function to determine if the device ARCore is currently running on is supported. ARCore's list of supported devices is frequently updated to include additional devices. For a full list of devices that ARCore supports, refer to [ARCore supported devices](https://developers.google.com/ar/discover/supported-devices).
+ARCore's list of supported devices is frequently updated to include additional devices. For a full list of devices that ARCore supports, refer to [ARCore supported devices](https://developers.google.com/ar/discover/supported-devices).
 
-If ARCore isn't already installed on a device, your app needs to check with the Google Play store to see if there's a version of ARCore that supports that device. To do this, use `GetAvailabilityAsync` to return a `Promise` that you can use in a coroutine. For ARCore, this check can take some time.
+If ARCore isn't already installed on a device, your app needs to check with the Google Play store to see if there's a version of ARCore that supports that device. To check whether ARCore is supported and install it if necessary, pass [InstallSoftwareIfNeeded](xref:UnityEngine.XR.ARSubsystems.XRSubsystemStartOptions.InstallSoftwareIfNeeded) to `TryStartAsync` when you start the session, or call `TryInstallAsync` on [ARCoreSessionSubsystem](xref:UnityEngine.XR.ARCore.ARCoreSessionSubsystem) to install explicitly. Checking for and installing ARCore can take some time.
 
-If the device is supported, but ARCore is not installed or requires an update, call [XRSessionSubsystem.InstallAsync](UnityEngine.XR.ARSubsystems.XRSessionSubsystem.InstallAsync), which also returns a `Promise`.
+If the device doesn't support ARCore, the returned [XRResultStatus](xref:UnityEngine.XR.ARSubsystems.XRResultStatus) has a `StatusCode.Unsupported` status code.
 
 ## Native pointer
 

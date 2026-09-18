@@ -36,7 +36,7 @@ This package also provides a header file containing the definitions of various n
 Cast `void* planePtr` to an [ArPlane](https://developers.google.com/ar/reference/c/group/ar-plane) handle in C++ using the following example code:
 
 ```cpp
-// Marhshal the native plane data from the BoundedPlane.nativePtr in C#
+// Marshal the native plane data from the BoundedPlane.nativePtr in C#
 UnityXRNativePlane nativePlaneData;
 ArPlane* planeHandle = static_cast<ArPlane*>(nativePlaneData.planePtr);
 ```

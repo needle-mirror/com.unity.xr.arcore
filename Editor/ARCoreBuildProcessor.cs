@@ -2,6 +2,9 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Xml;
+#if UNITY_6000_5_OR_NEWER
+using Unity.Scripting.LifecycleManagement;
+#endif
 using UnityEditor.Android;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
@@ -188,6 +191,9 @@ namespace UnityEditor.XR.ARCore
             }
         }
 
+#if UNITY_6000_5_OR_NEWER
+        [NoAutoStaticsCleanup]
+#endif
         static bool s_ShouldDeleteStreamingAssetsFolder;
 
         static readonly string[] k_RuntimePluginNames =
