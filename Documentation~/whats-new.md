@@ -1,13 +1,17 @@
 ---
 uid: arcore-whats-new
 ---
-# What's new in version 6.7
+# What's new in version 7.0
 
 This release includes the following significant changes:
 
-## ARCore installation
+## Breaking changes
 
-- Added `ARCoreSessionSubsystem.TryStartAsync`, an override that starts the session and, if `XRSubsystemStartOptions.InstallSoftwareIfNeeded` is set, checks whether Google Play Services for AR (ARCore) is installed and installs it if needed before starting.
-- Added `ARCoreSessionSubsystem.TryInstallAsync`, which asynchronously checks whether Google Play Services for AR (ARCore) is installed on the device and attempts to install it if needed.
+Google ARCore plug-in 7.0 contains breaking changes:
+
+- `ARCoreXRDepthSubsystem` and `ARCoreXRPointCloudSubsystem` are removed. Use `ARCorePointCloudSubsystem` instead.
+- APIs deprecated in earlier versions are obsolete and produce compile errors, including the file path-based session recording and playback APIs.
+
+To upgrade your project, refer to [Upgrade to Google ARCore plug-in 7.0](xref:arcore-upgrade-guide-7-0).
 
 For a full list of changes in this version including backwards-compatible bugfixes, refer to the package [changelog](xref:arcore-changelog).

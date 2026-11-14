@@ -45,14 +45,6 @@ namespace UnityEngine.XR.ARCore
         public XRCameraSubsystem cameraSubsystem => GetLoadedSubsystem<XRCameraSubsystem>();
 
         /// <summary>
-        /// The [XRDepthSubsystem](xref:UnityEngine.XR.ARSubsystems.XRDepthSubsystem) whose lifecycle is managed by this loader.
-        /// This field is obsolete. Use <see cref="pointCloudSubsystem"/> instead.
-        /// </summary>
-        /// <value>The XR point cloud subsystem instance.</value>
-        [Obsolete("Use pointCloudSubsystem instead. (2022-02-03)")]
-        public XRDepthSubsystem depthSubsystem => GetLoadedSubsystem<XRDepthSubsystem>();
-
-        /// <summary>
         /// The `XRPointCloudSubsystem` whose lifecycle is managed by this loader.
         /// </summary>
         /// <value>The XR point cloud subsystem instance.</value>

@@ -1,5 +1,8 @@
 * [Introduction](xref:arcore-manual)
 * [What's new](xref:arcore-whats-new)
+* [Install and upgrade](xref:arcore-install-and-upgrade)
+  * [Install the Google ARCore plug-in](xref:arcore-install)
+  * [Upgrade to Google ARCore plug-in 7.0](xref:arcore-upgrade-guide-7-0)
 * [Project configuration](xref:arcore-project-config)
 * [Features](xref:arcore-features)
   * [Session](xref:arcore-session)

@@ -81,8 +81,8 @@ namespace UnityEngine.XR.ARCore
         /// The value for the <c>GraphicsSettings.currentRenderPipeline</c> is not expected to change within the lifetime
         /// of the application.
         /// </remarks>
-        [Obsolete("'backgroundShaderName' is obsolete, use 'backgroundShaderNames' instead. (2022/04/04)")]
-        public static string backgroundShaderName => k_BeforeOpaquesBackgroundShaderName;
+        [Obsolete("'backgroundShaderName' is obsolete, use 'backgroundShaderNames' instead. (2022/04/04)", true)]
+        public static string backgroundShaderName => null;
 
         /// <summary>
         /// The names for the background shaders based on the current render pipeline.

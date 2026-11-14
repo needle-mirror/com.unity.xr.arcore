@@ -75,8 +75,8 @@ namespace UnityEngine.XR.ARCore
                 }
             }
 
-            public override unsafe TrackableChanges<BoundedPlane> GetChanges(
-                BoundedPlane defaultPlane,
+            public override unsafe TrackableChanges<XRPlane> GetChanges(
+                XRPlane defaultPlane,
                 Allocator allocator)
             {
                 int addedLength, updatedLength, removedLength, elementSize;
@@ -89,7 +89,7 @@ namespace UnityEngine.XR.ARCore
 
                 try
                 {
-                    return new TrackableChanges<BoundedPlane>(
+                    return new TrackableChanges<XRPlane>(
                         addedPtr, addedLength,
                         updatedPtr, updatedLength,
                         removedPtr, removedLength,

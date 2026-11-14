@@ -100,8 +100,8 @@ namespace UnityEngine.XR.ARCore
         /// <seealso cref="StartRecording"/>
         /// <seealso cref="StopRecording"/>
         /// <seealso cref="StopPlayback"/>
-        [Obsolete("StartPlayback is deprecated in AR Foundation 6.1. Use StartPlaybackUri(string playbackDatasetUri) instead.")]
-        public ArStatus StartPlayback(string playbackDataset) => ((ARCoreProvider)provider).SetPlaybackDataset(playbackDataset);
+        [Obsolete("StartPlayback is deprecated in AR Foundation 6.1. Use StartPlaybackUri(string playbackDatasetUri) instead.", true)]
+        public ArStatus StartPlayback(string playbackDataset) => default;
 
         /// <summary>
         /// Starts playing back a previously recorded session. (refer to <see cref="StartRecording"/>)
@@ -131,8 +131,8 @@ namespace UnityEngine.XR.ARCore
         /// <seealso cref="StartPlayback"/>
         /// <seealso cref="StartRecording"/>
         /// <seealso cref="StopRecording"/>
-        [Obsolete("StopPlayback is deprecated in AR Foundation 6.1. Use StopPlaybackUri(ArRecordingConfig recordingConfig) instead.")]
-        public ArStatus StopPlayback() => ((ARCoreProvider)provider).SetPlaybackDataset(null);
+        [Obsolete("StopPlayback is deprecated in AR Foundation 6.1. Use StopPlaybackUri(ArRecordingConfig recordingConfig) instead.", true)]
+        public ArStatus StopPlayback() => default;
 
         /// <summary>
         /// Stops playing back a session recording.
@@ -181,26 +181,6 @@ namespace UnityEngine.XR.ARCore
 #endif
         internal static bool s_VulkanSupportRendererFeatureEnabled = false;
 
-        // For built-in render pipeline Vulkan plugin event callback injection.
-#if !URP_7_OR_NEWER
-        /// <summary>
-        /// The camera to add the Vulkan callback event.
-        /// We cache a reference to the main camera so that in case main camera changed (e.g. scene changed)
-        /// we will know to add the command buffer to the new camera.
-        /// </summary>
-        private static Camera m_CameraWithPluginCallback = null;
-
-        /// <summary>
-        /// Command buffer for the render event injection.
-        /// </summary>
-        private static CommandBuffer m_PluginCallbackCommandBuffer = null;
-
-        /// <summary>
-        /// Name of the command buffer.
-        /// </summary>
-        private static readonly string k_PluginCallbackCommandBufferName = "Vulkan Support Event Injection Pass (Built-in Render Pipeline)";
-#endif // !URP_7_OR_NEWER
-
         /// <summary>
         /// Attempts to start the subsystem with the given options, optionally checking for and installing ARCore software
         /// if <see cref="XRSubsystemStartOptions.InstallSoftwareIfNeeded"/> is set.
@@ -239,17 +219,6 @@ namespace UnityEngine.XR.ARCore
             [NoAutoStaticsCleanup]
 #endif
             static string s_UnityVersion;
-
-            [Obsolete("Use SetPlaybackDatasetUri(string uri) instead")]
-            public ArStatus SetPlaybackDataset(string playbackDataset)
-            {
-                var session = this.session;
-
-                if (session == null)
-                    throw new InvalidOperationException($"{nameof(SetPlaybackDataset)} requires a valid {nameof(ArSession)}");
-
-                return SetPlaybackDatasetInternal(session, playbackDataset, session.SetPlaybackDataset);
-            }
 
             public ArStatus SetPlaybackDatasetUri(string playbackDatasetUri)
             {
@@ -298,24 +267,6 @@ namespace UnityEngine.XR.ARCore
 
             public override void Update(XRSessionUpdateParams updateParams, Configuration configuration)
             {
-                // For built-in render pipeline only. Check or configure Vulkan camera event callback.
-#if !URP_7_OR_NEWER
-                if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Vulkan)
-                {
-                    // Check per frame in case main camera changed due to user script or scene change.
-                    bool cameraEventAdded = TryAddCameraEventCallbackForVulkanSupport();
-
-                    if (cameraEventAdded && !s_VulkanSupportRendererFeatureEnabled)
-                    {
-                        OnVulkanSupportRendererFeatureEnabled();
-                    }
-                    else if (!cameraEventAdded && s_VulkanSupportRendererFeatureEnabled)
-                    {
-                        OnVulkanSupportRendererFeatureDisabled();
-                    }
-                }
-#endif // !URP_7_OR_NEWER
-
                 ARCoreFeatures arCoreFeatures = ARCoreFeatures.None;
                 if (ARCoreRuntimeSettings.Instance.enableCloudAnchors)
                 {
@@ -465,24 +416,6 @@ namespace UnityEngine.XR.ARCore
                 }
             }
 
-            [Obsolete("GetAvailabilityAsync has been deprecated in AR Foundation version 6.7. Use XRSubsystemStartOptions.InstallSoftwareIfNeeded with TryStartAsync instead.")]
-            public override Promise<SessionAvailability> GetAvailabilityAsync()
-            {
-                return ExecuteAsync<SessionAvailability>((context) =>
-                {
-                    NativeApi.ArPresto_checkApkAvailability(OnCheckApkAvailability, context);
-                });
-            }
-
-            [Obsolete("InstallAsync has been deprecated in AR Foundation version 6.7. Use XRSubsystemStartOptions.InstallSoftwareIfNeeded with TryStartAsync instead.")]
-            public override Promise<SessionInstallationStatus> InstallAsync()
-            {
-                return ExecuteAsync<SessionInstallationStatus>((context) =>
-                {
-                    NativeApi.ArPresto_requestApkInstallation(true, OnApkInstallation, context);
-                });
-            }
-
             public override IntPtr nativePtr => NativeApi.UnityARCore_session_getNativePtr();
 
             public override TrackingState trackingState => NativeApi.UnityARCore_session_getTrackingState();
@@ -609,63 +542,6 @@ namespace UnityEngine.XR.ARCore
                     _ => new XRResultStatus(StatusCode.UnknownError),
                 };
 
-            [Obsolete("OnApkInstallation has been deprecated in AR Foundation version 6.7 along with InstallAsync. Use TryInstallAsync on ARCoreSessionSubsystem, or pass XRSubsystemStartOptions.InstallSoftwareIfNeeded to TryStartAsync instead.")]
-            [MonoPInvokeCallback(typeof(Action<NativeApi.ArPrestoApkInstallStatus, IntPtr>))]
-            static void OnApkInstallation(NativeApi.ArPrestoApkInstallStatus status, IntPtr context)
-            {
-                var sessionInstallation = SessionInstallationStatus.None;
-                switch (status)
-                {
-                    case NativeApi.ArPrestoApkInstallStatus.ErrorDeviceNotCompatible:
-                        sessionInstallation = SessionInstallationStatus.ErrorDeviceNotCompatible;
-                        break;
-
-                    case NativeApi.ArPrestoApkInstallStatus.ErrorUserDeclined:
-                        sessionInstallation = SessionInstallationStatus.ErrorUserDeclined;
-                        break;
-
-                    case NativeApi.ArPrestoApkInstallStatus.Requested:
-                        // This shouldn't happen
-                        sessionInstallation = SessionInstallationStatus.Error;
-                        break;
-
-                    case NativeApi.ArPrestoApkInstallStatus.Success:
-                        sessionInstallation = SessionInstallationStatus.Success;
-                        break;
-
-                    case NativeApi.ArPrestoApkInstallStatus.Error:
-                    default:
-                        sessionInstallation = SessionInstallationStatus.Error;
-                        break;
-                }
-
-                ResolvePromise(context, sessionInstallation);
-            }
-
-            [Obsolete("OnCheckApkAvailability has been deprecated in AR Foundation version 6.7 along with GetAvailabilityAsync. Use TryInstallAsync on ARCoreSessionSubsystem, or pass XRSubsystemStartOptions.InstallSoftwareIfNeeded to TryStartAsync instead.")]
-            [MonoPInvokeCallback(typeof(Action<NativeApi.ArAvailability, IntPtr>))]
-            static void OnCheckApkAvailability(NativeApi.ArAvailability availability, IntPtr context)
-            {
-                var sessionAvailability = SessionAvailability.None;
-                switch (availability)
-                {
-                    case NativeApi.ArAvailability.SupportedNotInstalled:
-                    case NativeApi.ArAvailability.SupportedApkTooOld:
-                        sessionAvailability = SessionAvailability.Supported;
-                        break;
-
-                    case NativeApi.ArAvailability.SupportedInstalled:
-                        sessionAvailability = SessionAvailability.Supported | SessionAvailability.Installed;
-                        break;
-
-                    default:
-                        sessionAvailability = SessionAvailability.None;
-                        break;
-                }
-
-                ResolvePromise(context, sessionAvailability);
-            }
-
             [MonoPInvokeCallback(typeof(NativeApi.CameraPermissionRequestProviderDelegate))]
             static void CameraPermissionRequestProvider(NativeApi.CameraPermissionsResultCallbackDelegate callback, IntPtr context)
             {
@@ -739,16 +615,12 @@ namespace UnityEngine.XR.ARCore
                 id = "ARCore-Session",
                 providerType = typeof(ARCoreProvider),
                 subsystemTypeOverride = typeof(ARCoreSessionSubsystem),
-#pragma warning disable CS0618 // supportsInstall is deprecated
-                supportsInstall = true,
-#pragma warning restore CS0618
                 supportsMatchFrameRate = true
             });
         }
 
         /// <summary>
         /// An internal callback to set the flag when Vulkan plugin render thread callback is registered.
-        /// Used for both URP and built-in render pipeline.
         /// </summary>
         internal static void OnVulkanSupportRendererFeatureEnabled()
         {
@@ -756,19 +628,6 @@ namespace UnityEngine.XR.ARCore
             {
                 s_VulkanSupportRendererFeatureEnabled = true;
                 NativeApi.UnityARCore_session_onVulkanSupportRendererFeatureEnabled();
-            }
-        }
-
-        /// <summary>
-        /// An internal callback to set the flag when main camera changed and camera event command buffer needs to be re-added.
-        /// Useful only for built-in render pipeline.
-        /// </summary>
-        internal static void OnVulkanSupportRendererFeatureDisabled()
-        {
-            if (s_VulkanTaskHandlerEventFunc != IntPtr.Zero)
-            {
-                s_VulkanSupportRendererFeatureEnabled = false;
-                NativeApi.UnityARCore_session_onVulkanSupportRendererFeatureDisabled();
             }
         }
 
@@ -785,52 +644,6 @@ namespace UnityEngine.XR.ARCore
                 commandBuffer.IssuePluginEvent(s_VulkanTaskHandlerEventFunc, 0);
             }
         }
-
-#if !URP_7_OR_NEWER
-        /// <summary>
-        /// Support ARCore Vulkan rendering by injecting the necessary plugin event callback to the main camera.
-        /// Implementation required for built-in render pipeline only.
-        /// </summary>
-        /// <remarks>
-        /// If using URP 7 or newer then the event injection will be handled by ARCommandBufferSupportRendererFeature,
-        /// in which case this path will be disabled.
-        /// </remarks>
-        /// <returns>Returns true if the callback is successfully added. Returns false if main camera is empty.</returns>
-        internal static bool TryAddCameraEventCallbackForVulkanSupport()
-        {
-            var mainCamera = Camera.main;
-            if (mainCamera == null)
-            {
-                return false;
-            }
-
-            // Return success if the event command buffer is already added.
-            if (mainCamera == m_CameraWithPluginCallback)
-            {
-                return true;
-            }
-
-            // Create a new command buffer and queue commands if first time.
-            if (m_PluginCallbackCommandBuffer == null)
-            {
-                m_PluginCallbackCommandBuffer = new CommandBuffer();
-                m_PluginCallbackCommandBuffer.name = k_PluginCallbackCommandBufferName;
-                AddVulkanRenderSupportHandler(m_PluginCallbackCommandBuffer);
-            }
-
-            // Remove the old command buffer in case it is a camera that has been used before.
-            mainCamera.RemoveCommandBuffer(CameraEvent.BeforeForwardOpaque, m_PluginCallbackCommandBuffer);
-            mainCamera.RemoveCommandBuffer(CameraEvent.BeforeGBuffer, m_PluginCallbackCommandBuffer);
-
-            // Attach the command buffer to the camera.
-            mainCamera.AddCommandBuffer(CameraEvent.BeforeForwardOpaque, m_PluginCallbackCommandBuffer);
-            mainCamera.AddCommandBuffer(CameraEvent.BeforeGBuffer, m_PluginCallbackCommandBuffer);
-
-            m_CameraWithPluginCallback = mainCamera;
-
-            return true;
-        }
-#endif // !URP_7_OR_NEWER
 
         internal static class NativeApi
         {

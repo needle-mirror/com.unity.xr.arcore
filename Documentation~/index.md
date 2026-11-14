@@ -33,15 +33,7 @@ This package does not implement the following AR features, as they are not suppo
 
 ## Install the Google ARCore XR Plug-in
 
-When you enable the Google ARCore XR Plug-in in **Project Settings** > **XR Plug-in Management**, Unity automatically installs this package if necessary. Refer to [Enable the ARCore plug-in](xref:arcore-project-config#enable-arcore) for instructions.
-
-You can also install and uninstall this package using the [Package Manager](https://learn.unity.com/tutorial/the-package-manager). Installing through the Package Manager does not automatically enable the plug-in. In this case you must enable it in **Project Settings** > **XR Plug-in Management**.
-
-## Requirements
-
-This version of the Google ARCore XR Plug-in is compatible with the following versions of the Unity Editor:
-
-* Unity 6 (6000.0) or newer.
+To check the requirements and install this package, refer to [Install the Google ARCore plug-in](xref:arcore-install).
 
 ## Samples
 

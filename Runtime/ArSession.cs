@@ -169,25 +169,8 @@ namespace UnityEngine.XR.ARCore
         /// - Returns <see cref="ArStatus.ErrorSessionUnsupported"/> if playback is incompatible with selected features.
         /// - Returns <see cref="ArStatus.ErrorPlaybackFailed"/> if an error occurred with the MP4 dataset file such as not being able to open the file or the file is unable to be decoded.
         /// </returns>
-        [Obsolete("SetPlaybackDataset is deprecated in AR Foundation 6.1. Use SetPlaybackDatasetUri(string uri) instead")]
-        public ArStatus SetPlaybackDataset(string path)
-        {
-            unsafe
-            {
-                if (string.IsNullOrEmpty(path))
-                {
-                    return SetPlaybackDataset(this, null);
-                }
-
-                using (var bytes = path.ToBytes(Encoding.UTF8, Allocator.Temp))
-                {
-                    return SetPlaybackDataset(this, (byte*)bytes.GetUnsafePtr());
-                }
-            }
-        }
-
-        [DllImport("arcore_sdk_c", EntryPoint = "ArSession_setPlaybackDataset")]
-        static extern unsafe ArStatus SetPlaybackDataset(ArSession session, byte* mp4DatasetFilePath);
+        [Obsolete("SetPlaybackDataset is deprecated in AR Foundation 6.1. Use SetPlaybackDatasetUri(string uri) instead", true)]
+        public ArStatus SetPlaybackDataset(string path) => default;
 
         /// <summary>
         /// Sets an MP4 dataset URI to playback instead of live camera feed.

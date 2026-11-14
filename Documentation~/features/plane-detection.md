@@ -21,7 +21,7 @@ The ARCore plane subsystem requires a significant amount of energy. You can redu
 
 ## Native pointer
 
-[BoundedPlane.nativePtr](xref:UnityEngine.XR.ARSubsystems.BoundedPlane.nativePtr) values returned by this package contain a pointer to the following struct:
+[XRPlane.nativePtr](xref:UnityEngine.XR.ARSubsystems.XRPlane.nativePtr) values returned by this package contain a pointer to the following struct:
 
 ```c
 typedef struct UnityXRNativePlane
@@ -36,7 +36,7 @@ This package also provides a header file containing the definitions of various n
 Cast `void* planePtr` to an [ArPlane](https://developers.google.com/ar/reference/c/group/ar-plane) handle in C++ using the following example code:
 
 ```cpp
-// Marshal the native plane data from the BoundedPlane.nativePtr in C#
+// Marshal the native plane data from the XRPlane.nativePtr in C#
 UnityXRNativePlane nativePlaneData;
 ArPlane* planeHandle = static_cast<ArPlane*>(nativePlaneData.planePtr);
 ```

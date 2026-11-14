@@ -54,12 +54,9 @@ namespace UnityEngine.XR.ARCore
                 }
             }
 
-            [Obsolete("CreateRuntimeLibrary is deprecated in AR Foundation 6.7. Use TryCreateRuntimeLibraryAsync instead.")]
-            public unsafe override RuntimeReferenceImageLibrary CreateRuntimeLibrary(
-                XRReferenceImageLibrary serializedLibrary)
-            {
-                return new ARCoreImageDatabase(serializedLibrary);
-            }
+            [Obsolete("CreateRuntimeLibrary is deprecated in AR Foundation 6.7. Use TryCreateRuntimeLibraryAsync instead.", true)]
+            public override RuntimeReferenceImageLibrary CreateRuntimeLibrary(
+                XRReferenceImageLibrary serializedLibrary) => null;
 
             public override Awaitable<Result<RuntimeReferenceImageLibrary>> TryCreateRuntimeLibraryAsync(
                 XRReferenceImageLibrary serializedLibrary, CancellationToken cancellationToken = default)

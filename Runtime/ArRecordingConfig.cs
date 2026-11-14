@@ -179,18 +179,8 @@ namespace UnityEngine.XR.ARCore
         /// </summary>
         /// <param name="session">The ARCore session.</param>
         /// <returns>Returns the path to the MP4 dataset file to which the recording should be saved.</returns>
-        [Obsolete("GetMp4DatasetFilePath is deprecated in AR Foundation 6.1. Use GetMp4DatasetUri(ArSession session) instead")]
-        public string GetMp4DatasetFilePath(ArSession session)
-        {
-            GetMp4DatasetFilePath(session, this, out var value);
-            using (value)
-            {
-                return value.ToString(Encoding.UTF8);
-            }
-        }
-
-        [DllImport("arcore_sdk_c", EntryPoint = "ArRecordingConfig_getMp4DatasetFilePath")]
-        static extern void GetMp4DatasetFilePath(ArSession session, ArRecordingConfig config, out ArString outMp4DatasetFilePath);
+        [Obsolete("GetMp4DatasetFilePath is deprecated in AR Foundation 6.1. Use GetMp4DatasetUri(ArSession session) instead", true)]
+        public string GetMp4DatasetFilePath(ArSession session) => null;
 
         /// <summary>
         /// Gets the URI to save an MP4 dataset file for this recording.
@@ -215,23 +205,8 @@ namespace UnityEngine.XR.ARCore
         /// <param name="session">The ARCore session.</param>
         /// <param name="path">The file path to which an MP4 dataset should be written.</param>
         /// <exception cref="System.ArgumentNullException">Thrown if <paramref name="path"/> is `null`.</exception>
-        [Obsolete("SetMp4DatasetFilePath is deprecated in AR Foundation 6.1. Use SetMp4DatasetUri(ArSession session, string uri) instead")]
-        public void SetMp4DatasetFilePath(ArSession session, string path)
-        {
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
-
-            unsafe
-            {
-                using (var bytes = path.ToBytes(Encoding.UTF8, Allocator.Temp))
-                {
-                    SetMp4DatasetFilePath(session, this, (byte*)bytes.GetUnsafePtr());
-                }
-            }
-        }
-
-        [DllImport("arcore_sdk_c", EntryPoint = "ArRecordingConfig_setMp4DatasetFilePath")]
-        static extern unsafe void SetMp4DatasetFilePath(ArSession session, ArRecordingConfig config, byte* mp4DatasetFilePath);
+        [Obsolete("SetMp4DatasetFilePath is deprecated in AR Foundation 6.1. Use SetMp4DatasetUri(ArSession session, string uri) instead", true)]
+        public void SetMp4DatasetFilePath(ArSession session, string path) { }
 
         /// <summary>
         /// Sets the URI to save an MP4 dataset file for the recording.

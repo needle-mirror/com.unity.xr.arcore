@@ -8,6 +8,30 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [7.0.0-pre.1] - 2026-11-14
+
+### Changed
+
+- Changed the minimum Unity version from 6000.0 to 7000.0.
+- Changed the minimum dependency version of AR Foundation from 6.7.1 to 7.0.0-pre.1.
+- Updated the plane subsystem to use [XRPlane](xref:UnityEngine.XR.ARSubsystems.XRPlane), which replaces `BoundedPlane` in AR Foundation 7.0.
+
+### Deprecated
+
+- The following APIs, which were previously deprecated with a warning, now produce compile errors when referenced. Refer to the [upgrade guide](xref:arcore-upgrade-guide-7-0) for more information.
+  - [`ARCoreCameraSubsystem.backgroundShaderName`](xref:UnityEngine.XR.ARCore.ARCoreCameraSubsystem.backgroundShaderName). Use `backgroundShaderNames` instead.
+  - [`ARCoreSessionSubsystem`](xref:UnityEngine.XR.ARCore.ARCoreSessionSubsystem) methods `StartPlayback` and `StopPlayback`. Use `StartPlaybackUri` and `StopPlaybackUri` instead.
+  - [`ArRecordingConfig`](xref:UnityEngine.XR.ARCore.ArRecordingConfig) methods `GetMp4DatasetFilePath` and `SetMp4DatasetFilePath`. Use `GetMp4DatasetUri` and `SetMp4DatasetUri` instead.
+  - [`ArSession.SetPlaybackDataset`](xref:UnityEngine.XR.ARCore.ArSession.SetPlaybackDataset(System.String)). Use `SetPlaybackDatasetUri` instead.
+
+### Removed
+
+- Removed `ARCoreXRDepthSubsystem`, `ARCoreXRPointCloudSubsystem`, and `ARCoreLoader.depthSubsystem`. Use [`ARCorePointCloudSubsystem`](xref:UnityEngine.XR.ARCore.ARCorePointCloudSubsystem) and [`ARCoreLoader.pointCloudSubsystem`](xref:UnityEngine.XR.ARCore.ARCoreLoader.pointCloudSubsystem) instead. Refer to the [upgrade guide](xref:arcore-upgrade-guide-7-0) for more information.
+
+### Fixed
+
+- Fixed `CS0618` compiler warnings about the obsolete `CameraEvent`, `Camera.AddCommandBuffer`, and `Camera.RemoveCommandBuffer` in `ARCoreSessionSubsystem` in projects without the Universal Render Pipeline (URP). The Built-In Render Pipeline code path that injected the Vulkan support command buffer into the main camera has been removed, because the Built-In Render Pipeline is no longer available in Unity 7000.0.
+
 ## [6.7.1] - 2026-10-27
 
 ### Changed
